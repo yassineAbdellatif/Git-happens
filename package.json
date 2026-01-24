@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "node_modules/expo/AppEntry.js",
     "scripts": {
+        "prestart": "node -e \"const fs = require('fs'); const required = ['typescript', 'expo', 'firebase', 'react', 'react-native']; const missing = required.filter(d => !fs.existsSync('node_modules/' + d)); if (missing.length) { console.error('Missing dependencies:', missing.join(', ') + '. Run: npm install'); process.exit(1); }\"",
         "start": "expo start",
         "android": "expo start --android",
         "ios": "expo start --ios",
@@ -12,15 +13,19 @@
     },
     "dependencies": {
         "expo": "^50.0.0",
+        "expo-status-bar": "~1.11.1",
         "firebase": "^10.7.0",
         "react": "^18.2.0",
         "react-native": "^0.73.0"
     },
     "devDependencies": {
         "@testing-library/react-native": "^12.9.0",
+        "@types/react": "^18.2.0",
         "jest": "^29.7.0",
         "jest-expo": "^50.0.4",
-        "react-test-renderer": "^18.2.0"
+        "react-native-dotenv": "^3.4.9",
+        "react-test-renderer": "^18.2.0",
+        "typescript": "^5.3.0"
     },
     "jest": {
         "preset": "jest-expo",
