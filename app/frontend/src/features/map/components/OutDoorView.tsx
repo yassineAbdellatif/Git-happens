@@ -1,63 +1,87 @@
-import React, { forwardRef } from 'react';
-import { StyleSheet, View } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Polygon, Region } from 'react-native-maps';
-import { CONCORDIA_BUILDINGS, Building } from '../../../constants/buildings';
+import React, { forwardRef } from "react";
+import { StyleSheet, View } from "react-native";
+import MapView, {
+  PROVIDER_GOOGLE,
+  Polygon,
+  Region,
+  Polyline,
+} from "react-native-maps";
+import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
 
 interface OutdoorViewProps {
+  // Initial region for the map
   region: Region;
+
+  // ID of the building where the user currently is
   currentBuildingId?: string | null;
+
+  // ID of the building currently selected
   selectedBuildingId?: string | null;
+
+  // Handle building selection
   onBuildingPress: (building: Building) => void;
+
+  // Deselect a building when the map is pressed
   onMapPress: () => void;
+  // New prop for route coordinates
+  routeCoords?: { latitude: number; longitude: number }[];
 }
 
 const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
-  const { 
-    region, 
-    currentBuildingId, 
-    selectedBuildingId, 
-    onBuildingPress, 
-    onMapPress 
+  const {
+    region,
+    currentBuildingId,
+    selectedBuildingId,
+    onBuildingPress,
+    onMapPress,
+    routeCoords, // Destructure it here
   } = props;
 
-  // We create a unique string based on what is currently active.
-  // When this string changes, the 'key' in the map function changes,
-  // forcing the native engine to redraw the polygons correctly.
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
 
   return (
     <View style={styles.container}>
       <MapView
-        ref={ref} 
+        ref={ref}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={region}
         showsUserLocation={true}
-        moveOnMarkerPress={false} 
+        moveOnMarkerPress={false}
         onPress={onMapPress}
-      >     
+      >
+        {/* --- DRAW THE ROUTE LINE --- */}
+        {routeCoords && routeCoords.length > 0 && (
+          <Polyline
+            coordinates={routeCoords}
+            strokeColor="#912338" 
+            strokeWidth={5}
+            lineCap="round"
+            lineJoin="round"
+            zIndex={20} 
+          />
+        )}
+
         {CONCORDIA_BUILDINGS.map((building) => {
           const isSelected = building.id === selectedBuildingId;
           const isCurrent = building.id === currentBuildingId;
 
-          let fillColor = "rgba(145, 35, 56, 0.15)"; // Very light default
+          let fillColor = "rgba(145, 35, 56, 0.15)";
           let strokeColor = "#912338";
           let zIndex = 1;
 
           if (isSelected) {
-            fillColor = "rgba(145, 35, 56, 0.8)"; // Tapped
+            fillColor = "rgba(145, 35, 56, 0.8)";
             strokeColor = "#000000";
             zIndex = 10;
           } else if (isCurrent) {
-            fillColor = "rgba(255, 215, 0, 0.6)"; // GPS
+            fillColor = "rgba(255, 215, 0, 0.6)";
             zIndex = 5;
           }
 
           return (
             <Polygon
-              // This key forces a refresh ONLY when the selection or GPS building changes.
-              // It prevents the "Invisible" bug while ensuring the color actually updates.
-              key={`${building.id}-${stateTracker}`} 
+              key={`${building.id}-${stateTracker}`}
               coordinates={building.coordinates}
               fillColor={fillColor}
               strokeColor={strokeColor}
@@ -65,7 +89,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
               zIndex={zIndex}
               tappable={true}
               onPress={(e) => {
-                e.stopPropagation(); 
+                e.stopPropagation();
                 onBuildingPress(building);
               }}
             />
@@ -76,7 +100,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
   );
 });
 
-OutdoorView.displayName = 'OutdoorView';
+OutdoorView.displayName = "OutdoorView";
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
