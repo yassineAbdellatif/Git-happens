@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-// TIP: Use your actual IP address here. 
-// On Mac: Option + Click Wi-Fi icon -> IP Address
-// On Windows: Type 'ipconfig' in cmd -> IPv4 Address
-const API_BASE_URL = 'http://localhost:3000/'; // Update with your backend server address
+// Read API base URL from environment variable
+// Set EXPO_PUBLIC_API_BASE_URL in your .env file (e.g., http://192.168.1.100:3000)
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 export const getRouteFromBackend = async (origin: string, destination: string, mode: string) => {
 
