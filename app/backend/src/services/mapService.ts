@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config } from '../config'; // Import the config to access the API key
+import { config } from '../config/config'; // Import the config to access the API key
 
 export const getDirections = async (origin: string, destination: string, mode: string) => {
   
