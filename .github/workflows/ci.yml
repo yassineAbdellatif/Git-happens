@@ -2,31 +2,59 @@ name: CI
 
 on:
   push:
+    branches: [main, sprint_one, develop]
   pull_request:
+    branches: [main, sprint_one, develop]
 
 jobs:
   quality:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for SonarCloud
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'  # Cache dependencies for faster builds
 
-      - run: npm install
-      - run: npm test -- --coverage
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: ./app/backend
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: ./app/frontend
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/coverage-final.json
+          files: ./coverage/lcov.info
           flags: unittests
+          name: codecov-umbrella
           fail_ci_if_error: false
+          verbose: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Check SonarCloud Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true  # Don't block initially, just report
