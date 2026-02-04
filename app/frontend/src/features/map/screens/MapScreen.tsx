@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import OutdoorView from "../components/OutDoorView";
+import ShuttleInfo from "../components/ShuttleInfo";
 import * as Location from "expo-location";
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
 import { isPointInPolygon } from "geolib";
@@ -429,14 +430,7 @@ const MapScreen = () => {
 
                   {/* Shuttle info only shows if SHUTTLE is selected */}
                   {transportMode === "SHUTTLE" && (
-                    <View style={styles.shuttleInfo}>
-                      <Text style={styles.shuttleText}>
-                        Next Shuttle: 12:45 PM (In 12 mins)
-                      </Text>
-                      <Text style={styles.shuttleSubtext}>
-                        Departs from outside Hall Building
-                      </Text>
-                    </View>
+                    <ShuttleInfo routeId="sgw-loyola" />
                   )}
 
                   <TouchableOpacity
@@ -638,14 +632,6 @@ const styles = StyleSheet.create({
   activeModeButton: {
     backgroundColor: "#912338",
     borderColor: "#912338",
-  },
-  shuttleInfo: {
-    backgroundColor: "#fff5f5",
-    padding: 10,
-    borderRadius: 8,
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 15,
   },
   shuttleText: { color: "#912338", fontWeight: "bold" },
   shuttleSubtext: { fontSize: 11, color: "#666" },
