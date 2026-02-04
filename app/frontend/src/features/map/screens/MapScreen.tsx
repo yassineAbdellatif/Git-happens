@@ -3,6 +3,8 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
   Text,
   SafeAreaView,
   TextInput,
@@ -202,6 +204,7 @@ const MapScreen = () => {
   };
 
   const handleSelectFromSearch = (building: Building) => {
+    Keyboard.dismiss();
     setSelectedBuilding(building);
     setSearchQuery(""); // Clear the bar
     setFilteredBuildings([]); // Close dropdown
@@ -221,6 +224,7 @@ const MapScreen = () => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible ={false}>
     <View style={styles.container}>
       {/* MAP LAYER */}
       <View style={styles.mapContainer}>
@@ -452,6 +456,7 @@ const MapScreen = () => {
         )}
       </SafeAreaView>
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 
