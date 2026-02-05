@@ -140,9 +140,12 @@ const MapScreen = () => {
         }
 
         setIsNavigating(true);
-        // Auto-zoom the map to fit the new path
+        // Auto-zoom the map to fit the route (inter-campus vs same-campus)
         mapRef.current?.fitToCoordinates(decodedPath, {
-          edgePadding: { top: 50, right: 50, bottom: 300, left: 50 },
+          edgePadding:
+            decodedPath.length > 50
+              ? { top: 120, right: 120, bottom: 380, left: 120 }
+              : { top: 50, right: 50, bottom: 300, left: 50 },
           animated: true,
         });
       }
