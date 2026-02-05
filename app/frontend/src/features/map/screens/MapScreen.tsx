@@ -59,6 +59,23 @@ const MapScreen = () => {
   const [currentTransportMode, setCurrentTransportMode] = useState<string>("");
 
   const [isNavigating, setIsNavigating] = useState(false);
+  const [originType, setOriginType] = useState<
+    "CURRENT" | "BUILDING" | "SEARCH" | null
+  >(null);
+  const [originCoords, setOriginCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const [originLabel, setOriginLabel] = useState<string>("My Location");
+  const resetRoutingState = () => {
+    setOriginType(null);
+    setOriginCoords(null);
+    setOriginLabel("Choose starting point");
+
+    setRouteCoords([]);
+    setIsNavigating(false);
+    setIsRouting(false);
+  };
 
   // --- Location Tracking & Geofencing ---
   useEffect(() => {
@@ -117,13 +134,13 @@ const MapScreen = () => {
     console.log("Fetching route with mode:", mode);
 
     // Safety Check: Don't run if we don't have a user or a target
-    if (!userLocation || !selectedBuilding) {
+    if (!originCoords || !selectedBuilding) {
       console.warn("User location or building selection is missing.");
       return;
     }
 
     try {
-      const origin = `${userLocation.latitude},${userLocation.longitude}`;
+      const origin = `${originCoords.latitude},${originCoords.longitude}`;
       const destination = `${selectedBuilding.coordinates[0].latitude},${selectedBuilding.coordinates[0].longitude}`;
       const data = await getRouteFromBackend(origin, destination, mode);
 
@@ -135,8 +152,6 @@ const MapScreen = () => {
 
         const encodedPath = data.routes[0].overview_polyline.points;
         const decodedPath = decodePolyline(encodedPath);
-
-        console.log("Decoded path coordinates:", decodedPath);
 
         console.log("Decoded path coordinates:", decodedPath);
 
@@ -160,7 +175,7 @@ const MapScreen = () => {
               latitudeDelta: 0.01, // Zoom in closer to the start
               longitudeDelta: 0.01,
             },
-            1000,
+            1000
           );
         }
 
@@ -180,7 +195,6 @@ const MapScreen = () => {
 
   // --- Recenter Button ---
   const handleRecenter = () => {
-    // logic to recenter the map on the user's current location
     console.log("Recentering map to user location...");
     if (userLocation && mapRef.current) {
       mapRef.current.animateToRegion(
@@ -190,7 +204,7 @@ const MapScreen = () => {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         },
-        1000,
+        1000
       );
     }
   };
@@ -209,6 +223,7 @@ const MapScreen = () => {
   // --- Building Selection ---
   const handleBuildingPress = (building: Building) => {
     setSelectedBuilding(building);
+    resetRoutingState();
   };
 
   // --- Search Logic ---
@@ -218,7 +233,7 @@ const MapScreen = () => {
       const results = CONCORDIA_BUILDINGS.filter(
         (b) =>
           b.fullName.toLowerCase().includes(text.toLowerCase()) ||
-          b.id.toLowerCase().includes(text.toLowerCase()),
+          b.id.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredBuildings(results);
     } else {
@@ -229,6 +244,7 @@ const MapScreen = () => {
   const handleSelectFromSearch = (building: Building) => {
     Keyboard.dismiss();
     setSelectedBuilding(building);
+    resetRoutingState();
     setSearchQuery(""); // Clear the bar
     setFilteredBuildings([]); // Close dropdown
 
@@ -241,27 +257,27 @@ const MapScreen = () => {
           latitudeDelta: 0.003,
           longitudeDelta: 0.003,
         },
-        1000,
+        1000
       );
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible ={false}>
-    <View style={styles.container}>
-      {/* MAP LAYER */}
-      <View style={styles.mapContainer}>
-        <OutdoorView
-          ref={mapRef}
-          region={currentRegion}
-          currentBuildingId={currentBuilding?.id}
-          selectedBuildingId={selectedBuilding?.id}
-          onBuildingPress={handleBuildingPress}
-          onMapPress={() => setSelectedBuilding(null)}
-          routeCoords={routeCoords}
-          transportMode=""
-        />
-      </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        {/* MAP LAYER */}
+        <View style={styles.mapContainer}>
+          <OutdoorView
+            ref={mapRef}
+            region={currentRegion}
+            currentBuildingId={currentBuilding?.id}
+            selectedBuildingId={selectedBuilding?.id}
+            onBuildingPress={handleBuildingPress}
+            onMapPress={() => setSelectedBuilding(null)}
+            routeCoords={routeCoords}
+            transportMode=""
+          />
+        </View>
 
       <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
         {/* TOP SEARCH BAR */}
@@ -281,209 +297,280 @@ const MapScreen = () => {
                   />
                 </View>
 
-                {/* DROPDOWN RESULTS */}
-                {filteredBuildings.length > 0 && (
-                  <View style={styles.dropdown}>
-                    <ScrollView keyboardShouldPersistTaps="handled">
-                      {filteredBuildings.map((b) => (
-                        <TouchableOpacity
-                          key={b.id}
-                          testID={`search-result-${b.id}`}
-                          style={styles.dropdownItem}
-                          onPress={() => handleSelectFromSearch(b)}
-                        >
-                          <Text style={styles.dropdownText}>{b.fullName}</Text>
-                          <Text style={styles.dropdownSubtext}>
-                            {b.id} - {b.campus} Campus
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                  </View>
-                )}
-              </View>
-            )
-          ) : (
-            /* ROUTE HEADER */
-            <View style={styles.routeHeader}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                // Change this onPress:
-                onPress={
-                  isNavigating
-                    ? handleCancelNavigation
-                    : () => setIsRouting(false)
-                }
-              >
-                <MaterialIcons
-                  name={isNavigating ? "arrow-back" : "close"}
-                  size={24}
-                  color="#333"
-                />
-              </TouchableOpacity>
-
-              <View style={styles.routeInputs}>
-                <View style={styles.inputRow}>
-                  <MaterialIcons name="my-location" size={18} color="#4285F4" />
-                  <Text style={styles.routeTextStatic}>My Location</Text>
-                </View>
-
-                <View style={styles.routeDivider} />
-
-                <View style={styles.inputRow}>
-                  <MaterialIcons name="place" size={18} color="#912338" />
-                  <Text style={styles.routeTextStatic}>
-                    {selectedBuilding?.fullName || "Select destination"}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
-        </View>
-        {/* RIGHT-SIDE CONTROLS */}
-        {!isNavigating && (
-          <View style={styles.rightControlsContainer}>
-            {/* RECENTER BUTTON */}
-            <TouchableOpacity
-              testID="recenter-button"
-              style={styles.recenterButton}
-              onPress={handleRecenter}
-            >
-              <MaterialIcons name="my-location" size={24} color="#912338" />
-            </TouchableOpacity>
-
-            {/* STATUS CARD */}
-            <View style={styles.statusCard}>
-              <Text style={styles.statusLabel}>CAMPUS</Text>
-              <Text style={styles.statusValue}>
-                {currentBuilding
-                  ? currentBuilding.campus
-                  : currentRegion.latitude === SGW_REGION.latitude
-                    ? "SGW"
-                    : "LOY"}
-              </Text>
-              <View style={styles.divider} />
-              <Text style={styles.statusLabel}>BUILDING</Text>
-              <Text style={styles.statusValue}>
-                {currentBuilding ? currentBuilding.id : "--"}
-              </Text>
-            </View>
-
-            {/* CAMPUS TOGGLE */}
-            <TouchableOpacity
-              testID="campus-toggle-button"
-              style={styles.toggleButton}
-              onPress={toggleCampus}
-            >
-              <Text style={styles.toggleText}>
-                {currentRegion.latitude === SGW_REGION.latitude
-                  ? "TO LOYOLA"
-                  : "TO SGW"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {/* BOTTOM SHEET */}
-        {selectedBuilding && !isNavigating && (
-          <View
-            style={[
-              styles.bottomSheetMock,
-              isRouting && { minHeight: 220, height: "auto" }, // Grow naturally in routing mode
-            ]}
-          >
-            <View style={styles.dragHandle} />
-
-            {/* ScrollView ensures content is never cut off on smaller screens */}
-            <ScrollView
-              style={{ width: "100%" }}
-              contentContainerStyle={{ alignItems: "center" }}
-              showsVerticalScrollIndicator={false}
-            >
-              {!isRouting ? (
-                // --- DEFAULT UI ---
-                <>
-                  <Text style={styles.sheetTitle}>
-                    {selectedBuilding
-                      ? selectedBuilding.fullName
-                      : "Select a building"}
-                  </Text>
-                  {selectedBuilding && (
-                    <TouchableOpacity
-                      testID="directions-button"
-                      style={styles.directionsButton}
-                      onPress={() => setIsRouting(true)}
-                    >
-                      <MaterialIcons
-                        name="directions"
-                        size={20}
-                        color="white"
-                      />
-                      <Text style={styles.directionsButtonText}>
-                        Directions
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  <Text style={styles.sheetSubtitle}>
-                    Tap a building to see indoor maps
-                  </Text>
-                </>
-              ) : (
-                // --- ROUTING UI ---
-                <View style={styles.routingSheetContent}>
-                  <Text style={styles.routingTitle}>Choose Travel Mode</Text>
-
-                  <View style={styles.modeContainer}>
-                    {[
-                      { id: "WALKING", icon: "directions-walk" },
-                      { id: "DRIVING", icon: "directions-car" },
-                      { id: "TRANSIT", icon: "directions-bus" },
-                      { id: "SHUTTLE", icon: "airport-shuttle" },
-                    ].map((mode) => (
-                      <TouchableOpacity
-                        key={mode.id}
-                        testID={`travel-mode-${mode.id.toLowerCase()}`}
-                        style={[
-                          styles.modeButton,
-                          transportMode === mode.id && styles.activeModeButton,
-                        ]}
-                        onPress={() => setTransportMode(mode.id)}
-                      >
-                        <MaterialIcons
-                          name={mode.icon as any}
-                          size={24}
-                          color={
-                            transportMode === mode.id ? "white" : "#912338"
-                          }
-                        />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {/* Shuttle info only shows if SHUTTLE is selected */}
-                  {transportMode === "SHUTTLE" && (
-                    <View style={styles.shuttleInfo}>
-                      <Text style={styles.shuttleText}>
-                        Next Shuttle: 12:45 PM (In 12 mins)
-                      </Text>
-                      <Text style={styles.shuttleSubtext}>
-                        Departs from outside Hall Building
-                      </Text>
+                  {/* DROPDOWN RESULTS */}
+                  {filteredBuildings.length > 0 && (
+                    <View style={styles.dropdown}>
+                      <ScrollView keyboardShouldPersistTaps="handled">
+                        {filteredBuildings.map((b) => (
+                          <TouchableOpacity
+                            key={b.id}
+                            testID={`search-result-${b.id}`}
+                            style={styles.dropdownItem}
+                            onPress={() => handleSelectFromSearch(b)}
+                          >
+                            <Text style={styles.dropdownText}>
+                              {b.fullName}
+                            </Text>
+                            <Text style={styles.dropdownSubtext}>
+                              {b.id} - {b.campus} Campus
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
                     </View>
                   )}
-
-                  <TouchableOpacity
-                    testID="start-navigation-button"
-                    style={styles.startButton}
-                    onPress={() => handleFetchRoute(transportMode)}
-                  >
-                    <Text style={styles.startButtonText}>Start Navigation</Text>
-                  </TouchableOpacity>
                 </View>
-              )}
-            </ScrollView>
+              )
+            ) : (
+              /* ROUTE HEADER */
+              <View style={styles.routeHeader}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  // Change this onPress:
+                  onPress={
+                    isNavigating
+                      ? handleCancelNavigation
+                      : () => setIsRouting(false)
+                  }
+                >
+                  <MaterialIcons
+                    name={isNavigating ? "arrow-back" : "close"}
+                    size={24}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+
+                <View style={styles.routeInputs}>
+                  <View style={styles.inputRow}>
+                    <MaterialIcons
+                      name="my-location"
+                      size={18}
+                      color="#4285F4"
+                    />
+                    <Text style={styles.routeTextStatic}>
+                      {originLabel || "Choose an origin location"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.routeDivider} />
+
+                  <View style={styles.inputRow}>
+                    <MaterialIcons name="place" size={18} color="#912338" />
+                    <Text style={styles.routeTextStatic}>
+                      {selectedBuilding?.fullName || "Select destination"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
           </View>
-        )}
-        {/*step by step instructions*/}
+          {/* RIGHT-SIDE CONTROLS */}
+          {!isNavigating && (
+            <View style={styles.rightControlsContainer}>
+              {/* RECENTER BUTTON */}
+              <TouchableOpacity
+                testID="recenter-button"
+                style={styles.recenterButton}
+                onPress={handleRecenter}
+              >
+                <MaterialIcons name="my-location" size={24} color="#912338" />
+              </TouchableOpacity>
+
+              {/* STATUS CARD */}
+              <View style={styles.statusCard}>
+                <Text style={styles.statusLabel}>CAMPUS</Text>
+                <Text style={styles.statusValue}>
+                  {currentBuilding
+                    ? currentBuilding.campus
+                    : currentRegion.latitude === SGW_REGION.latitude
+                    ? "SGW"
+                    : "LOY"}
+                </Text>
+                <View style={styles.divider} />
+                <Text style={styles.statusLabel}>BUILDING</Text>
+                <Text style={styles.statusValue}>
+                  {currentBuilding ? currentBuilding.id : "--"}
+                </Text>
+              </View>
+
+              {/* CAMPUS TOGGLE */}
+              <TouchableOpacity
+                testID="campus-toggle-button"
+              style={styles.toggleButton}
+                onPress={toggleCampus}
+              >
+                <Text style={styles.toggleText}>
+                  {currentRegion.latitude === SGW_REGION.latitude
+                    ? "TO LOYOLA"
+                    : "TO SGW"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {/* BOTTOM SHEET */}
+          {selectedBuilding && !isNavigating && (
+            <View
+              style={[
+                styles.bottomSheetMock,
+                isRouting && { minHeight: 220, height: "auto" }, // Grow naturally in routing mode
+              ]}
+            >
+              <View style={styles.dragHandle} />
+
+              {/* ScrollView ensures content is never cut off on smaller screens */}
+              <ScrollView
+                style={{ width: "100%" }}
+                contentContainerStyle={{ alignItems: "center" }}
+                showsVerticalScrollIndicator={false}
+              >
+                {!isRouting ? (
+                  // --- DEFAULT UI ---
+                  <>
+                    <Text style={styles.sheetTitle}>
+                      {selectedBuilding
+                        ? selectedBuilding.fullName
+                        : "Select a building"}
+                    </Text>
+                    {selectedBuilding && (
+                      <TouchableOpacity
+                        testID="directions-button"
+                      style={styles.directionsButton}
+                        onPress={() => {
+                          setIsRouting(true);
+                        }}
+                      >
+                        <MaterialIcons
+                          name="directions"
+                          size={20}
+                          color="white"
+                        />
+                        <Text style={styles.directionsButtonText}>
+                          Directions
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    <Text style={styles.sheetSubtitle}>
+                      Tap a building to see indoor maps
+                    </Text>
+                  </>
+                ) : (
+                  // --- ROUTING UI ---
+                  <View style={styles.routingSheetContent}>
+                    {!originType && (
+                      <View style={{ width: "100%" }}>
+                        <Text style={styles.routingTitle}>
+                          Choose starting point
+                        </Text>
+
+                        <TouchableOpacity style={styles.originOptionButton}
+                          onPress={() => {
+                          setOriginType("CURRENT");
+                          setOriginLabel("My Location");
+                          if (userLocation) {
+                            setOriginCoords({
+                              latitude: userLocation.latitude,
+                              longitude: userLocation.longitude,
+                            });
+                          } else {
+                            alert("Location not available. Please enable location services.");
+                          }
+                          }}
+                        >
+                          <Text style={styles.originOptionText}> Use Current Location</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.originOptionButton}
+                          onPress={() => setOriginType("BUILDING")}
+                        >
+                          <Text style={styles.originOptionText}> Choose Building</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                    {originType === "BUILDING" && !originCoords && (
+                      <View style={{ width: "100%" }}>
+                        <Text style={styles.routingTitle}>
+                          Select origin building
+                        </Text>
+
+                        <ScrollView style={{ maxHeight: 180 }}>
+                          {CONCORDIA_BUILDINGS.map((b) => (
+                            <TouchableOpacity
+                              key={b.id}
+                              style={styles.dropdownItem}
+                              onPress={() => {
+                                setOriginCoords({
+                                  latitude: b.coordinates[0].latitude,
+                                  longitude: b.coordinates[0].longitude,
+                                });
+                                setOriginLabel(b.fullName);
+                                setOriginType("BUILDING"); // keep type, but now origin is set
+                              }}
+                            >
+                              <Text style={styles.dropdownText}>
+                                {b.fullName}
+                              </Text>
+                              <Text style={styles.dropdownSubtext}>
+                                {b.id} – {b.campus}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    )}
+
+                    {originCoords && (
+                      <>
+                        <Text style={styles.routingTitle}>
+                          Choose Travel Mode
+                        </Text>
+
+                        <View style={styles.modeContainer}>
+                          {[
+                            { id: "WALKING", icon: "directions-walk" },
+                            { id: "DRIVING", icon: "directions-car" },
+                            { id: "TRANSIT", icon: "directions-bus" },
+                            { id: "SHUTTLE", icon: "airport-shuttle" },
+                          ].map((mode) => (
+                            <TouchableOpacity
+                              key={mode.id}
+                              testID={`travel-mode-${mode.id.toLowerCase()}`}
+                        style={[
+                                styles.modeButton,
+                                transportMode === mode.id &&
+                                  styles.activeModeButton,
+                              ]}
+                              onPress={() => setTransportMode(mode.id)}
+                            >
+                              <MaterialIcons
+                                name={mode.icon as any}
+                                size={24}
+                                color={
+                                  transportMode === mode.id
+                                    ? "white"
+                                    : "#912338"
+                                }
+                              />
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+
+                        <TouchableOpacity
+                          testID="start-navigation-button"
+                    style={styles.startButton}
+                          onPress={() => handleFetchRoute(transportMode)}
+                        >
+                          <Text style={styles.startButtonText}>
+                            Start Navigation
+                          </Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                )}
+              </ScrollView>
+            </View>
+          )}
+          {/*step by step instructions*/}
         {isNavigating && (
           <View style={styles.navigationSheet}>
             <View style={styles.dragHandle} />
@@ -549,7 +636,7 @@ const MapScreen = () => {
           </View>
         )}
       </SafeAreaProvider>
-    </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -765,6 +852,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  originOptionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  originOptionText: {
+    fontSize: 16,
+    color: '#333',
+    marginLeft: 10,
   },
   //step by step instruction elements
   routeSummary: {
