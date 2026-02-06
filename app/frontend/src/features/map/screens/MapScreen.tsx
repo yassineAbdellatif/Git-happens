@@ -8,6 +8,8 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
+
+import { SafeAreaProvider } from "react-native-safe-area-context"; //safe area view deprecated https://reactnative.dev/docs/safeareaview
 import OutdoorView from "../components/OutDoorView";
 import * as Location from "expo-location";
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
@@ -47,6 +49,12 @@ const MapScreen = () => {
   const [routeCoords, setRouteCoords] = useState<
     { latitude: number; longitude: number }[]
   >([]); // Route polyline coordinates
+
+  //added for step-by-step directions on bottom sheet
+  const [routeSteps, setRouteSteps] = useState<any[]>([]);
+  const [routeDistance, setRouteDistance] = useState<string>("");
+  const [routeDuration, setRouteDuration] = useState<string>("");
+  const [currentTransportMode, setCurrentTransportMode] = useState<string>("");
 
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -120,12 +128,27 @@ const MapScreen = () => {
       console.log("Route data received:", data);
 
       if (data.routes && data.routes.length > 0) {
+        const route = data.routes[0];
+        const leg = route.legs[0];
+
         const encodedPath = data.routes[0].overview_polyline.points;
         const decodedPath = decodePolyline(encodedPath);
 
         console.log("Decoded path coordinates:", decodedPath);
 
+        console.log("Decoded path coordinates:", decodedPath);
+
+        // saving processed steps from backend
+        if (data.processedRoute && data.processedRoute.steps) {
+          setRouteSteps(data.processedRoute.steps);
+          console.log("Steps received:", data.processedRoute.steps);
+        }
+
+        // step by step instructions processing
         setRouteCoords(decodedPath);
+        setRouteDistance(leg.distance.text);
+        setRouteDuration(leg.duration.text);
+        setCurrentTransportMode(mode);
 
         if (decodedPath.length > 0) {
           mapRef.current?.animateToRegion(
@@ -232,10 +255,11 @@ const MapScreen = () => {
           onBuildingPress={handleBuildingPress}
           onMapPress={() => setSelectedBuilding(null)}
           routeCoords={routeCoords}
+          transportMode=""
         />
       </View>
 
-      <SafeAreaView style={styles.overlay} pointerEvents="box-none">
+      <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
         {/* TOP SEARCH BAR */}
         <View style={styles.searchContainer}>
           {!isRouting ? (
@@ -310,7 +334,6 @@ const MapScreen = () => {
             </View>
           )}
         </View>
-
         {/* RIGHT-SIDE CONTROLS */}
         {!isNavigating && (
           <View style={styles.rightControlsContainer}>
@@ -352,7 +375,6 @@ const MapScreen = () => {
             </TouchableOpacity>
           </View>
         )}
-
         {/* BOTTOM SHEET */}
         {selectedBuilding && !isNavigating && (
           <View
@@ -450,7 +472,72 @@ const MapScreen = () => {
             </ScrollView>
           </View>
         )}
-      </SafeAreaView>
+        {/*step by step instructions*/}
+        {isNavigating && (
+          <View style={styles.navigationSheet}>
+            <View style={styles.dragHandle} />
+
+            {/* Route Summary Header (Existing Code) */}
+            <View style={styles.routeSummary}>
+              <View style={styles.summaryRow}>
+                <MaterialIcons
+                  name={
+                    currentTransportMode === "WALKING"
+                      ? "directions-walk"
+                      : currentTransportMode === "DRIVING"
+                        ? "directions-car"
+                        : currentTransportMode === "TRANSIT"
+                          ? "directions-bus"
+                          : "airport-shuttle"
+                  }
+                  size={24}
+                  color="#912338"
+                />
+                <View style={styles.summaryInfo}>
+                  <Text style={styles.durationText}>{routeDuration}</Text>
+                  <Text style={styles.distanceText}>{routeDistance}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.endNavButton}
+                onPress={handleCancelNavigation}
+              >
+                <Text style={styles.endNavText}>End</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+
+            <Text style={styles.stepsHeader}>Steps</Text>
+
+            <ScrollView style={styles.stepsContainer}>
+              {routeSteps.map((step, index) => (
+                <View key={index} style={styles.stepItem}>
+                  {/* Direction Icon based on maneuver if available, or a dot */}
+                  <MaterialIcons
+                    name={
+                      step.maneuver.includes("left")
+                        ? "turn-left"
+                        : step.maneuver.includes("right")
+                          ? "turn-right"
+                          : "straight"
+                    }
+                    size={20}
+                    color="#666"
+                    style={{ marginTop: 2 }}
+                  />
+                  <View style={styles.stepTextContainer}>
+                    <Text style={styles.stepInstruction}>
+                      {step.instruction}
+                    </Text>
+                    <Text style={styles.stepDistance}>{step.distance}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </SafeAreaProvider>
     </View>
   );
 };
@@ -666,6 +753,98 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  //step by step instruction elements
+  routeSummary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  summaryInfo: {
+    flexDirection: "column",
+  },
+  durationText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  distanceText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  endNavButton: {
+    backgroundColor: "#f0f0f0",
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  endNavText: {
+    color: "#912338",
+    fontWeight: "bold",
+  },
+  destinationInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+  },
+  destinationText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  navigationSheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 40,
+    elevation: 10,
+    zIndex: 10,
+    maxHeight: "60%",
+  },
+  stepsHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  stepsContainer: {
+    marginTop: 5,
+  },
+  stepItem: {
+    flexDirection: "row",
+    marginBottom: 15,
+    alignItems: "flex-start",
+    gap: 10,
+  },
+  stepTextContainer: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+    paddingBottom: 10,
+  },
+  stepInstruction: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 4,
+    flexWrap: "wrap",
+  },
+  stepDistance: {
+    fontSize: 12,
+    color: "#999",
   },
 });
 
