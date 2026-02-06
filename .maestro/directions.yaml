@@ -1,0 +1,37 @@
+appId: com.githappens
+---
+# Test: Request directions and start navigation
+
+- launchApp:
+    clearState: true
+    permissions:
+      location: allow
+
+# Search for building
+- tapOn: "Search for a building"
+- inputText: "Hall"
+- assertVisible: "Henry F. Hall Building"
+- tapOn: "Henry F. Hall Building"
+
+# Open directions
+- assertVisible:
+    id: "directions-button"
+- tapOn:
+    id: "directions-button"
+
+# Verify travel mode options appear
+- assertVisible: "Choose Travel Mode"
+
+# Select walking mode (default)
+- assertVisible:
+    id: "start-navigation-button"
+
+# Start navigation
+- tapOn:
+    id: "start-navigation-button"
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Verify navigation started (route should be visible)
+# Note: This depends on backend connection
+- assertVisible: "My Location"

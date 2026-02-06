@@ -1,0 +1,9 @@
+# Maestro Configuration
+# This file defines the app configuration for all flows
+
+appId: com.githappens  # Update this with your actual app package name
+
+# For Android: com.yourcompany.yourapp
+# For iOS: com.yourcompany.YourApp
+
+# You can override this in individual flow files if needed

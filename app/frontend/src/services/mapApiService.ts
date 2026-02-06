@@ -18,7 +18,7 @@ export const getRouteFromBackend = async (origin: string, destination: string, m
     }]
   };
   */
-  const url = `${API_BASE_URL}api/directions`;
+  const url = `${API_BASE_URL}/api/directions`;
   console.log(`Requesting route from backend at: ${url}`);
 
   try {

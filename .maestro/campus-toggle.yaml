@@ -1,0 +1,33 @@
+appId: com.githappens
+---
+# Test: Toggle between SGW and Loyola campuses
+
+- launchApp:
+    clearState: true
+    permissions:
+      location: allow
+
+- assertVisible:
+    id: "map-container"
+
+# Verify initial campus
+- assertVisible:
+    id: "campus-toggle-button"
+
+# Toggle to other campus
+- tapOn:
+    id: "campus-toggle-button"
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Toggle back
+- tapOn:
+    id: "campus-toggle-button"
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Test recenter button
+- tapOn:
+    id: "recenter-button"
+- waitForAnimationToEnd:
+    timeout: 1000
