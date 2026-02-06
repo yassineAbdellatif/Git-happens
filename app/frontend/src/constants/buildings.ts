@@ -16,10 +16,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Home to the Faculty of Engineering and Computer Science and the 7th floor lounge.",
     coordinates: [
-      { latitude: 45.496831703073426, longitude: -73.57886161006161 },
-      { latitude: 45.497164066012594, longitude: -73.57954284420437 },
-      { latitude: 45.49770467748888, longitude: -73.57903266885518 },
-      { latitude: 45.4973744212895, longitude: -73.57833943058655 },
+      { latitude: 45.497159, longitude: -73.579554 },
+      { latitude: 45.497722, longitude: -73.579022 },
+      { latitude: 45.497387, longitude: -73.578305 },
+      { latitude: 45.496824, longitude: -73.578837 },
     ],
   },
   {
@@ -29,10 +29,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Contains the Webster Library, Birks Student Service Centre, and Cinema Politica.",
     coordinates: [
-      { latitude: 45.4962608117808, longitude: -73.57770546619393 },
-      { latitude: 45.496846013401424, longitude: -73.5771905221769 },
-      { latitude: 45.49726071952932, longitude: -73.57805825762689 },
-      { latitude: 45.496692417764145, longitude: -73.57859511415528 },
+      { latitude: 45.497282, longitude: -73.578036 }, 
+      { latitude: 45.496910, longitude: -73.577255 }, 
+      { latitude: 45.496560, longitude: -73.577590 }, 
+      { latitude: 45.496485, longitude: -73.577435 },
+      { latitude: 45.496221, longitude: -73.577682 },
+      { latitude: 45.496676, longitude: -73.578626 } 
     ],
   },
   {
@@ -43,10 +45,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "State-of-the-art labs and the FOFA Gallery.",
     coordinates: [
-      { latitude: 45.495866665347314, longitude: -73.57849513713523 },
-      { latitude: 45.495593229550785, longitude: -73.57876461699963 },
-      { latitude: 45.49521411588751, longitude: -73.5778789139488 },
-      { latitude: 45.495445283059006, longitude: -73.57761131855897 },
+      { latitude: 45.495567, longitude: -73.578776 },
+      { latitude: 45.495947, longitude: -73.578416 },
+      { latitude: 45.495755, longitude: -73.578009 },
+      { latitude: 45.496088, longitude: -73.577684 },
+      { latitude: 45.495855, longitude: -73.577180 },
+      { latitude: 45.495153, longitude: -73.577883 },
     ],
   },
   {
@@ -56,10 +60,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Home of the John Molson School of Business.",
     coordinates: [
-      { latitude: 45.495520469231906, longitude: -73.5792020907505 }, // top-left
-      { latitude: 45.4953576540106, longitude: -73.57936862583686 }, // top-right
-      { latitude: 45.49500130207221, longitude: -73.57874192801188 }, // bottom-right
-      { latitude: 45.4951856223219, longitude: -73.57853375915393 }, // bottom-left
+      { latitude: 45.495531, longitude: -73.579224 },
+      { latitude: 45.495197, longitude: -73.578468 },
+      { latitude: 45.494941, longitude: -73.578800 },
+      { latitude: 45.495129, longitude: -73.579111 },
+      { latitude: 45.495189, longitude: -73.579111 },
+      { latitude: 45.495377, longitude: -73.579465 },
     ],
   },
   {
@@ -69,10 +75,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Contains university administrative offices and various classrooms.",
     coordinates: [
-      { latitude: 45.49594367960742, longitude: -73.57843753001087 }, // top-left
-      { latitude: 45.49612840702602, longitude: -73.5788110982497 }, // top-right
-      { latitude: 45.49578275677468, longitude: -73.5791452720197 }, // bottom-right
-      { latitude: 45.49561897685144, longitude: -73.57874861047155 }, // bottom-left
+      { latitude: 45.496530, longitude: -73.579557 },
+      { latitude: 45.496369, longitude: -73.579238 },
+      { latitude: 45.496157, longitude: -73.579455 },
+      { latitude: 45.496269, longitude: -73.579677 },
+      { latitude: 45.496353, longitude: -73.579591 },
+      { latitude: 45.496402, longitude: -73.579689 },
     ],
   },
   {
@@ -82,10 +90,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Dedicated space for the Faculty of Fine Arts.",
     coordinates: [
-      { latitude: 45.49618642295494, longitude: -73.5737950018861 }, // top-left
-      { latitude: 45.49592636675518, longitude: -73.57327467694199 }, // top-right
-      { latitude: 45.495403013501104, longitude: -73.57376883169661 }, // bottom-right
-      { latitude: 45.49566846751203, longitude: -73.5743122479844 }, // bottom-left
+      { latitude: 45.496172, longitude: -73.573791 },
+      { latitude: 45.496051, longitude: -73.573539 },
+      { latitude: 45.495780, longitude: -73.573802 },
+      { latitude: 45.495634, longitude: -73.573496 },
+      { latitude: 45.495356, longitude: -73.573743 },
+      { latitude: 45.495615, longitude: -73.574321 },
     ],
   },
   {
@@ -95,10 +105,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Classrooms and the Mel Hoppenheim School of Cinema.",
     coordinates: [
-      { latitude: 45.494910677711516, longitude: -73.57778435124267 }, // top-left
-      { latitude: 45.49465262793321, longitude: -73.57721900844952 }, // top-right
-      { latitude: 45.493628097201814, longitude: -73.57873097173558 }, // bottom-right
-      { latitude: 45.493823174208444, longitude: -73.57906842440856 }, // bottom-left
+      { latitude: 45.494910, longitude: -73.577770 },
+      { latitude: 45.494658, longitude: -73.577181 },
+      { latitude: 45.494318, longitude: -73.577578 },
+      { latitude: 45.494412, longitude: -73.577718 },
+      { latitude: 45.494167, longitude: -73.578082 },
+      { latitude: 45.494348, longitude: -73.578409 },
     ],
   },
 
@@ -110,10 +122,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "The main library for the Loyola campus.",
     coordinates: [
-      { latitude: 45.459510972578045, longitude: -73.63915299892896 }, // top-left
-      { latitude: 45.45908744439003, longitude: -73.63793229118957 }, // top-right
-      { latitude: 45.4587280846448, longitude: -73.6382198240618 }, // bottom-right
-      { latitude: 45.459034273959844, longitude: -73.63951110805166 }, // bottom-left
+      { latitude: 45.459095, longitude: -73.637839 },
+      { latitude: 45.458568, longitude: -73.638330 },
+      { latitude: 45.458825, longitude: -73.639086 },
+      { latitude: 45.459318, longitude: -73.638657 },
     ],
   },
   {
@@ -123,10 +135,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Main administrative hub for the Loyola Campus.",
     coordinates: [
-      { latitude: 45.458359606506505, longitude: -73.64142443063798 }, // top-left
-      { latitude: 45.45822874595657, longitude: -73.64108899416341 }, // top-right
-      { latitude: 45.45790225416947, longitude: -73.64142066168884 }, // bottom-right
-      { latitude: 45.45800800070426, longitude: -73.64168071918036 }, // bottom-left
+      { latitude: 45.458327, longitude: -73.639403 },
+      { latitude: 45.457691, longitude: -73.639831 },
+      { latitude: 45.457810, longitude: -73.640190 },
+      { latitude: 45.458446, longitude: -73.639762 },
     ],
   },
   {
@@ -136,10 +148,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Houses advanced research labs and the Department of Biology.",
     coordinates: [
-      { latitude: 45.457998747890386, longitude: -73.64170333287528 }, // top-left
-      { latitude: 45.457898288670556, longitude: -73.64142819958714 }, // top-right
-      { latitude: 45.45761673753494, longitude: -73.64160910914646 }, // bottom-right
-      { latitude: 45.457734381138174, longitude: -73.64188801138376 }, // bottom-left
+      { latitude: 45.458372, longitude: -73.641435 },
+      { latitude: 45.458175, longitude: -73.640937 },
+      { latitude: 45.457522, longitude: -73.641462 },
+      { latitude: 45.457195, longitude: -73.640636 },
+      { latitude: 45.456958, longitude: -73.640826 },
+      { latitude: 45.457481, longitude: -73.642150 },
     ],
   },
   {
@@ -149,10 +163,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Contains media labs, radio stations, and journalism facilities.",
     coordinates: [
-      { latitude: 45.45751876328547, longitude: -73.63999916817816 }, // top-left
-      { latitude: 45.457444466936586, longitude: -73.63975820019054 }, // top-right
-      { latitude: 45.45722714955416, longitude: -73.63988265618416 }, // bottom-right
-      { latitude: 45.4572819433321, longitude: -73.64009582017319 }, // bottom-left
+      { latitude: 45.457846, longitude: -73.640509 },
+      { latitude: 45.457488, longitude: -73.639603 },
+      { latitude: 45.457037, longitude: -73.639946 },
+      { latitude: 45.457383, longitude: -73.640857 },
     ],
   },
   {
@@ -162,10 +176,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Student life hub including the Hive Cafe and food services.",
     coordinates: [
-      { latitude: 45.4577598134696, longitude: -73.64036854809433 }, // top-left
-      { latitude: 45.45764757333694, longitude: -73.64005368011232 }, // top-right
-      { latitude: 45.457198610572135, longitude: -73.64040468048572 }, // bottom-right
-      { latitude: 45.45732261878991, longitude: -73.64071438669754 }, // bottom-left
+      { latitude: 45.459106, longitude: -73.639467 },
+      { latitude: 45.459516, longitude: -73.639160 },
+      { latitude: 45.459371, longitude: -73.638716 },
+      { latitude: 45.458942, longitude: -73.639081 },
     ],
   },
   {
@@ -175,10 +189,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Home to the Department of Psychology and research clinics.",
     coordinates: [
-      { latitude: 45.45923414686468, longitude: -73.64057235160632 }, // top-left
-      { latitude: 45.45906116560649, longitude: -73.64015050736825 }, // top-right
-      { latitude: 45.45866967974583, longitude: -73.64045985981015 }, // bottom-right
-      { latitude: 45.458813073137804, longitude: -73.64079192694113 }, // bottom-left
+      { latitude: 45.459083, longitude: -73.640084 },
+      { latitude: 45.458619, longitude: -73.640434 },
+      { latitude: 45.458801, longitude: -73.640922 },
+      { latitude: 45.459264, longitude: -73.640572 },
     ],
   },
   {
@@ -188,10 +202,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Interdisciplinary research center focusing on aquatic science and nano-science.",
     coordinates: [
-      { latitude: 45.45717976633968, longitude: -73.64056919425785 }, // top-left
-      { latitude: 45.457059011727615, longitude: -73.64017986647805 }, // top-right
-      { latitude: 45.45681843061432, longitude: -73.6404023394951 }, // bottom-right
-      { latitude: 45.45695311900883, longitude: -73.64075458843872 }, // bottom-left
-    ],
+  { latitude: 45.458233, longitude: -73.641693 },
+  { latitude: 45.458417, longitude: -73.642171 },
+  { latitude: 45.458750, longitude: -73.641910 },
+  { latitude: 45.458566, longitude: -73.641432 },
+],
   },
 ];
