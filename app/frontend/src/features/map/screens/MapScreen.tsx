@@ -377,6 +377,13 @@ const MapScreen = () => {
                       ? selectedBuilding.fullName
                       : "Select a building"}
                   </Text>
+
+                  {/* Display the building info */}
+                  {selectedBuilding?.info && (
+                    <Text style={styles.sheetInfoText}>
+                      {selectedBuilding.info}
+                    </Text>
+                  )}
                   {selectedBuilding && (
                     <TouchableOpacity
                       style={styles.directionsButton}
@@ -387,6 +394,7 @@ const MapScreen = () => {
                         size={20}
                         color="white"
                       />
+                      
                       <Text style={styles.directionsButtonText}>
                         Directions
                       </Text>
@@ -581,6 +589,14 @@ const styles = StyleSheet.create({
   },
   sheetTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center" },
   sheetSubtitle: { color: "#666", marginTop: 5, textAlign: "center" },
+  sheetInfoText: {
+    fontSize: 14,
+    color: '#666',         // Grey color
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    marginVertical: 10,
+    lineHeight: 20,        // Improves readability for multi-line text
+  },
 
   // --- DROPDOWN & BUTTONS ---
   dropdown: {
