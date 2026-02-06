@@ -25,6 +25,7 @@ interface OutdoorViewProps {
   onMapPress: () => void;
   // New prop for route coordinates
   routeCoords?: { latitude: number; longitude: number }[];
+  transportMode?: string;
 }
 
 const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
@@ -35,9 +36,26 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     onBuildingPress,
     onMapPress,
     routeCoords, // Destructure it here
+    transportMode,
   } = props;
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
+
+  //different polyline colors for different modes
+  const getPolylineColor = () => {
+    switch (transportMode) {
+      case "WALKING":
+        return "#4285F4"; // Blue
+      case "DRIVING":
+        return "#34A853"; // Green
+      case "TRANSIT":
+        return "#FBBC04"; // Yellow/Orange
+      case "SHUTTLE":
+        return "#912338"; // Concordia Maroon
+      default:
+        return "#912338";
+    }
+  };
 
   return (
     <View style={styles.container}>
