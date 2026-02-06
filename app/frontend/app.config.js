@@ -15,13 +15,13 @@ export default {
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourname.campusguide", 
+      "bundleIdentifier": "com.githappens",
       "config": {
         "googleMapsApiKey": process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
       }
     },
     "android": {
-      "package": "com.yourname.campusguide", 
+      "package": "com.githappens",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

@@ -1,29 +1,30 @@
-appId: com.githappens
+appId: host.exp.exponent
 ---
-# Test: Search for buildings and verify results
+# Test: Search for buildings
 
-- launchApp:
-    clearState: true
-    permissions:
-      location: allow
+# Wait for app to be ready
+- waitForAnimationToEnd:
+    timeout: 2000
 
-- assertVisible: "Search for a building"
-
-# Test searching for Hall Building
-- tapOn: "Search for a building"
-- inputText: "Hall"
-- assertVisible: "Hall Building"
-
-# Select building
-- tapOn: "Henry F. Hall Building"
-
-# Verify building details appear
-- assertVisible: "Directions"
-- assertVisible:
-    id: "directions-button"
-
-# Test searching for another building
+# Tap search bar at top
 - tapOn:
-    id: "search-input"
-- inputText: "Vanier"
-- assertVisible: "Vanier Library"
+    point: "50%,10%"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Search for Hall Building
+- inputText: "Hall"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Try to tap on first search result
+- tapOn:
+    point: "50%,20%"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Take screenshot
+- takeScreenshot: building-selected

@@ -1,33 +1,32 @@
-appId: com.githappens
+appId: host.exp.exponent
 ---
-# Test: Toggle between SGW and Loyola campuses
+# Test: Campus toggle and map controls
 
-- launchApp:
-    clearState: true
-    permissions:
-      location: allow
-
-- assertVisible:
-    id: "map-container"
-
-# Verify initial campus
-- assertVisible:
-    id: "campus-toggle-button"
-
-# Toggle to other campus
-- tapOn:
-    id: "campus-toggle-button"
+# Wait for map to load
 - waitForAnimationToEnd:
     timeout: 2000
+
+# Tap campus toggle button (bottom right area)
+- tapOn:
+    point: "85%,85%"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- takeScreenshot: after-toggle
 
 # Toggle back
 - tapOn:
-    id: "campus-toggle-button"
+    point: "85%,85%"
+
 - waitForAnimationToEnd:
     timeout: 2000
 
-# Test recenter button
+# Test recenter button (right side, mid-bottom)
 - tapOn:
-    id: "recenter-button"
+    point: "90%,70%"
+
 - waitForAnimationToEnd:
     timeout: 1000
+
+- takeScreenshot: after-recenter

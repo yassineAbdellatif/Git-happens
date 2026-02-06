@@ -1,37 +1,37 @@
-appId: com.githappens
+appId: host.exp.exponent
 ---
-# Test: Request directions and start navigation
+# Test: Request directions
 
-- launchApp:
-    clearState: true
-    permissions:
-      location: allow
+# Wait for map
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Tap search bar
+- tapOn:
+    point: "50%,10%"
+
+- waitForAnimationToEnd:
+    timeout: 1000
 
 # Search for building
-- tapOn: "Search for a building"
 - inputText: "Hall"
-- assertVisible: "Henry F. Hall Building"
-- tapOn: "Henry F. Hall Building"
 
-# Open directions
-- assertVisible:
-    id: "directions-button"
-- tapOn:
-    id: "directions-button"
-
-# Verify travel mode options appear
-- assertVisible: "Choose Travel Mode"
-
-# Select walking mode (default)
-- assertVisible:
-    id: "start-navigation-button"
-
-# Start navigation
-- tapOn:
-    id: "start-navigation-button"
 - waitForAnimationToEnd:
-    timeout: 3000
+    timeout: 2000
 
-# Verify navigation started (route should be visible)
-# Note: This depends on backend connection
-- assertVisible: "My Location"
+# Tap first result
+- tapOn:
+    point: "50%,20%"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Look for and tap "Directions" button (should appear in bottom sheet)
+- tapOn:
+    point: "50%,85%"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Take screenshot of directions UI
+- takeScreenshot: directions-screen

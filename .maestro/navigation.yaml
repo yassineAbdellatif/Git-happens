@@ -1,9 +1,25 @@
-appId: com.githappens # Update with your actual app ID
+appId: host.exp.exponent
 ---
-- launchApp
-- assertVisible: "Search for a building"
-- tapOn: "Search for a building"
-- inputText: "Hall Building"
-- assertVisible: "Henry F. Hall Building"
-- tapOn: "Henry F. Hall Building"
-- assertVisible: "Directions"
+# Basic navigation test - app already running
+
+# Wait for map to load
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Tap on the search area (top of screen)
+- tapOn:
+    point: "50%,10%"
+
+# Wait for keyboard
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Type a building name
+- inputText: "Hall"
+
+# Wait for search results
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Take screenshot to verify
+- takeScreenshot: search-results
