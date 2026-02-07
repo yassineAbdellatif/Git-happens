@@ -2,196 +2,196 @@ export interface Building {
   id: string;
   name: string;
   fullName: string;
-  campus: 'SGW' | 'LOYOLA';
+  campus: "SGW" | "LOYOLA";
   coordinates: { latitude: number; longitude: number }[];
   info: string;
-  
 }
 
 export const CONCORDIA_BUILDINGS: Building[] = [
   // --- SIR GEORGE WILLIAMS (SGW) CAMPUS ---
   {
-    id: 'H',
-    name: 'Hall',
-    fullName: 'Henry F. Hall Building',
-    campus: 'SGW',
-    info: 'Home to the Faculty of Engineering and Computer Science and the 7th floor lounge.',
+    id: "H",
+    name: "Hall",
+    fullName: "Henry F. Hall Building",
+    campus: "SGW",
+    info: "Home to the Faculty of Engineering and Computer Science and the 7th floor lounge.",
     coordinates: [
-      { latitude: 45.4971, longitude: -73.5788 },
-      { latitude: 45.4968, longitude: -73.5791 },
-      { latitude: 45.4973, longitude: -73.5798 },
-      { latitude: 45.4976, longitude: -73.5795 },
+      { latitude: 45.496831703073426, longitude: -73.57886161006161 },
+      { latitude: 45.497164066012594, longitude: -73.57954284420437 },
+      { latitude: 45.49770467748888, longitude: -73.57903266885518 },
+      { latitude: 45.4973744212895, longitude: -73.57833943058655 },
     ],
   },
   {
-    id: 'LB',
-    name: 'LB',
-    fullName: 'J.W. McConnell Building',
-    campus: 'SGW',
-    info: 'Contains the Webster Library, Birks Student Service Centre, and Cinema Politica.',
+    id: "LB",
+    name: "LB",
+    fullName: "J.W. McConnell Building",
+    campus: "SGW",
+    info: "Contains the Webster Library, Birks Student Service Centre, and Cinema Politica.",
     coordinates: [
-      { latitude: 45.4966, longitude: -73.5779 },
-      { latitude: 45.4962, longitude: -73.5785 },
-      { latitude: 45.4967, longitude: -73.5791 },
-      { latitude: 45.4971, longitude: -73.5785 },
+      { latitude: 45.4962608117808, longitude: -73.57770546619393 },
+      { latitude: 45.496846013401424, longitude: -73.5771905221769 },
+      { latitude: 45.49726071952932, longitude: -73.57805825762689 },
+      { latitude: 45.496692417764145, longitude: -73.57859511415528 },
     ],
   },
   {
-    id: 'EV',
-    name: 'EV',
-    fullName: 'Engineering, Computer Science and Visual Arts Integrated Complex',
-    campus: 'SGW',
-    info: 'State-of-the-art labs and the FOFA Gallery.',
+    id: "EV",
+    name: "EV",
+    fullName:
+      "Engineering, Computer Science and Visual Arts Integrated Complex",
+    campus: "SGW",
+    info: "State-of-the-art labs and the FOFA Gallery.",
     coordinates: [
-      { latitude: 45.4954, longitude: -73.5779 },
-      { latitude: 45.4951, longitude: -73.5784 },
-      { latitude: 45.4957, longitude: -73.5792 },
-      { latitude: 45.4960, longitude: -73.5787 },
+      { latitude: 45.495866665347314, longitude: -73.57849513713523 },
+      { latitude: 45.495593229550785, longitude: -73.57876461699963 },
+      { latitude: 45.49521411588751, longitude: -73.5778789139488 },
+      { latitude: 45.495445283059006, longitude: -73.57761131855897 },
     ],
   },
   {
-    id: 'MB',
-    name: 'MB',
-    fullName: 'John Molson Building',
-    campus: 'SGW',
-    info: 'Home of the John Molson School of Business.',
+    id: "MB",
+    name: "MB",
+    fullName: "John Molson Building",
+    campus: "SGW",
+    info: "Home of the John Molson School of Business.",
     coordinates: [
-      { latitude: 45.4951, longitude: -73.5792 },
-      { latitude: 45.4947, longitude: -73.5797 },
-      { latitude: 45.4952, longitude: -73.5804 },
-      { latitude: 45.4956, longitude: -73.5799 },
+      { latitude: 45.495520469231906, longitude: -73.5792020907505 }, // top-left
+      { latitude: 45.4953576540106, longitude: -73.57936862583686 }, // top-right
+      { latitude: 45.49500130207221, longitude: -73.57874192801188 }, // bottom-right
+      { latitude: 45.4951856223219, longitude: -73.57853375915393 }, // bottom-left
     ],
   },
   {
-    id: 'GM',
-    name: 'GM',
-    fullName: 'Guy-De Maisonneuve Building',
-    campus: 'SGW',
-    info: 'Contains university administrative offices and various classrooms.',
+    id: "GM",
+    name: "GM",
+    fullName: "Guy-De Maisonneuve Building",
+    campus: "SGW",
+    info: "Contains university administrative offices and various classrooms.",
     coordinates: [
-      { latitude: 45.4961, longitude: -73.5796 },
-      { latitude: 45.4958, longitude: -73.5801 },
-      { latitude: 45.4963, longitude: -73.5807 },
-      { latitude: 45.4966, longitude: -73.5802 },
+      { latitude: 45.49594367960742, longitude: -73.57843753001087 }, // top-left
+      { latitude: 45.49612840702602, longitude: -73.5788110982497 }, // top-right
+      { latitude: 45.49578275677468, longitude: -73.5791452720197 }, // bottom-right
+      { latitude: 45.49561897685144, longitude: -73.57874861047155 }, // bottom-left
     ],
   },
   {
-    id: 'VA',
-    name: 'VA',
-    fullName: 'Visual Arts Building',
-    campus: 'SGW',
-    info: 'Dedicated space for the Faculty of Fine Arts.',
+    id: "VA",
+    name: "VA",
+    fullName: "Visual Arts Building",
+    campus: "SGW",
+    info: "Dedicated space for the Faculty of Fine Arts.",
     coordinates: [
-      { latitude: 45.4956, longitude: -73.5739 },
-      { latitude: 45.4953, longitude: -73.5744 },
-      { latitude: 45.4958, longitude: -73.5750 },
-      { latitude: 45.4961, longitude: -73.5745 },
+      { latitude: 45.49618642295494, longitude: -73.5737950018861 }, // top-left
+      { latitude: 45.49592636675518, longitude: -73.57327467694199 }, // top-right
+      { latitude: 45.495403013501104, longitude: -73.57376883169661 }, // bottom-right
+      { latitude: 45.49566846751203, longitude: -73.5743122479844 }, // bottom-left
     ],
   },
   {
-    id: 'FB',
-    name: 'FB',
-    fullName: 'Faubourg Building',
-    campus: 'SGW',
-    info: 'Classrooms and the Mel Hoppenheim School of Cinema.',
+    id: "FB",
+    name: "FB",
+    fullName: "Faubourg Building",
+    campus: "SGW",
+    info: "Classrooms and the Mel Hoppenheim School of Cinema.",
     coordinates: [
-      { latitude: 45.4947, longitude: -73.5777 },
-      { latitude: 45.4943, longitude: -73.5782 },
-      { latitude: 45.4948, longitude: -73.5788 },
-      { latitude: 45.4952, longitude: -73.5783 },
+      { latitude: 45.494910677711516, longitude: -73.57778435124267 }, // top-left
+      { latitude: 45.49465262793321, longitude: -73.57721900844952 }, // top-right
+      { latitude: 45.493628097201814, longitude: -73.57873097173558 }, // bottom-right
+      { latitude: 45.493823174208444, longitude: -73.57906842440856 }, // bottom-left
     ],
   },
 
   // --- LOYOLA CAMPUS ---
   {
-    id: 'VL',
-    name: 'VL',
-    fullName: 'Vanier Library Building',
-    campus: 'LOYOLA',
-    info: 'The main library for the Loyola campus.',
+    id: "VL",
+    name: "VL",
+    fullName: "Vanier Library Building",
+    campus: "LOYOLA",
+    info: "The main library for the Loyola campus.",
     coordinates: [
-      { latitude: 45.4592, longitude: -73.6385 },
-      { latitude: 45.4589, longitude: -73.6391 },
-      { latitude: 45.4594, longitude: -73.6397 },
-      { latitude: 45.4597, longitude: -73.6391 },
+      { latitude: 45.459510972578045, longitude: -73.63915299892896 }, // top-left
+      { latitude: 45.45908744439003, longitude: -73.63793229118957 }, // top-right
+      { latitude: 45.4587280846448, longitude: -73.6382198240618 }, // bottom-right
+      { latitude: 45.459034273959844, longitude: -73.63951110805166 }, // bottom-left
     ],
   },
   {
-    id: 'AD',
-    name: 'AD',
-    fullName: 'Administration Building',
-    campus: 'LOYOLA',
-    info: 'Main administrative hub for the Loyola Campus.',
+    id: "SP",
+    name: "SP",
+    fullName: "Administration Building",
+    campus: "LOYOLA",
+    info: "Main administrative hub for the Loyola Campus.",
     coordinates: [
-      { latitude: 45.4581, longitude: -73.6398 },
-      { latitude: 45.4578, longitude: -73.6403 },
-      { latitude: 45.4583, longitude: -73.6409 },
-      { latitude: 45.4586, longitude: -73.6404 },
+      { latitude: 45.458359606506505, longitude: -73.64142443063798 }, // top-left
+      { latitude: 45.45822874595657, longitude: -73.64108899416341 }, // top-right
+      { latitude: 45.45790225416947, longitude: -73.64142066168884 }, // bottom-right
+      { latitude: 45.45800800070426, longitude: -73.64168071918036 }, // bottom-left
     ],
   },
   {
-    id: 'SP',
-    name: 'SP',
-    fullName: 'Richard J. Renaud Science Complex',
-    campus: 'LOYOLA',
-    info: 'Houses advanced research labs and the Department of Biology.',
+    id: "RR",
+    name: "RR",
+    fullName: "Richard J. Renaud Science Complex",
+    campus: "LOYOLA",
+    info: "Houses advanced research labs and the Department of Biology.",
     coordinates: [
-      { latitude: 45.4577, longitude: -73.6417 },
-      { latitude: 45.4573, longitude: -73.6423 },
-      { latitude: 45.4578, longitude: -73.6430 },
-      { latitude: 45.4582, longitude: -73.6424 },
+      { latitude: 45.457998747890386, longitude: -73.64170333287528 }, // top-left
+      { latitude: 45.457898288670556, longitude: -73.64142819958714 }, // top-right
+      { latitude: 45.45761673753494, longitude: -73.64160910914646 }, // bottom-right
+      { latitude: 45.457734381138174, longitude: -73.64188801138376 }, // bottom-left
     ],
   },
   {
-    id: 'CJ',
-    name: 'CJ',
-    fullName: 'Communication Studies and Journalism Building',
-    campus: 'LOYOLA',
-    info: 'Contains media labs, radio stations, and journalism facilities.',
+    id: "SJB",
+    name: "SJB",
+    fullName: "Communication Studies and Journalism Building",
+    campus: "LOYOLA",
+    info: "Contains media labs, radio stations, and journalism facilities.",
     coordinates: [
-      { latitude: 45.4574, longitude: -73.6404 },
-      { latitude: 45.4570, longitude: -73.6410 },
-      { latitude: 45.4575, longitude: -73.6417 },
-      { latitude: 45.4579, longitude: -73.6411 },
+      { latitude: 45.45751876328547, longitude: -73.63999916817816 }, // top-left
+      { latitude: 45.457444466936586, longitude: -73.63975820019054 }, // top-right
+      { latitude: 45.45722714955416, longitude: -73.63988265618416 }, // bottom-right
+      { latitude: 45.4572819433321, longitude: -73.64009582017319 }, // bottom-left
     ],
   },
   {
-    id: 'SC',
-    name: 'SC',
-    fullName: 'Student Centre',
-    campus: 'LOYOLA',
-    info: 'Student life hub including the Hive Cafe and food services.',
+    id: "Hive",
+    name: "Hive",
+    fullName: "Hive cafe and Student Services Building",
+    campus: "LOYOLA",
+    info: "Student life hub including the Hive Cafe and food services.",
     coordinates: [
-      { latitude: 45.4591, longitude: -73.6413 },
-      { latitude: 45.4588, longitude: -73.6419 },
-      { latitude: 45.4593, longitude: -73.6425 },
-      { latitude: 45.4596, longitude: -73.6419 },
+      { latitude: 45.4577598134696, longitude: -73.64036854809433 }, // top-left
+      { latitude: 45.45764757333694, longitude: -73.64005368011232 }, // top-right
+      { latitude: 45.457198610572135, longitude: -73.64040468048572 }, // bottom-right
+      { latitude: 45.45732261878991, longitude: -73.64071438669754 }, // bottom-left
     ],
   },
   {
-    id: 'PY',
-    name: 'PY',
-    fullName: 'Psychology Building',
-    campus: 'LOYOLA',
-    info: 'Home to the Department of Psychology and research clinics.',
+    id: "PY",
+    name: "PY",
+    fullName: "Psychology Building",
+    campus: "LOYOLA",
+    info: "Home to the Department of Psychology and research clinics.",
     coordinates: [
-      { latitude: 45.4588, longitude: -73.6405 },
-      { latitude: 45.4585, longitude: -73.6411 },
-      { latitude: 45.4590, longitude: -73.6417 },
-      { latitude: 45.4593, longitude: -73.6411 },
+      { latitude: 45.45923414686468, longitude: -73.64057235160632 }, // top-left
+      { latitude: 45.45906116560649, longitude: -73.64015050736825 }, // top-right
+      { latitude: 45.45866967974583, longitude: -73.64045985981015 }, // bottom-right
+      { latitude: 45.458813073137804, longitude: -73.64079192694113 }, // bottom-left
     ],
   },
   {
-    id: 'HU',
-    name: 'HU',
-    fullName: 'Applied Science Hub',
-    campus: 'LOYOLA',
-    info: 'Interdisciplinary research center focusing on aquatic science and nano-science.',
+    id: "SFG",
+    name: "SFG",
+    fullName: "Center for structural and functional genomics",
+    campus: "LOYOLA",
+    info: "Interdisciplinary research center focusing on aquatic science and nano-science.",
     coordinates: [
-      { latitude: 45.4584, longitude: -73.6426 },
-      { latitude: 45.4580, longitude: -73.6432 },
-      { latitude: 45.4585, longitude: -73.6438 },
-      { latitude: 45.4589, longitude: -73.6432 },
+      { latitude: 45.45717976633968, longitude: -73.64056919425785 }, // top-left
+      { latitude: 45.457059011727615, longitude: -73.64017986647805 }, // top-right
+      { latitude: 45.45681843061432, longitude: -73.6404023394951 }, // bottom-right
+      { latitude: 45.45695311900883, longitude: -73.64075458843872 }, // bottom-left
     ],
   },
 ];
