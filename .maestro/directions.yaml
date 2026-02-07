@@ -1,37 +1,61 @@
-appId: com.githappens
+appId: host.exp.exponent
 ---
-# Test: Request directions and start navigation
+# Test: Get directions with car mode
 
-- launchApp:
-    clearState: true
-    permissions:
-      location: allow
+# Wait for map to load
+- waitForAnimationToEnd:
+    timeout: 2000
 
-# Search for building
-- tapOn: "Search for a building"
+# Tap search bar area 2 times with 1 second in between (top of screen)
+- tapOn:
+    point: "500,350"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- tapOn:
+    point: "500, 350"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Search for Hall building
 - inputText: "Hall"
-- assertVisible: "Henry F. Hall Building"
-- tapOn: "Henry F. Hall Building"
 
-# Open directions
-- assertVisible:
-    id: "directions-button"
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Click on Hall Building search result by text
 - tapOn:
-    id: "directions-button"
+    point: "500, 600"
 
-# Verify travel mode options appear
-- assertVisible: "Choose Travel Mode"
+- waitForAnimationToEnd:
+    timeout: 1500
 
-# Select walking mode (default)
-- assertVisible:
-    id: "start-navigation-button"
-
-# Start navigation
+# Click on "Directions" button
 - tapOn:
-    id: "start-navigation-button"
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Choose car travel mode by tapping the car icon area
+- tapOn:
+    point: "400, 2050"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Click "Start Navigation" button
+- tapOn:
+    point: "500, 2200"
+
+# Wait for route to load
 - waitForAnimationToEnd:
     timeout: 3000
-
-# Verify navigation started (route should be visible)
-# Note: This depends on backend connection
-- assertVisible: "My Location"

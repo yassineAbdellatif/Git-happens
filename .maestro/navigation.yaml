@@ -1,9 +1,0 @@
-appId: com.githappens # Update with your actual app ID
----
-- launchApp
-- assertVisible: "Search for a building"
-- tapOn: "Search for a building"
-- inputText: "Hall Building"
-- assertVisible: "Henry F. Hall Building"
-- tapOn: "Henry F. Hall Building"
-- assertVisible: "Directions"

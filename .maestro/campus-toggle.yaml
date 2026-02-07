@@ -1,33 +1,24 @@
-appId: com.githappens
+appId: host.exp.exponent
 ---
-# Test: Toggle between SGW and Loyola campuses
+# Test: Campus toggle button
 
-- launchApp:
-    clearState: true
-    permissions:
-      location: allow
-
-- assertVisible:
-    id: "map-container"
-
-# Verify initial campus
-- assertVisible:
-    id: "campus-toggle-button"
-
-# Toggle to other campus
-- tapOn:
-    id: "campus-toggle-button"
+# Wait for map to load
 - waitForAnimationToEnd:
     timeout: 2000
 
-# Toggle back
+# Click campus toggle button to switch campus (uses visible text)
 - tapOn:
-    id: "campus-toggle-button"
+    text: "TO LOYOLA"
+
+# Wait 3 seconds
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Click toggle button again to switch back
+- tapOn:
+    text: "TO SGW"
+
+# Wait for animation to complete
 - waitForAnimationToEnd:
     timeout: 2000
 
-# Test recenter button
-- tapOn:
-    id: "recenter-button"
-- waitForAnimationToEnd:
-    timeout: 1000

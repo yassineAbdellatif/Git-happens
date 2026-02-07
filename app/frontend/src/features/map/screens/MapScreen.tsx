@@ -268,6 +268,7 @@ const MapScreen = () => {
               <View style={styles.searchContainer}>
                 <View style={styles.searchBar}>
                   <TextInput
+                    testID="search-input"
                     style={styles.searchInput}
                     placeholder="Search for a building or room..."
                     placeholderTextColor="#999"
@@ -283,6 +284,7 @@ const MapScreen = () => {
                       {filteredBuildings.map((b) => (
                         <TouchableOpacity
                           key={b.id}
+                          testID={`search-result-${b.id}`}
                           style={styles.dropdownItem}
                           onPress={() => handleSelectFromSearch(b)}
                         >
@@ -339,6 +341,7 @@ const MapScreen = () => {
           <View style={styles.rightControlsContainer}>
             {/* RECENTER BUTTON */}
             <TouchableOpacity
+              testID="recenter-button"
               style={styles.recenterButton}
               onPress={handleRecenter}
             >
@@ -364,6 +367,7 @@ const MapScreen = () => {
 
             {/* CAMPUS TOGGLE */}
             <TouchableOpacity
+              testID="campus-toggle-button"
               style={styles.toggleButton}
               onPress={toggleCampus}
             >
@@ -401,6 +405,7 @@ const MapScreen = () => {
                   </Text>
                   {selectedBuilding && (
                     <TouchableOpacity
+                      testID="directions-button"
                       style={styles.directionsButton}
                       onPress={() => setIsRouting(true)}
                     >
@@ -432,6 +437,7 @@ const MapScreen = () => {
                     ].map((mode) => (
                       <TouchableOpacity
                         key={mode.id}
+                        testID={`travel-mode-${mode.id.toLowerCase()}`}
                         style={[
                           styles.modeButton,
                           transportMode === mode.id && styles.activeModeButton,
@@ -462,6 +468,7 @@ const MapScreen = () => {
                   )}
 
                   <TouchableOpacity
+                    testID="start-navigation-button"
                     style={styles.startButton}
                     onPress={() => handleFetchRoute(transportMode)}
                   >

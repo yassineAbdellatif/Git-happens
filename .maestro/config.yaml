@@ -1,7 +1,7 @@
 # Maestro Configuration
 # This file defines the app configuration for all flows
 
-appId: com.githappens  # Update this with your actual app package name
+appId: host.exp.exponent  # Update this with your actual app package name
 
 # For Android: com.yourcompany.yourapp
 # For iOS: com.yourcompany.YourApp
