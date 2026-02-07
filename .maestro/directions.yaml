@@ -1,37 +1,61 @@
 appId: host.exp.exponent
 ---
-# Test: Request directions
+# Test: Get directions with car mode
 
-# Wait for map
+# Wait for map to load
 - waitForAnimationToEnd:
     timeout: 2000
 
-# Tap search bar
+# Tap search bar area 2 times with 1 second in between (top of screen)
 - tapOn:
-    point: "50%,10%"
+    point: "500,350"
 
 - waitForAnimationToEnd:
     timeout: 1000
 
-# Search for building
+- tapOn:
+    point: "500, 350"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Search for Hall building
 - inputText: "Hall"
 
 - waitForAnimationToEnd:
     timeout: 2000
 
-# Tap first result
+# Click on Hall Building search result by text
 - tapOn:
-    point: "50%,20%"
+    point: "500, 600"
 
 - waitForAnimationToEnd:
     timeout: 1500
 
-# Look for and tap "Directions" button (should appear in bottom sheet)
+# Click on "Directions" button
 - tapOn:
-    point: "50%,85%"
+    point: "500, 2200"
 
 - waitForAnimationToEnd:
-    timeout: 2000
+    timeout: 1500
 
-# Take screenshot of directions UI
-- takeScreenshot: directions-screen
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Choose car travel mode by tapping the car icon area
+- tapOn:
+    point: "400, 2050"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Click "Start Navigation" button
+- tapOn:
+    point: "500, 2200"
+
+# Wait for route to load
+- waitForAnimationToEnd:
+    timeout: 3000
