@@ -33,6 +33,18 @@ jobs:
         run: npm ci
         working-directory: ./app/frontend
 
+      - name: Build backend
+        run: npm run build
+        working-directory: ./app/backend
+
+      - name: Type check backend
+        run: npx tsc --noEmit
+        working-directory: ./app/backend
+
+      - name: Type check frontend
+        run: npx tsc --noEmit
+        working-directory: ./app/frontend
+
       - name: Run tests with coverage
         run: npm run test:coverage
 
@@ -58,3 +70,27 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         continue-on-error: true  # Don't block initially, just report
+  e2e:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH:$HOME/.maestro/bin"
+
+      - name: Run Maestro E2E tests
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          npm run maestro:test
+        continue-on-error: true  # E2E tests may need real device/simulator
