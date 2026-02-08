@@ -2,20 +2,19 @@ export interface Building {
   id: string;
   name: string;
   fullName: string;
-  campus: 'SGW' | 'LOYOLA';
+  campus: "SGW" | "LOYOLA";
   coordinates: { latitude: number; longitude: number }[];
   info: string;
-  
 }
 
 export const CONCORDIA_BUILDINGS: Building[] = [
   // --- SIR GEORGE WILLIAMS (SGW) CAMPUS ---
   {
-    id: 'H',
-    name: 'Hall',
-    fullName: 'Henry F. Hall Building',
-    campus: 'SGW',
-    info: 'Home to the Faculty of Engineering and Computer Science and the 7th floor lounge.',
+    id: "H",
+    name: "Hall",
+    fullName: "Henry F. Hall Building",
+    campus: "SGW",
+    info: "Home to the Faculty of Engineering and Computer Science and the 7th floor lounge.",
     coordinates: [
       { latitude: 45.497159, longitude: -73.579554 },
       { latitude: 45.497722, longitude: -73.579022 },
@@ -24,11 +23,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'LB',
-    name: 'LB',
-    fullName: 'J.W. McConnell Building',
-    campus: 'SGW',
-    info: 'Contains the Webster Library, Birks Student Service Centre, and Cinema Politica.',
+    id: "LB",
+    name: "LB",
+    fullName: "J.W. McConnell Building",
+    campus: "SGW",
+    info: "Contains the Webster Library, Birks Student Service Centre, and Cinema Politica.",
     coordinates: [
       { latitude: 45.497282, longitude: -73.578036 }, 
       { latitude: 45.496910, longitude: -73.577255 }, 
@@ -39,11 +38,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'EV',
-    name: 'EV',
-    fullName: 'Engineering, Computer Science and Visual Arts Integrated Complex',
-    campus: 'SGW',
-    info: 'State-of-the-art labs and the FOFA Gallery.',
+    id: "EV",
+    name: "EV",
+    fullName:
+      "Engineering, Computer Science and Visual Arts Integrated Complex",
+    campus: "SGW",
+    info: "State-of-the-art labs and the FOFA Gallery.",
     coordinates: [
       { latitude: 45.495567, longitude: -73.578776 },
       { latitude: 45.495947, longitude: -73.578416 },
@@ -54,11 +54,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'MB',
-    name: 'MB',
-    fullName: 'John Molson Building',
-    campus: 'SGW',
-    info: 'Home of the John Molson School of Business.',
+    id: "MB",
+    name: "MB",
+    fullName: "John Molson Building",
+    campus: "SGW",
+    info: "Home of the John Molson School of Business.",
     coordinates: [
       { latitude: 45.495531, longitude: -73.579224 },
       { latitude: 45.495197, longitude: -73.578468 },
@@ -69,11 +69,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'GM',
-    name: 'GM',
-    fullName: 'Guy-De Maisonneuve Building',
-    campus: 'SGW',
-    info: 'Contains university administrative offices and various classrooms.',
+    id: "GM",
+    name: "GM",
+    fullName: "Guy-De Maisonneuve Building",
+    campus: "SGW",
+    info: "Contains university administrative offices and various classrooms.",
     coordinates: [
       { latitude: 45.496530, longitude: -73.579557 },
       { latitude: 45.496369, longitude: -73.579238 },
@@ -84,11 +84,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'VA',
-    name: 'VA',
-    fullName: 'Visual Arts Building',
-    campus: 'SGW',
-    info: 'Dedicated space for the Faculty of Fine Arts.',
+    id: "VA",
+    name: "VA",
+    fullName: "Visual Arts Building",
+    campus: "SGW",
+    info: "Dedicated space for the Faculty of Fine Arts.",
     coordinates: [
       { latitude: 45.496172, longitude: -73.573791 },
       { latitude: 45.496051, longitude: -73.573539 },
@@ -99,11 +99,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'FB',
-    name: 'FB',
-    fullName: 'Faubourg Building',
-    campus: 'SGW',
-    info: 'Classrooms and the Mel Hoppenheim School of Cinema.',
+    id: "FB",
+    name: "FB",
+    fullName: "Faubourg Building",
+    campus: "SGW",
+    info: "Classrooms and the Mel Hoppenheim School of Cinema.",
     coordinates: [
       { latitude: 45.494910, longitude: -73.577770 },
       { latitude: 45.494658, longitude: -73.577181 },
@@ -116,11 +116,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
 
   // --- LOYOLA CAMPUS ---
   {
-    id: 'VL',
-    name: 'VL',
-    fullName: 'Vanier Library Building',
-    campus: 'LOYOLA',
-    info: 'The main library for the Loyola campus.',
+    id: "VL",
+    name: "VL",
+    fullName: "Vanier Library Building",
+    campus: "LOYOLA",
+    info: "The main library for the Loyola campus.",
     coordinates: [
       { latitude: 45.459095, longitude: -73.637839 },
       { latitude: 45.458568, longitude: -73.638330 },
@@ -129,11 +129,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'AD',
-    name: 'AD',
-    fullName: 'Administration Building',
-    campus: 'LOYOLA',
-    info: 'Main administrative hub for the Loyola Campus.',
+    id: "SP",
+    name: "SP",
+    fullName: "Administration Building",
+    campus: "LOYOLA",
+    info: "Main administrative hub for the Loyola Campus.",
     coordinates: [
       { latitude: 45.458327, longitude: -73.639403 },
       { latitude: 45.457691, longitude: -73.639831 },
@@ -142,11 +142,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'SP',
-    name: 'SP',
-    fullName: 'Richard J. Renaud Science Complex',
-    campus: 'LOYOLA',
-    info: 'Houses advanced research labs and the Department of Biology.',
+    id: "RR",
+    name: "RR",
+    fullName: "Richard J. Renaud Science Complex",
+    campus: "LOYOLA",
+    info: "Houses advanced research labs and the Department of Biology.",
     coordinates: [
       { latitude: 45.458372, longitude: -73.641435 },
       { latitude: 45.458175, longitude: -73.640937 },
@@ -157,11 +157,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'CJ',
-    name: 'CJ',
-    fullName: 'Communication Studies and Journalism Building',
-    campus: 'LOYOLA',
-    info: 'Contains media labs, radio stations, and journalism facilities.',
+    id: "SJB",
+    name: "SJB",
+    fullName: "Communication Studies and Journalism Building",
+    campus: "LOYOLA",
+    info: "Contains media labs, radio stations, and journalism facilities.",
     coordinates: [
       { latitude: 45.457846, longitude: -73.640509 },
       { latitude: 45.457488, longitude: -73.639603 },
@@ -170,11 +170,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'SC',
-    name: 'SC',
-    fullName: 'Student Centre',
-    campus: 'LOYOLA',
-    info: 'Student life hub including the Hive Cafe and food services.',
+    id: "Hive",
+    name: "Hive",
+    fullName: "Hive cafe and Student Services Building",
+    campus: "LOYOLA",
+    info: "Student life hub including the Hive Cafe and food services.",
     coordinates: [
       { latitude: 45.459106, longitude: -73.639467 },
       { latitude: 45.459516, longitude: -73.639160 },
@@ -183,11 +183,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'PY',
-    name: 'PY',
-    fullName: 'Psychology Building',
-    campus: 'LOYOLA',
-    info: 'Home to the Department of Psychology and research clinics.',
+    id: "PY",
+    name: "PY",
+    fullName: "Psychology Building",
+    campus: "LOYOLA",
+    info: "Home to the Department of Psychology and research clinics.",
     coordinates: [
       { latitude: 45.459083, longitude: -73.640084 },
       { latitude: 45.458619, longitude: -73.640434 },
@@ -196,11 +196,11 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
   {
-    id: 'HU',
-    name: 'HU',
-    fullName: 'Applied Science Hub',
-    campus: 'LOYOLA',
-    info: 'Interdisciplinary research center focusing on aquatic science and nano-science.',
+    id: "SFG",
+    name: "SFG",
+    fullName: "Center for structural and functional genomics",
+    campus: "LOYOLA",
+    info: "Interdisciplinary research center focusing on aquatic science and nano-science.",
     coordinates: [
   { latitude: 45.458233, longitude: -73.641693 },
   { latitude: 45.458417, longitude: -73.642171 },

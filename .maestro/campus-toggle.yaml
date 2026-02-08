@@ -1,0 +1,24 @@
+appId: host.exp.exponent
+---
+# Test: Campus toggle button
+
+# Wait for map to load
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Click campus toggle button to switch campus (uses visible text)
+- tapOn:
+    text: "TO LOYOLA"
+
+# Wait 3 seconds
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Click toggle button again to switch back
+- tapOn:
+    text: "TO SGW"
+
+# Wait for animation to complete
+- waitForAnimationToEnd:
+    timeout: 2000
+
