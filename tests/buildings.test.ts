@@ -108,8 +108,8 @@ describe('buildings constants', () => {
       
       // Check for some known Loyola buildings
       expect(buildingIds).toContain('VL');  // Vanier Library
-      expect(buildingIds).toContain('AD');  // Administration
-      expect(buildingIds).toContain('SP');  // Science Complex
+      expect(buildingIds).toContain('SP');  // Administration Building
+      expect(buildingIds).toContain('RR');  // Richard J. Renaud Science Complex
     });
   });
 
