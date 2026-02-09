@@ -1,6 +1,7 @@
 // Decodes a polyline encoded string into an array of latitude and longitude points from google maps
 
 export const decodePolyline = (encoded: string) => {
+  console.log("Decoding polyline:", encoded);
   const points = [];
   let index = 0, len = encoded.length;
   let lat = 0, lng = 0;
