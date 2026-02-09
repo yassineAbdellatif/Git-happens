@@ -9,21 +9,12 @@ import MapView, {
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
 
 interface OutdoorViewProps {
-  // Initial region for the map
-  region: Region;
 
-  // ID of the building where the user currently is
+  region: Region;  
   currentBuildingId?: string | null;
-
-  // ID of the building currently selected
   selectedBuildingId?: string | null;
-
-  // Handle building selection
   onBuildingPress: (building: Building) => void;
-
-  // Deselect a building when the map is pressed
   onMapPress: () => void;
-  // New prop for route coordinates
   routeCoords?: { latitude: number; longitude: number }[];
   transportMode?: string;
 }
@@ -35,25 +26,22 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     selectedBuildingId,
     onBuildingPress,
     onMapPress,
-    routeCoords, // Destructure it here
+    routeCoords,
     transportMode,
   } = props;
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
 
-  //different polyline colors for different modes
   const getPolylineColor = () => {
     switch (transportMode) {
-      case "WALKING":
-        return "#4285F4"; // Blue
       case "DRIVING":
-        return "#34A853"; // Green
+        return "#4285F4"; // Blue for driving
+      case "WALKING":
+        return "#4285F4"; // Blue for walking (matches driving per request)
       case "TRANSIT":
-        return "#FBBC04"; // Yellow/Orange
-      case "SHUTTLE":
-        return "#912338"; // Concordia Maroon
+        return "#020202"; // Black for bus/transit
       default:
-        return "#912338";
+        return "#912338"; // Default Concordia Maroon
     }
   };
 
@@ -72,11 +60,12 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         {routeCoords && routeCoords.length > 0 && (
           <Polyline
             coordinates={routeCoords}
-            strokeColor="#912338" 
+            strokeColor={getPolylineColor()}
             strokeWidth={5}
             lineCap="round"
             lineJoin="round"
-            zIndex={20} 
+            zIndex={20}
+            lineDashPattern={transportMode === "WALKING" ? [2, 10] : undefined}
           />
         )}
 

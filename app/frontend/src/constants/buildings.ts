@@ -195,3 +195,19 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
   },
 ];
+
+
+export const SGW_REGION = {
+  latitude: 45.4971,
+  longitude: -73.5788,
+  latitudeDelta: 0.01,
+  longitudeDelta: 0.01,
+};
+
+export const LOYOLA_REGION = {
+  latitude: 45.4582,
+  longitude: -73.6405,
+  latitudeDelta: 0.01,
+  longitudeDelta: 0.01,
+};
+
