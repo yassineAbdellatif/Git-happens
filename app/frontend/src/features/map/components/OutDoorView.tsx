@@ -1,5 +1,6 @@
 import React, { forwardRef, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+import { Marker } from "react-native-maps";
 import MapView, {
   PROVIDER_GOOGLE,
   Polygon,
@@ -31,6 +32,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
 
+  // Determine the color for the route based on the transport mode
   const currentColor = useMemo(() => {
     const mode = transportMode?.toUpperCase();
     console.log("Current transport mode:", mode);
@@ -49,6 +51,24 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         return "#912338";
     }
   }, [transportMode]);
+
+  // Get polygon center to write building name
+  const getPolygonCenter = (
+    coordinates: { latitude: number; longitude: number }[],
+  ) => {
+    const sys = coordinates.reduce(
+      (acc, curr) => ({
+        latitude: acc.latitude + curr.latitude,
+        longitude: acc.longitude + curr.longitude,
+      }),
+      { latitude: 0, longitude: 0 },
+    );
+    return {
+      latitude: sys.latitude / coordinates.length,
+      longitude: sys.longitude / coordinates.length,
+    };
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -63,7 +83,6 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         {/* --- DRAW THE ROUTE LINE --- */}
         {routeCoords && routeCoords.length > 0 && (
           <Polyline
-            key={`polyline-${currentColor}-${transportMode === "WALKING"}`}
             coordinates={routeCoords}
             strokeColor={currentColor}
             strokeWidth={8}
@@ -77,6 +96,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         {CONCORDIA_BUILDINGS.map((building) => {
           const isSelected = building.id === selectedBuildingId;
           const isCurrent = building.id === currentBuildingId;
+          const buildingCenter = getPolygonCenter(building.coordinates);
 
           let fillColor = "rgba(145, 35, 56, 0.15)";
           let strokeColor = "#912338";
@@ -92,19 +112,31 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
           }
 
           return (
-            <Polygon
-              key={`${building.id}-${stateTracker}`}
-              coordinates={building.coordinates}
-              fillColor={fillColor}
-              strokeColor={strokeColor}
-              strokeWidth={isSelected ? 3 : 2}
-              zIndex={zIndex}
-              tappable={true}
-              onPress={(e) => {
-                e.stopPropagation();
-                onBuildingPress(building);
-              }}
-            />
+            <React.Fragment key={`group-${building.id}`}>
+              <Polygon
+                key={`${building.id}-${stateTracker}`}
+                coordinates={building.coordinates}
+                fillColor={fillColor}
+                strokeColor={strokeColor}
+                strokeWidth={isSelected ? 3 : 2}
+                zIndex={zIndex}
+                tappable={true}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onBuildingPress(building);
+                }}
+              />
+
+              <Marker
+                coordinate={buildingCenter}
+                tracksViewChanges={false}
+                pointerEvents="none"
+              >
+                <View >
+                  <Text>{building.id}</Text>
+                </View>
+              </Marker>
+            </React.Fragment>
           );
         })}
       </MapView>
