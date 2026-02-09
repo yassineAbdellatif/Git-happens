@@ -10,18 +10,7 @@ export const getRouteFromBackend = async (
   destination: string,
   mode: string,
 ) => {
-  // UNCOMMENT THIS TO TEST FOR FREE:
-  /** 
-  console.log("MOCK MODE: Returning fake route");
-  return {
-    routes: [{
-      overview_polyline: { 
-        // This is a fake encoded string 
-        points: "u~ttGba_`L_AtC@u@NcBRmBJmBJiBL_BH_BDeBDeBBeB@eB@cA?cA?aA?aAAcACcAEcAGcAIcAKcAM"
-      }
-    }]
-  };
-  */
+
   const url = `${API_BASE_URL}/api/directions`;
   console.log(`Requesting route from backend at: ${url}`);
 
@@ -35,6 +24,7 @@ export const getRouteFromBackend = async (
       timeout: 10000, // 10 second limit before giving up
     });
 
+    console.log("Received response from backend:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to connect to backend:", error);

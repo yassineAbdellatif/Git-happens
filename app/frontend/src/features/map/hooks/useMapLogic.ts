@@ -17,6 +17,8 @@ export const useMapLogic = () => {
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBuildings, setFilteredBuildings] = useState<Building[]>([]);
+
+  
   const [isRouting, setIsRouting] = useState(false);
   const [transportMode, setTransportMode] = useState("WALKING");
   const [routeCoords, setRouteCoords] = useState<{ latitude: number; longitude: number }[]>([]);
@@ -29,6 +31,12 @@ export const useMapLogic = () => {
   const [originType, setOriginType] = useState<"CURRENT" | "BUILDING" | "SEARCH" | null>(null);
   const [originCoords, setOriginCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [originLabel, setOriginLabel] = useState("My Location");
+
+  /*
+  Routing state vs Navigation state:
+  - Routing: User is in the process of setting up a route (choosing origin, destination, mode)
+  - Navigation: User has an active route displayed and is following it
+  */
 
   // Helper: Reset Routing
   const resetRoutingState = () => {
@@ -140,6 +148,8 @@ export const useMapLogic = () => {
         setRouteDuration(route.legs[0].duration.text);
         setRouteSteps(data.processedRoute?.steps || []);
         setIsNavigating(true);
+
+        
         mapRef.current?.fitToCoordinates(decoded, {
           edgePadding: { top: 50, right: 50, bottom: 300, left: 50 },
           animated: true,

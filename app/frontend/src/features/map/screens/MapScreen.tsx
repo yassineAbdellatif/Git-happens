@@ -79,6 +79,8 @@ const MapScreen = () => {
         <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
+            
+            
             {!isRouting ? (
               !isNavigating && (
                 <View style={styles.searchContainer}>
