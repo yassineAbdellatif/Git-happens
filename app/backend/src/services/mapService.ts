@@ -6,7 +6,7 @@ export const getDirections = async (origin: string, destination: string, mode: s
     // Use the key from config
   const apiKey = config.googleMapsApiKey;
   
-  const googleMode = mode === 'SHUTTLE' ? 'transit' : mode.toLowerCase();
+  const googleMode = mode === 'SHUTTLE' ? 'TRANSIT' : mode.toLowerCase();
 
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=${googleMode}&key=${apiKey}`;
   
