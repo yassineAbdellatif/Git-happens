@@ -8,8 +8,6 @@ export const getDirections = async (
 ) => {
   // UNCOMMENT THIS TO TEST FOR FREE:
 
-  /*
-  
   console.log("MOCK MODE: Returning fake route");
   return {
     status: "OK",
@@ -41,7 +39,7 @@ export const getDirections = async (
     },
   };
 
-  */
+
 
   // Use the key from config
   const apiKey = config.googleMapsApiKey;
