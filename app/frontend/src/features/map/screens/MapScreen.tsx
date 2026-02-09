@@ -70,7 +70,8 @@ const MapScreen = () => {
             currentBuildingId={currentBuilding?.id}
             selectedBuildingId={selectedBuilding?.id}
             onBuildingPress={handleBuildingPress}
-            onMapPress={() => setSelectedBuilding(null)}
+            // When navigating, we want to disable deselecting buildings by tapping the map, to prevent accidental taps from disrupting navigation. --- IGNORE ---
+            onMapPress={isNavigating ? () => {} : () => setSelectedBuilding(null)}
             routeCoords={routeCoords}
             transportMode={transportMode}
           />

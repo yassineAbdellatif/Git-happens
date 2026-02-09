@@ -92,6 +92,7 @@ export const useMapLogic = () => {
   };
 
   const handleBuildingPress = (building: Building) => {
+    if(isNavigating) return; // Prevent changing selection while navigating
     setSelectedBuilding(building);
     resetRoutingState();
   };
