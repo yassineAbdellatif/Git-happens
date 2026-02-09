@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, {
   PROVIDER_GOOGLE,
@@ -9,8 +9,7 @@ import MapView, {
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
 
 interface OutdoorViewProps {
-
-  region: Region;  
+  region: Region;
   currentBuildingId?: string | null;
   selectedBuildingId?: string | null;
   onBuildingPress: (building: Building) => void;
@@ -32,19 +31,24 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
 
-  const getPolylineColor = () => {
-    switch (transportMode) {
+  const currentColor = useMemo(() => {
+    const mode = transportMode?.toUpperCase();
+    console.log("Current transport mode:", mode);
+    switch (mode) {
       case "DRIVING":
-        return "#4285F4"; // Blue for driving
+        console.log("Using DRIVING mode color:", "#4285F4");
+        return "#4285F4";
       case "WALKING":
-        return "#4285F4"; // Blue for walking (matches driving per request)
+        console.log("Using WALKING mode color:", "#4285F4");
+        return "#4285F4";
       case "TRANSIT":
-        return "#020202"; // Black for bus/transit
+        console.log("Using TRANSIT mode color:", "#020202");
+        return "#020202";
       default:
-        return "#912338"; // Default Concordia Maroon
+        console.log("Using default color for mode:", mode);
+        return "#912338";
     }
-  };
-
+  }, [transportMode]);
   return (
     <View style={styles.container}>
       <MapView
@@ -59,13 +63,14 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         {/* --- DRAW THE ROUTE LINE --- */}
         {routeCoords && routeCoords.length > 0 && (
           <Polyline
+            key={`polyline-${currentColor}-${transportMode === "WALKING"}`}
             coordinates={routeCoords}
-            strokeColor={getPolylineColor()}
-            strokeWidth={5}
+            strokeColor={currentColor}
+            strokeWidth={8}
             lineCap="round"
             lineJoin="round"
-            zIndex={20}
-            lineDashPattern={transportMode === "WALKING" ? [2, 10] : undefined}
+            lineDashPattern={transportMode === "WALKING" ? [2, 10] : [0]}
+            zIndex={20} // Boost this to ensure it's not hidden
           />
         )}
 
