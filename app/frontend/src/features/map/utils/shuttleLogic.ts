@@ -76,3 +76,37 @@ export const getNextShuttleInfo = (
     subtitle: `${originCampus} to ${destinationCampus} · in ${minutesUntil} min`,
   };
 };
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type RegionCenter = {
+  latitude: number;
+  longitude: number;
+};
+
+export const getOriginCampusFromLocation = (
+  currentBuildingCampus: Campus | null,
+  userLocation: Coordinates | null,
+  sgwRegion: RegionCenter,
+  loyolaRegion: RegionCenter,
+): Campus | null => {
+  if (currentBuildingCampus) {
+    return currentBuildingCampus;
+  }
+
+  if (!userLocation) {
+    return null;
+  }
+
+  const sgwDistance =
+    Math.pow(userLocation.latitude - sgwRegion.latitude, 2) +
+    Math.pow(userLocation.longitude - sgwRegion.longitude, 2);
+  const loyolaDistance =
+    Math.pow(userLocation.latitude - loyolaRegion.latitude, 2) +
+    Math.pow(userLocation.longitude - loyolaRegion.longitude, 2);
+
+  return sgwDistance <= loyolaDistance ? "SGW" : "LOYOLA";
+};

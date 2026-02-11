@@ -8,7 +8,10 @@ import {
   CONCORDIA_BUILDINGS,
   Building,
 } from "../../../constants/buildings";
-import { getNextShuttleInfo } from "../utils/shuttleLogic";
+import {
+  getNextShuttleInfo,
+  getOriginCampusFromLocation,
+} from "../utils/shuttleLogic";
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
 import { getRouteFromBackend } from "../../../services/mapApiService";
@@ -175,23 +178,14 @@ export const useMapLogic = () => {
 
   useEffect(() => {
     if (originType === "CURRENT") {
-      if (currentBuilding?.campus) {
-        setOriginCampus(currentBuilding.campus);
-        return;
-      }
-
-      if (userLocation) {
-        const sgwDistance =
-          Math.pow(userLocation.latitude - SGW_REGION.latitude, 2) +
-          Math.pow(userLocation.longitude - SGW_REGION.longitude, 2);
-        const loyolaDistance =
-          Math.pow(userLocation.latitude - LOYOLA_REGION.latitude, 2) +
-          Math.pow(userLocation.longitude - LOYOLA_REGION.longitude, 2);
-        setOriginCampus(sgwDistance <= loyolaDistance ? "SGW" : "LOYOLA");
-        return;
-      }
-
-      setOriginCampus(null);
+      setOriginCampus(
+        getOriginCampusFromLocation(
+          currentBuilding?.campus || null,
+          userLocation,
+          SGW_REGION,
+          LOYOLA_REGION,
+        ),
+      );
     }
   }, [originType, currentBuilding, userLocation]);
 
