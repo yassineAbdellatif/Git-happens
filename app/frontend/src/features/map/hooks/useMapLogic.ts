@@ -8,7 +8,7 @@ import {
   CONCORDIA_BUILDINGS,
   Building,
 } from "../../../constants/buildings";
-import { SHUTTLE_SCHEDULE } from "../../../constants/shuttleSchedule";
+import { getNextShuttleInfo } from "../utils/shuttleLogic";
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
 import { getRouteFromBackend } from "../../../services/mapApiService";
@@ -202,77 +202,10 @@ export const useMapLogic = () => {
       return;
     }
 
-    if (!originCoords || !selectedBuilding) {
-      setNextShuttleTitle("Select origin and destination");
-      setNextShuttleSubtitle(
-        "Shuttle schedules show after both campuses are set.",
-      );
-      return;
-    }
-
-    const destinationCampus = selectedBuilding.campus;
-    if (!originCampus || !destinationCampus) {
-      setNextShuttleTitle("Select origin and destination");
-      setNextShuttleSubtitle(
-        "Shuttle schedules show after both campuses are set.",
-      );
-      return;
-    }
-
-    if (originCampus === destinationCampus) {
-      setNextShuttleTitle("Shuttle runs between campuses only");
-      setNextShuttleSubtitle("Choose a destination on the other campus.");
-      return;
-    }
-
-    const schedule =
-      SHUTTLE_SCHEDULE.semesters[SHUTTLE_SCHEDULE.activeSemester]?.Schedule;
-    if (!schedule) {
-      setNextShuttleTitle("No schedule available");
-      setNextShuttleSubtitle("Check back later for updates.");
-      return;
-    }
-
-    const now = new Date();
-    const dayIndex = now.getDay();
-    const daySchedule =
-      dayIndex >= 1 && dayIndex <= 4
-        ? schedule["Monday-Thursday"]
-        : dayIndex === 5
-          ? schedule["Friday"]
-          : null;
-
-    if (!daySchedule) {
-      setNextShuttleTitle("No shuttle service today");
-      setNextShuttleSubtitle("Service runs Monday to Friday.");
-      return;
-    }
-
-    const times =
-      originCampus === "LOYOLA"
-        ? daySchedule.departure_times_LOY
-        : daySchedule.departure_times_SGW;
-
-    const toMinutes = (time: string) => {
-      const [hours, minutes] = time.split(":").map((value) => Number(value));
-      return hours * 60 + minutes;
-    };
-
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    const nextTime =
-      times.find((time) => toMinutes(time) >= nowMinutes) || null;
-
-    if (!nextTime) {
-      setNextShuttleTitle("No more shuttles today");
-      setNextShuttleSubtitle("Try again tomorrow.");
-      return;
-    }
-
-    const minutesUntil = Math.max(0, toMinutes(nextTime) - nowMinutes);
-    setNextShuttleTitle(`Next shuttle at ${nextTime}`);
-    setNextShuttleSubtitle(
-      `${originCampus} to ${destinationCampus} · in ${minutesUntil} min`,
-    );
+    const destinationCampus = selectedBuilding?.campus || null;
+    const shuttleInfo = getNextShuttleInfo(originCampus, destinationCampus);
+    setNextShuttleTitle(shuttleInfo.title);
+    setNextShuttleSubtitle(shuttleInfo.subtitle);
   }, [originCoords, selectedBuilding, transportMode, originCampus]);
 
   const handleFetchRoute = async (mode: string) => {
