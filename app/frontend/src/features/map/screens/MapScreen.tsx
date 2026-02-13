@@ -35,6 +35,7 @@ const MapScreen = () => {
     isRouting,
     transportMode,
     routeCoords,
+    routeSegments,
     routeSteps,
     routeDistance,
     routeDuration,
@@ -78,6 +79,7 @@ const MapScreen = () => {
               isNavigating ? () => {} : () => setSelectedBuilding(null)
             }
             routeCoords={routeCoords}
+            routeSegments={routeSegments}
             transportMode={transportMode}
           />
         </View>

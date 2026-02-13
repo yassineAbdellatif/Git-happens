@@ -7,6 +7,22 @@ type Campus = "SGW" | "LOYOLA";
 
 export const SHUTTLE_TRAVEL_MINUTES = 40;
 
+export const getSegmentColor = (mode?: string) => {
+  const normalized = mode?.toUpperCase();
+  console.log("Current transport mode:", normalized);
+  switch (normalized) {
+    case "WALKING":
+      console.log("Using WALKING mode color:", "#4285F4");
+      return "#4285F4";
+    case "SHUTTLE":
+      console.log("Using SHUTTLE mode color:", "#912338");
+      return "#912338";
+    default:
+      console.log("Using default color for mode:", normalized);
+      return "#912338";
+  }
+};
+
 type ShuttleResult = {
   title: string;
   subtitle: string;
@@ -125,6 +141,7 @@ type ShuttleRouteInput = {
 
 type ShuttleRouteResult = {
   coords: Coordinates[];
+  segments: { mode: "WALKING" | "SHUTTLE"; coords: Coordinates[] }[];
   steps: { instruction: string; distance: string; duration: string }[];
   distance: string;
   duration: string;
@@ -171,6 +188,12 @@ export const buildShuttleRoute = async (
     ...walkToDestinationCoords,
   ];
 
+  const segments = [
+    { mode: "WALKING" as const, coords: walkToStopCoords },
+    { mode: "SHUTTLE" as const, coords: shuttleCoords },
+    { mode: "WALKING" as const, coords: walkToDestinationCoords },
+  ].filter((segment) => segment.coords.length > 0);
+
   const walkingSteps = walkToStop.processedRoute?.steps || [];
   const shuttleStep = {
     instruction: `Take shuttle from ${input.originCampus} stop to ${input.destinationCampus} stop`,
@@ -209,6 +232,7 @@ export const buildShuttleRoute = async (
 
   return {
     coords: combinedCoords,
+    segments,
     steps: combinedSteps,
     distance: formatDistance(totalDistanceMeters),
     duration: formatDuration(totalDurationMinutes),

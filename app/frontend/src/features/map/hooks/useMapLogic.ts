@@ -36,6 +36,9 @@ export const useMapLogic = () => {
   const [routeCoords, setRouteCoords] = useState<
     { latitude: number; longitude: number }[]
   >([]);
+  const [routeSegments, setRouteSegments] = useState<
+    { mode: string; coords: { latitude: number; longitude: number }[] }[]
+  >([]);
 
   // Navigation States
   const [routeSteps, setRouteSteps] = useState<any[]>([]);
@@ -71,6 +74,7 @@ export const useMapLogic = () => {
     setNextShuttleTitle("");
     setNextShuttleSubtitle("");
     setRouteCoords([]);
+    setRouteSegments([]);
     setIsNavigating(false);
     setIsRouting(false);
   };
@@ -173,6 +177,7 @@ export const useMapLogic = () => {
 
   const handleCancelNavigation = () => {
     setRouteCoords([]);
+    setRouteSegments([]);
     setIsNavigating(false);
     setIsRouting(false);
   };
@@ -233,6 +238,7 @@ export const useMapLogic = () => {
         }
 
         setRouteCoords(shuttleRoute.coords);
+        setRouteSegments(shuttleRoute.segments || []);
         setRouteDistance(shuttleRoute.distance);
         setRouteDuration(shuttleRoute.duration);
         setRouteSteps(shuttleRoute.steps);
@@ -253,6 +259,7 @@ export const useMapLogic = () => {
         const route = data.routes[0];
         const decoded = decodePolyline(route.overview_polyline.points);
         setRouteCoords(decoded);
+        setRouteSegments([]);
         setRouteDistance(route.legs[0].distance.text);
         setRouteDuration(route.legs[0].duration.text);
         setRouteSteps(data.processedRoute?.steps || []);
@@ -279,6 +286,7 @@ export const useMapLogic = () => {
     isRouting,
     transportMode,
     routeCoords,
+    routeSegments,
     routeSteps,
     routeDistance,
     routeDuration,
