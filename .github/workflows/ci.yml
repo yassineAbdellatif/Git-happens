@@ -58,11 +58,25 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
+      - name: Debug Secret Visibility
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "ERROR: SONAR_TOKEN is empty! GitHub cannot see the secret."
+            exit 1
+          else
+            echo "SONAR_TOKEN is present."
+          fi
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: "."
+          args: >
+            -Dsonar.organization=githappens
+            -Dsonar.projectKey=yassineAbdellatif_Git-happens
+            -X
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check SonarCloud Quality Gate
         uses: sonarsource/sonarqube-quality-gate-action@master

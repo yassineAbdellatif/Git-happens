@@ -40,6 +40,10 @@ In the `app/backend` terminal:
 ```bash
 npx tsx src/index.ts
 ```
+or
+```bash
+npm start
+```
 
 #### Start Frontend
 In the `app/frontend` terminal:
