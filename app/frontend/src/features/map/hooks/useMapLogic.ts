@@ -11,6 +11,7 @@ import {
 import {
   getNextShuttleInfo,
   getOriginCampusFromLocation,
+  buildShuttleRoute,
 } from "../utils/shuttleLogic";
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
@@ -207,6 +208,43 @@ export const useMapLogic = () => {
 
     if (!originCoords || !selectedBuilding) return;
     try {
+      if (mode === "SHUTTLE") {
+        const destinationCampus = selectedBuilding.campus || null;
+        if (!originCampus || !destinationCampus) {
+          alert("Select origin and destination campuses.");
+          return;
+        }
+
+        if (originCampus === destinationCampus) {
+          alert("Shuttle runs between campuses only.");
+          return;
+        }
+
+        const shuttleRoute = await buildShuttleRoute({
+          originCoords,
+          destinationCoords: selectedBuilding.coordinates[0],
+          originCampus,
+          destinationCampus,
+        });
+
+        if (!shuttleRoute) {
+          alert("Unable to calculate shuttle route.");
+          return;
+        }
+
+        setRouteCoords(shuttleRoute.coords);
+        setRouteDistance(shuttleRoute.distance);
+        setRouteDuration(shuttleRoute.duration);
+        setRouteSteps(shuttleRoute.steps);
+        setIsNavigating(true);
+
+        mapRef.current?.fitToCoordinates(shuttleRoute.coords, {
+          edgePadding: { top: 50, right: 50, bottom: 300, left: 50 },
+          animated: true,
+        });
+        return;
+      }
+
       const origin = `${originCoords.latitude},${originCoords.longitude}`;
       const destination = `${selectedBuilding.coordinates[0].latitude},${selectedBuilding.coordinates[0].longitude}`;
       const data = await getRouteFromBackend(origin, destination, mode);

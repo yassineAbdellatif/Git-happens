@@ -132,7 +132,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
                 tracksViewChanges={false}
                 pointerEvents="none"
               >
-                <View >
+                <View>
                   <Text>{building.id}</Text>
                 </View>
               </Marker>
