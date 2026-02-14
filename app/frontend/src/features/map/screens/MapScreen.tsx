@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   ScrollView,
+  Image,
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -222,6 +223,21 @@ const MapScreen = () => {
                     <Text style={styles.sheetTitle}>
                       {selectedBuilding.fullName}
                     </Text>
+
+                    {/* Added Building Image*/}
+                    {selectedBuilding.image && (
+                      <Image
+                        source={{ uri: selectedBuilding.image }}
+                        style={styles.buildingImage}
+                        resizeMode="cover"
+                      />
+                    )}
+
+                    {/* Added Building Info*/}
+                    <Text style={styles.buildingInfo}>
+                      {selectedBuilding.info}
+                    </Text>
+
                     <TouchableOpacity
                       testID="directions-button"
                       style={styles.directionsButton}
