@@ -42,6 +42,8 @@ const MapScreen = () => {
     originType,
     originCoords,
     originLabel,
+    nextShuttleTitle,
+    nextShuttleSubtitle,
 
     // Handlers
     handleRecenter,
@@ -55,8 +57,10 @@ const MapScreen = () => {
     setOriginType,
     setOriginLabel,
     setOriginCoords,
+    setOriginCampus,
     setSelectedBuilding,
     setTransportMode,
+    handleLogout
   } = useMapLogic();
 
   return (
@@ -71,7 +75,9 @@ const MapScreen = () => {
             selectedBuildingId={selectedBuilding?.id}
             onBuildingPress={handleBuildingPress}
             // When navigating, we want to disable deselecting buildings by tapping the map, to prevent accidental taps from disrupting navigation. --- IGNORE ---
-            onMapPress={isNavigating ? () => {} : () => setSelectedBuilding(null)}
+            onMapPress={
+              isNavigating ? () => {} : () => setSelectedBuilding(null)
+            }
             routeCoords={routeCoords}
             transportMode={transportMode}
           />
@@ -80,8 +86,6 @@ const MapScreen = () => {
         <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
-            
-            
             {!isRouting ? (
               !isNavigating && (
                 <View style={styles.searchContainer}>
@@ -106,7 +110,9 @@ const MapScreen = () => {
                             style={styles.dropdownItem}
                             onPress={() => handleSelectFromSearch(b)}
                           >
-                            <Text style={styles.dropdownText}>{b.fullName}</Text>
+                            <Text style={styles.dropdownText}>
+                              {b.fullName}
+                            </Text>
                             <Text style={styles.dropdownSubtext}>
                               {b.id} - {b.campus} Campus
                             </Text>
@@ -121,7 +127,11 @@ const MapScreen = () => {
               <View style={styles.routeHeader}>
                 <TouchableOpacity
                   style={styles.closeButton}
-                  onPress={isNavigating ? handleCancelNavigation : () => setIsRouting(false)}
+                  onPress={
+                    isNavigating
+                      ? handleCancelNavigation
+                      : () => setIsRouting(false)
+                  }
                 >
                   <MaterialIcons
                     name={isNavigating ? "arrow-back" : "close"}
@@ -132,7 +142,11 @@ const MapScreen = () => {
 
                 <View style={styles.routeInputs}>
                   <View style={styles.inputRow}>
-                    <MaterialIcons name="my-location" size={18} color="#4285F4" />
+                    <MaterialIcons
+                      name="my-location"
+                      size={18}
+                      color="#4285F4"
+                    />
                     <Text style={styles.routeTextStatic}>
                       {originLabel || "Choose starting point"}
                     </Text>
@@ -152,6 +166,15 @@ const MapScreen = () => {
           {/* RIGHT-SIDE CONTROLS */}
           {!isNavigating && (
             <View style={styles.rightControlsContainer}>
+              {/* Log out button */}
+              <TouchableOpacity
+                testID="logout-button"
+                style={styles.logoutButton}
+                onPress={() => handleLogout()} 
+              >
+                <MaterialIcons name="logout" size={24} color="#912338" />
+              </TouchableOpacity>
+
               <TouchableOpacity
                 testID="recenter-button"
                 style={styles.recenterButton}
@@ -166,8 +189,8 @@ const MapScreen = () => {
                   {currentBuilding
                     ? currentBuilding.campus
                     : currentRegion.latitude === SGW_REGION.latitude
-                    ? "SGW"
-                    : "LOY"}
+                      ? "SGW"
+                      : "LOYOLA"}
                 </Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
@@ -192,7 +215,12 @@ const MapScreen = () => {
 
           {/* BOTTOM SHEET */}
           {selectedBuilding && !isNavigating && (
-            <View style={[styles.bottomSheetMock, isRouting && { minHeight: 220, height: "auto" }]}>
+            <View
+              style={[
+                styles.bottomSheetMock,
+                isRouting && { minHeight: 220, height: "auto" },
+              ]}
+            >
               <View style={styles.dragHandle} />
               <ScrollView
                 style={{ width: "100%" }}
@@ -201,22 +229,34 @@ const MapScreen = () => {
               >
                 {!isRouting ? (
                   <>
-                    <Text style={styles.sheetTitle}>{selectedBuilding.fullName}</Text>
+                    <Text style={styles.sheetTitle}>
+                      {selectedBuilding.fullName}
+                    </Text>
                     <TouchableOpacity
                       testID="directions-button"
                       style={styles.directionsButton}
                       onPress={() => setIsRouting(true)}
                     >
-                      <MaterialIcons name="directions" size={20} color="white" />
-                      <Text style={styles.directionsButtonText}>Directions</Text>
+                      <MaterialIcons
+                        name="directions"
+                        size={20}
+                        color="white"
+                      />
+                      <Text style={styles.directionsButtonText}>
+                        Directions
+                      </Text>
                     </TouchableOpacity>
-                    <Text style={styles.sheetSubtitle}>Tap a building to see indoor maps</Text>
+                    <Text style={styles.sheetSubtitle}>
+                      Tap a building to see indoor maps
+                    </Text>
                   </>
                 ) : (
                   <View style={{ width: "100%" }}>
                     {!originType && (
                       <>
-                        <Text style={styles.routingTitle}>Choose starting point</Text>
+                        <Text style={styles.routingTitle}>
+                          Choose starting point
+                        </Text>
                         <TouchableOpacity
                           style={styles.originOptionButton}
                           onPress={() => {
@@ -227,25 +267,32 @@ const MapScreen = () => {
                                 latitude: userLocation.latitude,
                                 longitude: userLocation.longitude,
                               });
+                              setOriginCampus(currentBuilding?.campus || null);
                             } else {
                               alert("Location not available.");
                             }
                           }}
                         >
-                          <Text style={styles.originOptionText}>Use Current Location</Text>
+                          <Text style={styles.originOptionText}>
+                            Use Current Location
+                          </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.originOptionButton}
                           onPress={() => setOriginType("BUILDING")}
                         >
-                          <Text style={styles.originOptionText}>Choose Building</Text>
+                          <Text style={styles.originOptionText}>
+                            Choose Building
+                          </Text>
                         </TouchableOpacity>
                       </>
                     )}
 
                     {originType === "BUILDING" && !originCoords && (
                       <View style={{ width: "100%" }}>
-                        <Text style={styles.routingTitle}>Select origin building</Text>
+                        <Text style={styles.routingTitle}>
+                          Select origin building
+                        </Text>
                         <ScrollView style={{ maxHeight: 180 }}>
                           {CONCORDIA_BUILDINGS.map((b) => (
                             <TouchableOpacity
@@ -254,9 +301,12 @@ const MapScreen = () => {
                               onPress={() => {
                                 setOriginCoords({ ...b.coordinates[0] });
                                 setOriginLabel(b.fullName);
+                                setOriginCampus(b.campus);
                               }}
                             >
-                              <Text style={styles.dropdownText}>{b.fullName}</Text>
+                              <Text style={styles.dropdownText}>
+                                {b.fullName}
+                              </Text>
                             </TouchableOpacity>
                           ))}
                         </ScrollView>
@@ -265,34 +315,57 @@ const MapScreen = () => {
 
                     {originCoords && (
                       <>
-                        <Text style={styles.routingTitle}>Choose Travel Mode</Text>
+                        <Text style={styles.routingTitle}>
+                          Choose Travel Mode
+                        </Text>
                         <View style={styles.modeContainer}>
                           {[
                             { id: "WALKING", icon: "directions-walk" },
                             { id: "DRIVING", icon: "directions-car" },
                             { id: "TRANSIT", icon: "directions-bus" },
                             { id: "SHUTTLE", icon: "airport-shuttle" },
-                            
                           ].map((mode) => (
                             <TouchableOpacity
                               key={mode.id}
-                              style={[styles.modeButton, transportMode === mode.id && styles.activeModeButton]}
+                              style={[
+                                styles.modeButton,
+                                transportMode === mode.id &&
+                                  styles.activeModeButton,
+                              ]}
                               onPress={() => setTransportMode(mode.id)}
                             >
                               <MaterialIcons
                                 name={mode.icon as any}
                                 size={24}
-                                color={transportMode === mode.id ? "white" : "#912338"}
+                                color={
+                                  transportMode === mode.id
+                                    ? "white"
+                                    : "#912338"
+                                }
                               />
-                              
                             </TouchableOpacity>
                           ))}
                         </View>
+                        {transportMode === "SHUTTLE" &&
+                          nextShuttleTitle.length > 0 && (
+                            <View style={styles.shuttleInfo}>
+                              <Text style={styles.shuttleText}>
+                                {nextShuttleTitle}
+                              </Text>
+                              {nextShuttleSubtitle.length > 0 && (
+                                <Text style={styles.shuttleSubtext}>
+                                  {nextShuttleSubtitle}
+                                </Text>
+                              )}
+                            </View>
+                          )}
                         <TouchableOpacity
                           style={styles.startButton}
                           onPress={() => handleFetchRoute(transportMode)}
                         >
-                          <Text style={styles.startButtonText}>Start Navigation</Text>
+                          <Text style={styles.startButtonText}>
+                            Start Navigation
+                          </Text>
                         </TouchableOpacity>
                       </>
                     )}
@@ -308,15 +381,24 @@ const MapScreen = () => {
               <View style={styles.dragHandle} />
               <View style={styles.routeSummary}>
                 <View style={styles.summaryRow}>
-                  
-                    
-                  <MaterialIcons name={(MODE_ICON_MAP[transportMode as keyof typeof MODE_ICON_MAP] || "directions-walk") as any} size={24} color="#912338" />
+                  <MaterialIcons
+                    name={
+                      (MODE_ICON_MAP[
+                        transportMode as keyof typeof MODE_ICON_MAP
+                      ] || "directions-walk") as any
+                    }
+                    size={24}
+                    color="#912338"
+                  />
                   <View style={styles.summaryInfo}>
                     <Text style={styles.durationText}>{routeDuration}</Text>
                     <Text style={styles.distanceText}>{routeDistance}</Text>
                   </View>
                 </View>
-                <TouchableOpacity style={styles.endNavButton} onPress={handleCancelNavigation}>
+                <TouchableOpacity
+                  style={styles.endNavButton}
+                  onPress={handleCancelNavigation}
+                >
                   <Text style={styles.endNavText}>End</Text>
                 </TouchableOpacity>
               </View>
@@ -327,7 +409,9 @@ const MapScreen = () => {
                   <View key={index} style={styles.stepItem}>
                     <MaterialIcons name="straight" size={20} color="#666" />
                     <View style={styles.stepTextContainer}>
-                      <Text style={styles.stepInstruction}>{step.instruction}</Text>
+                      <Text style={styles.stepInstruction}>
+                        {step.instruction}
+                      </Text>
                       <Text style={styles.stepDistance}>{step.distance}</Text>
                     </View>
                   </View>

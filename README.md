@@ -37,8 +37,17 @@ GOOGLE_MAPS_API_KEY=your_backend_api_key_here
 
 #### Start Backend
 In the `app/backend` terminal:
+1.
 ```bash
-npx tsx src/index.ts
+npx expo prebuild
+```
+2.
+```bash
+npx expo run:ios
+```
+or
+```bash
+npx expo run:android
 ```
 or
 ```bash
