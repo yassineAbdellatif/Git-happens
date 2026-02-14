@@ -108,7 +108,8 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "white",
-    minHeight: 140,
+    minHeight: 300, //incresed to 300 to accomodate building image
+    maxHeight: "80%", //added to prevent sheet from taking up entire screen on smaller devices
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -123,9 +124,25 @@ export const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     borderRadius: 10,
     marginBottom: 15,
+    alignSelf: "center", //ensures the drag handle is centered on the sheet
   },
-  sheetTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center" },
-  sheetSubtitle: { color: "#666", marginTop: 5, textAlign: "center" },
+  sheetTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }, //added margin to separate from image
+  sheetSubtitle: { color: "#666", marginTop: 10, textAlign: "center" },
+
+  buildingImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+
+  buildingInfo: {
+    fontSize: 14,
+    color: "#444",
+    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: 5,
+  },
 
   // --- DROPDOWN & BUTTONS ---
   dropdown: {
