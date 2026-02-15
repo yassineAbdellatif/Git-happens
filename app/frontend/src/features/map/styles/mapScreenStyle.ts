@@ -324,4 +324,11 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
     padding: 8,
   },
+  hamburgerButton: {
+  backgroundColor: 'white',
+  padding: 10,
+  borderRadius: 25,
+  marginRight: 10,
+  elevation: 5,
+},
 });

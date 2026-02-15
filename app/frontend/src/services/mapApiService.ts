@@ -11,7 +11,7 @@ export const getRouteFromBackend = async (
   mode: string,
 ) => {
 
-  const url = `${API_BASE_URL}/api/directions`;
+  const url = "http://localhost:3000/api/directions";
   console.log(`Requesting route from backend at: ${url}`);
 
   try {
