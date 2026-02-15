@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "332552903248",
+    "project_id": "soen390-565be",
+    "storage_bucket": "soen390-565be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332552903248:android:5f285329ae53a3c463cf55",
+        "android_client_info": {
+          "package_name": "com.githappens"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332552903248-0mra762jsq6vqirkeim0bef7p4jno3vg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCjjkpWrpu29BCBdhvuVpc_Lg1CcDMUIw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332552903248-0mra762jsq6vqirkeim0bef7p4jno3vg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332552903248-vb70apsfbeof7en4l4i5tbkn75ifr6nc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.githappens"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
