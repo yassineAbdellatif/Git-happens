@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   // --- TOP UI ---
   searchContainer: {
     position: "absolute",
-    top: 50, // Adjust for Notch/SafeArea
+    top: 15, 
     left: 0,
     right: 0,
     paddingHorizontal: 20,
@@ -341,4 +341,11 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
     padding: 8,
   },
+  hamburgerButton: {
+  backgroundColor: 'white',
+  padding: 10,
+  borderRadius: 25,
+  marginRight: 10,
+  elevation: 5,
+},
 });

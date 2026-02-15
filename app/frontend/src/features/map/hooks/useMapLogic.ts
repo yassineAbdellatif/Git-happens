@@ -16,10 +16,10 @@ import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
 import { getRouteFromBackend } from "../../../services/mapApiService";
 import { auth } from "@features/auth/config/firebaseConfig";
-import Constants from "expo-constants";
 
 
 export const useMapLogic = () => {
+  // map ref: Used for controlling the map (re-centering, animating to region, etc.)
   const mapRef = useRef<any>(null);
 
   // States
@@ -43,7 +43,7 @@ export const useMapLogic = () => {
   const [routeSteps, setRouteSteps] = useState<any[]>([]);
   const [routeDistance, setRouteDistance] = useState("");
   const [routeDuration, setRouteDuration] = useState("");
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isGuiding, setIsGuiding] = useState(false);
   const [originType, setOriginType] = useState<
     "CURRENT" | "BUILDING" | "SEARCH" | null
   >(null);
@@ -73,7 +73,7 @@ export const useMapLogic = () => {
     setNextShuttleTitle("");
     setNextShuttleSubtitle("");
     setRouteCoords([]);
-    setIsNavigating(false);
+    setIsGuiding(false);
     setIsRouting(false);
   };
 
@@ -136,7 +136,7 @@ export const useMapLogic = () => {
   };
 
   const handleBuildingPress = (building: Building) => {
-    if (isNavigating) return; // Prevent changing selection while navigating
+    if (isGuiding) return; // Prevent changing selection while navigating
     setSelectedBuilding(building);
     resetRoutingState();
   };
@@ -154,7 +154,6 @@ export const useMapLogic = () => {
       setFilteredBuildings([]);
     }
   };
-
 
   const handleLogout = async () => {
     try {
@@ -184,9 +183,9 @@ export const useMapLogic = () => {
     }
   };
 
-  const handleCancelNavigation = () => {
+  const handleCancelGuiding = () => {
     setRouteCoords([]);
-    setIsNavigating(false);
+    setIsGuiding(false);
     setIsRouting(false);
   };
 
@@ -232,7 +231,7 @@ export const useMapLogic = () => {
         setRouteDistance(route.legs[0].distance.text);
         setRouteDuration(route.legs[0].duration.text);
         setRouteSteps(data.processedRoute?.steps || []);
-        setIsNavigating(true);
+        setIsGuiding(true);
 
         mapRef.current?.fitToCoordinates(decoded, {
           edgePadding: { top: 50, right: 50, bottom: 300, left: 50 },
@@ -258,10 +257,12 @@ export const useMapLogic = () => {
     routeSteps,
     routeDistance,
     routeDuration,
-    isNavigating,
+    isGuiding,
     originType,
     originCoords,
     originLabel,
+    nextShuttleTitle,
+    nextShuttleSubtitle,
     setSelectedBuilding,
     setIsRouting,
     setTransportMode,
@@ -275,10 +276,8 @@ export const useMapLogic = () => {
     handleBuildingPress,
     handleSearch,
     handleSelectFromSearch,
-    handleCancelNavigation,
+    handleCancelGuiding,
     resetRoutingState,
     handleLogout,
-    nextShuttleTitle,
-    nextShuttleSubtitle,
   };
 };

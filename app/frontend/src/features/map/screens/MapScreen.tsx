@@ -14,7 +14,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import { SGW_REGION, CONCORDIA_BUILDINGS } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
+import { useMapLogic } from "../hooks/useMapLogic";
+import { useNavigation, DrawerActions } from "@react-navigation/native";
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
@@ -39,7 +40,7 @@ const MapScreen = () => {
     routeSteps,
     routeDistance,
     routeDuration,
-    isNavigating,
+    isGuiding,
     originType,
     originCoords,
     originLabel,
@@ -52,7 +53,7 @@ const MapScreen = () => {
     handleBuildingPress,
     handleSearch,
     handleSelectFromSearch,
-    handleCancelNavigation,
+    handleCancelGuiding,
     handleFetchRoute,
     setIsRouting,
     setOriginType,
@@ -61,8 +62,13 @@ const MapScreen = () => {
     setOriginCampus,
     setSelectedBuilding,
     setTransportMode,
-    handleLogout
+    handleLogout,
+ 
   } = useMapLogic();
+
+
+  // Navigation
+  const navigation = useNavigation();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -76,9 +82,7 @@ const MapScreen = () => {
             selectedBuildingId={selectedBuilding?.id}
             onBuildingPress={handleBuildingPress}
             // When navigating, we want to disable deselecting buildings by tapping the map, to prevent accidental taps from disrupting navigation. --- IGNORE ---
-            onMapPress={
-              isNavigating ? () => {} : () => setSelectedBuilding(null)
-            }
+            onMapPress={isGuiding ? () => {} : () => setSelectedBuilding(null)}
             routeCoords={routeCoords}
             transportMode={transportMode}
           />
@@ -88,7 +92,7 @@ const MapScreen = () => {
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
             {!isRouting ? (
-              !isNavigating && (
+              !isGuiding && (
                 <View style={styles.searchContainer}>
                   <View style={styles.searchBar}>
                     <TextInput
@@ -129,13 +133,11 @@ const MapScreen = () => {
                 <TouchableOpacity
                   style={styles.closeButton}
                   onPress={
-                    isNavigating
-                      ? handleCancelNavigation
-                      : () => setIsRouting(false)
+                    isGuiding ? handleCancelGuiding : () => setIsRouting(false)
                   }
                 >
                   <MaterialIcons
-                    name={isNavigating ? "arrow-back" : "close"}
+                    name={isGuiding ? "arrow-back" : "close"}
                     size={24}
                     color="#333"
                   />
@@ -165,13 +167,13 @@ const MapScreen = () => {
           </View>
 
           {/* RIGHT-SIDE CONTROLS */}
-          {!isNavigating && (
+          {!isGuiding && (
             <View style={styles.rightControlsContainer}>
               {/* Log out button */}
               <TouchableOpacity
                 testID="logout-button"
                 style={styles.logoutButton}
-                onPress={() => handleLogout()} 
+                onPress={() => handleLogout()}
               >
                 <MaterialIcons name="logout" size={24} color="#912338" />
               </TouchableOpacity>
@@ -215,7 +217,7 @@ const MapScreen = () => {
           )}
 
           {/* BOTTOM SHEET */}
-          {selectedBuilding && !isNavigating && (
+          {selectedBuilding && !isGuiding && (
             <View
               style={[
                 styles.bottomSheetMock,
@@ -392,7 +394,7 @@ const MapScreen = () => {
           )}
 
           {/* STEP BY STEP DIRECTIONS */}
-          {isNavigating && (
+          {isGuiding && (
             <View style={styles.navigationSheet}>
               <View style={styles.dragHandle} />
               <View style={styles.routeSummary}>
@@ -413,7 +415,7 @@ const MapScreen = () => {
                 </View>
                 <TouchableOpacity
                   style={styles.endNavButton}
-                  onPress={handleCancelNavigation}
+                  onPress={handleCancelGuiding}
                 >
                   <Text style={styles.endNavText}>End</Text>
                 </TouchableOpacity>
