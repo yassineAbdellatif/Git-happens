@@ -48,12 +48,23 @@ export const useMapLogic = () => {
   const [originType, setOriginType] = useState<
     "CURRENT" | "BUILDING" | "SEARCH" | null
   >(null);
+  const [destinationType, setDestinationType] = useState<
+    "CURRENT" | "BUILDING" | "SEARCH" | null
+  >(null);
   const [originCoords, setOriginCoords] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [destinationCoords, setDestinationCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [originLabel, setOriginLabel] = useState("My Location");
+  const [destinationLabel, setDestinationLabel] = useState("My Location");
   const [originCampus, setOriginCampus] = useState<"SGW" | "LOYOLA" | null>(
+    null,
+  );
+  const [destinationCampus, setDestinationCampus] = useState<"SGW" | "LOYOLA" | null>(
     null,
   );
   const [nextShuttleTitle, setNextShuttleTitle] = useState("");
@@ -71,6 +82,10 @@ export const useMapLogic = () => {
     setOriginCoords(null);
     setOriginLabel("Choose starting point");
     setOriginCampus(null);
+    setDestinationType(null);
+    setDestinationCoords(null);
+    setDestinationLabel("Select Destination");
+    setDestinationCampus(null);
     setNextShuttleTitle("");
     setNextShuttleSubtitle("");
     setRouteCoords([]);
@@ -180,8 +195,15 @@ export const useMapLogic = () => {
     setRouteSegments([]);
     setIsNavigating(false);
     setIsRouting(false);
-  };
+    setDestinationCoords(null);
+    setDestinationType(null);
+    setDestinationLabel("Select destination");
+    setOriginCoords(null);
+    setOriginType(null);
+    setOriginLabel("Choose starting point");
 
+  };
+  
   useEffect(() => {
     if (originType === "CURRENT") {
       setOriginCampus(
@@ -211,7 +233,7 @@ export const useMapLogic = () => {
   const handleFetchRoute = async (mode: string) => {
     console.log("Fetching route with mode:", mode);
 
-    if (!originCoords || !selectedBuilding) return;
+    if (!originCoords || !destinationCoords) return;
     try {
       if (mode === "SHUTTLE") {
         const destinationCampus = selectedBuilding.campus || null;
@@ -252,7 +274,7 @@ export const useMapLogic = () => {
       }
 
       const origin = `${originCoords.latitude},${originCoords.longitude}`;
-      const destination = `${selectedBuilding.coordinates[0].latitude},${selectedBuilding.coordinates[0].longitude}`;
+      const destination = `${destinationCoords.latitude},${destinationCoords.longitude}`;
       const data = await getRouteFromBackend(origin, destination, mode);
 
       if (data.routes?.length > 0) {
@@ -294,6 +316,9 @@ export const useMapLogic = () => {
     originType,
     originCoords,
     originLabel,
+    destinationType,
+    destinationCoords,
+    destinationLabel,
     setSelectedBuilding,
     setIsRouting,
     setTransportMode,
@@ -301,6 +326,10 @@ export const useMapLogic = () => {
     setOriginCoords,
     setOriginLabel,
     setOriginCampus,
+    setDestinationType,
+    setDestinationCoords,
+    setDestinationLabel,
+    setDestinationCampus,
     handleRecenter,
     handleFetchRoute,
     toggleCampus,
