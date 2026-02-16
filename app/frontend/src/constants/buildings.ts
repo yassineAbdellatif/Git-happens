@@ -134,7 +134,9 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     info: "The primary research and study hub for the Loyola campus. It offers 24/7 access during exam periods, specialized science resources, and silent study zones overlooking the campus greenery.",
     coordinates: [
       { latitude: 45.459095, longitude: -73.637839 },
-      { latitude: 45.458568, longitude: -73.638330 },
+      { latitude: 45.458727, longitude: -73.638365 }, 
+      { latitude: 45.458795, longitude: -73.638598 }, 
+      { latitude: 45.458679, longitude: -73.638684 }, 
       { latitude: 45.458825, longitude: -73.639086 },
       { latitude: 45.459318, longitude: -73.638657 },
     ],
@@ -232,6 +234,36 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     image:
       "https://www.concordia.ca/content/concordia/en/research/genomics/contact/_jcr_content/content-main/image.img.jpg/1449604501174.jpg",
   },
+  {
+    id: "CC",
+    name: "CC",
+    fullName: "Central Building",
+    campus: "LOYOLA",
+    info: "Central Building  includes classrooms, the Guadagni Lounge and the student-run campus radio station, CJLO.",
+    coordinates: [
+      { latitude: 45.458534, longitude: -73.640691 }, // top-left
+      { latitude: 45.458218, longitude: -73.639893 }, // top-right
+      { latitude: 45.458073, longitude: -73.639997 }, // bottom-right
+      { latitude: 45.458366, longitude: -73.640828 }, // bottom-left
+    ],
+    image:
+      "https://www.concordia.ca/content/concordia/en/maps/buildings/cc/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1750701910958.jpg",
+  },
+  {
+    id: "VE",
+    name: "VE",
+    fullName: "Vanier Extension",
+    campus: "LOYOLA",
+    info: "Vanier Extension offers flexible, digitally equipped classrooms and also houses spaces for the Department of Applied Human Sciences.",
+    coordinates: [
+      { latitude: 45.458607, longitude: -73.638470 }, // top-left n
+      { latitude: 45.458727, longitude: -73.638365 }, // top-right
+      { latitude: 45.458795, longitude: -73.638598 }, // bottom-right
+      { latitude: 45.458679, longitude: -73.638684 }, // bottom-left
+    ],
+    image:
+      "https://www.concordia.ca/content/concordia/en/maps/buildings/ve/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1754323922442.jpg",
+  }
 ];
 
 
