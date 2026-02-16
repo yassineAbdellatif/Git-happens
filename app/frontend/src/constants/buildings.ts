@@ -17,10 +17,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "The central hub of SGW campus. Houses the Gina Cody School of Engineering, large lecture theatres, the 7th-floor student lounge, and the DB Clarke Theatre. Features a popular cafeteria and tunnel access to the LB building.",
     coordinates: [
-      { latitude: 45.496831703073426, longitude: -73.57886161006161 },
-      { latitude: 45.497164066012594, longitude: -73.57954284420437 },
-      { latitude: 45.49770467748888, longitude: -73.57903266885518 },
-      { latitude: 45.4973744212895, longitude: -73.57833943058655 },
+      { latitude: 45.497159, longitude: -73.579554 },
+      { latitude: 45.497722, longitude: -73.579022 },
+      { latitude: 45.497387, longitude: -73.578305 },
+      { latitude: 45.496824, longitude: -73.578837 },
     ],
     image: "https://live.staticflickr.com/6102/6310030294_ed7366df3f_b.jpg",
   },
@@ -31,10 +31,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Home to the Webster Library (open 24/7), the Birks Student Service Centre, and Cinema Politica. It also contains the Leonard & Bina Ellen Art Gallery and is the primary gateway to the Guy-Concordia Metro station via the underground tunnel.",
     coordinates: [
-      { latitude: 45.4962608117808, longitude: -73.57770546619393 },
-      { latitude: 45.496846013401424, longitude: -73.5771905221769 },
-      { latitude: 45.49726071952932, longitude: -73.57805825762689 },
-      { latitude: 45.496692417764145, longitude: -73.57859511415528 },
+      { latitude: 45.497282, longitude: -73.578036 }, 
+      { latitude: 45.496910, longitude: -73.577255 }, 
+      { latitude: 45.496560, longitude: -73.577590 }, 
+      { latitude: 45.496485, longitude: -73.577435 },
+      { latitude: 45.496221, longitude: -73.577682 },
+      { latitude: 45.496676, longitude: -73.578626 },
     ],
     image:
       "https://thelinknewspaper.ca/images/articles/Stock%20Images/_resized/STOCK.LBBuilding.EmanueleBarbier.jpg",
@@ -47,10 +49,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "A modern glass landmark featuring state-of-the-art engineering labs and the FOFA Gallery. It offers bright study spaces, a popular Le Frigo Vert grocery, and direct indoor connections to the MB and GM buildings.",
     coordinates: [
-      { latitude: 45.495866665347314, longitude: -73.57849513713523 },
-      { latitude: 45.495593229550785, longitude: -73.57876461699963 },
-      { latitude: 45.49521411588751, longitude: -73.5778789139488 },
-      { latitude: 45.495445283059006, longitude: -73.57761131855897 },
+      { latitude: 45.495567, longitude: -73.578776 },
+      { latitude: 45.495947, longitude: -73.578416 },
+      { latitude: 45.495755, longitude: -73.578009 },
+      { latitude: 45.496088, longitude: -73.577684 },
+      { latitude: 45.495855, longitude: -73.577180 },
+      { latitude: 45.495153, longitude: -73.577883 },
     ],
     image:
       "https://nck.ca/wp-content/uploads/2021/08/NCK-Universite-Concordia-University-Pavillon-EV-Montreal-2021-1-1401x2000.jpg",
@@ -62,10 +66,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "The flagship building for the John Molson School of Business. It features a stunning tiered atrium, several private study rooms, a trading lab, and a direct tunnel link to the Guy-Concordia Metro.",
     coordinates: [
-      { latitude: 45.495520469231906, longitude: -73.5792020907505 }, // top-left
-      { latitude: 45.4953576540106, longitude: -73.57936862583686 }, // top-right
-      { latitude: 45.49500130207221, longitude: -73.57874192801188 }, // bottom-right
-      { latitude: 45.4951856223219, longitude: -73.57853375915393 }, // bottom-left
+      { latitude: 45.495531, longitude: -73.579224 },
+      { latitude: 45.495197, longitude: -73.578468 },
+      { latitude: 45.494941, longitude: -73.578800 },
+      { latitude: 45.495129, longitude: -73.579111 },
+      { latitude: 45.495189, longitude: -73.579111 },
+      { latitude: 45.495377, longitude: -73.579465 },
     ],
     image:
       "https://images.squarespace-cdn.com/content/v1/597b8962ebbd1a681f3b6efb/1520004557787-X66JBMR6FDIRR5A6PV9O/John+Molson+School+of+Business.jpg?format=original",
@@ -91,10 +97,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Dedicated to the Faculty of Fine Arts, this building contains specialized studios for painting, drawing, and sculpture. It features gallery spaces and student-run exhibition areas.",
     coordinates: [
-      { latitude: 45.49618642295494, longitude: -73.5737950018861 }, // top-left
-      { latitude: 45.49592636675518, longitude: -73.57327467694199 }, // top-right
-      { latitude: 45.495403013501104, longitude: -73.57376883169661 }, // bottom-right
-      { latitude: 45.49566846751203, longitude: -73.5743122479844 }, // bottom-left
+      { latitude: 45.496172, longitude: -73.573791 },
+      { latitude: 45.496051, longitude: -73.573539 },
+      { latitude: 45.495780, longitude: -73.573802 },
+      { latitude: 45.495634, longitude: -73.573496 },
+      { latitude: 45.495356, longitude: -73.573743 },
+      { latitude: 45.495615, longitude: -73.574321 },
     ],
     image:
       "https://thelinknewspaper.ca/images/articles/Stock%20Images/_resized/STOCK.VABuilding.EmanueleBarbier.jpg",
@@ -106,10 +114,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Located in a former shopping mall, it houses the Mel Hoppenheim School of Cinema and the Department of Education. Features a food court on the ground level and large, quiet classrooms on the upper floors.",
     coordinates: [
-      { latitude: 45.494910677711516, longitude: -73.57778435124267 }, // top-left
-      { latitude: 45.49465262793321, longitude: -73.57721900844952 }, // top-right
-      { latitude: 45.493628097201814, longitude: -73.57873097173558 }, // bottom-right
-      { latitude: 45.493823174208444, longitude: -73.57906842440856 }, // bottom-left
+      { latitude: 45.494910, longitude: -73.577770 },
+      { latitude: 45.494658, longitude: -73.577181 },
+      { latitude: 45.494318, longitude: -73.577578 },
+      { latitude: 45.494412, longitude: -73.577718 },
+      { latitude: 45.494167, longitude: -73.578082 },
+      { latitude: 45.494348, longitude: -73.578409 },
     ],
     image:
       "https://thelinknewspaper.ca/images/articles/Volume_37/News/_resized/19ca.refugeecenter(nikolas_litzenberger).jpg",
@@ -123,47 +133,51 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "The primary research and study hub for the Loyola campus. It offers 24/7 access during exam periods, specialized science resources, and silent study zones overlooking the campus greenery.",
     coordinates: [
-      { latitude: 45.459510972578045, longitude: -73.63915299892896 }, // top-left
-      { latitude: 45.45908744439003, longitude: -73.63793229118957 }, // top-right
-      { latitude: 45.4587280846448, longitude: -73.6382198240618 }, // bottom-right
-      { latitude: 45.459034273959844, longitude: -73.63951110805166 }, // bottom-left
+      { latitude: 45.459095, longitude: -73.637839 },
+      { latitude: 45.458727, longitude: -73.638365 }, 
+      { latitude: 45.458795, longitude: -73.638598 }, 
+      { latitude: 45.458679, longitude: -73.638684 }, 
+      { latitude: 45.458825, longitude: -73.639086 },
+      { latitude: 45.459318, longitude: -73.638657 },
     ],
     image:
       "https://www.concordia.ca/content/dam/concordia/now/2014/02/vanier-library-620.jpg",
   },
   {
-    id: "SP",
-    name: "SP",
+    id: "AD",
+    name: "AD",
     fullName: "Administration Building",
     campus: "LOYOLA",
     info: "The iconic administrative heart of the Loyola campus. Houses the Dean's offices, recruitment services, and general administrative support for faculty and staff.",
     coordinates: [
-      { latitude: 45.458359606506505, longitude: -73.64142443063798 }, // top-left
-      { latitude: 45.45822874595657, longitude: -73.64108899416341 }, // top-right
-      { latitude: 45.45790225416947, longitude: -73.64142066168884 }, // bottom-right
-      { latitude: 45.45800800070426, longitude: -73.64168071918036 }, // bottom-left
+      { latitude: 45.458327, longitude: -73.639403 },
+      { latitude: 45.457691, longitude: -73.639831 },
+      { latitude: 45.457810, longitude: -73.640190 },
+      { latitude: 45.458446, longitude: -73.639762 },
     ],
     image:
       "https://www.concordia.ca/content/shared/en/news/main/stories/2019/10/08/this-work-is-far-more-than-a-landscaping-facelift.img.png/1570558584455.jpg",
   },
   {
-    id: "RR",
-    name: "RR",
+    id: "SP",
+    name: "SP",
     fullName: "Richard J. Renaud Science Complex",
     campus: "LOYOLA",
     info: "A massive, ultra-modern science facility housing advanced labs for Biology, Chemistry, and Physics. Features a large, sunlit atrium often used for science fairs and events.",
     coordinates: [
-      { latitude: 45.457998747890386, longitude: -73.64170333287528 }, // top-left
-      { latitude: 45.457898288670556, longitude: -73.64142819958714 }, // top-right
-      { latitude: 45.45761673753494, longitude: -73.64160910914646 }, // bottom-right
-      { latitude: 45.457734381138174, longitude: -73.64188801138376 }, // bottom-left
+      { latitude: 45.458372, longitude: -73.641435 },
+      { latitude: 45.458175, longitude: -73.640937 },
+      { latitude: 45.457522, longitude: -73.641462 },
+      { latitude: 45.457195, longitude: -73.640636 },
+      { latitude: 45.456958, longitude: -73.640826 },
+      { latitude: 45.457481, longitude: -73.642150 },
     ],
     image:
       "https://jlp.ca/image/1/955/0/uploads/media/complexe-sciences-concordia_04-fr-1509468196.jpg",
   },
   {
-    id: "SJB",
-    name: "SJB",
+    id: "CJ",
+    name: "CJ",
     fullName: "Communication Studies and Journalism Building",
     campus: "LOYOLA",
     info: "Home to the Department of Journalism and Communication Studies. Equipped with professional TV studios, sound recording booths, and digital editing suites.",
@@ -183,10 +197,10 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "The social hub of Loyola. Contains the Hive Cafe (vegan-friendly), student union offices, and a multi-faith space. Great for community events and grabbing a coffee between classes.",
     coordinates: [
-      { latitude: 45.4577598134696, longitude: -73.64036854809433 }, // top-left
-      { latitude: 45.45764757333694, longitude: -73.64005368011232 }, // top-right
-      { latitude: 45.457198610572135, longitude: -73.64040468048572 }, // bottom-right
-      { latitude: 45.45732261878991, longitude: -73.64071438669754 }, // bottom-left
+      { latitude: 45.459106, longitude: -73.639467 },
+      { latitude: 45.459516, longitude: -73.639160 },
+      { latitude: 45.459371, longitude: -73.638716 },
+      { latitude: 45.458942, longitude: -73.639081 },
     ],
     image: "https://hivecafe.ca/loyolaSpace3.jpg",
   },
@@ -197,17 +211,17 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Focuses on the Department of Psychology, housing specialized research labs, observation rooms, and the Applied Psychology Centre clinic.",
     coordinates: [
-      { latitude: 45.45923414686468, longitude: -73.64057235160632 }, // top-left
-      { latitude: 45.45906116560649, longitude: -73.64015050736825 }, // top-right
-      { latitude: 45.45866967974583, longitude: -73.64045985981015 }, // bottom-right
-      { latitude: 45.458813073137804, longitude: -73.64079192694113 }, // bottom-left
+      { latitude: 45.459083, longitude: -73.640084 },
+      { latitude: 45.458619, longitude: -73.640434 },
+      { latitude: 45.458801, longitude: -73.640922 },
+      { latitude: 45.459264, longitude: -73.640572 },
     ],
     image:
       "https://www.concordia.ca/content/concordia/en/maps/buildings/py.img.png/1754585849970.jpg",
   },
   {
-    id: "SFG",
-    name: "SFG",
+    id: "GE",
+    name: "GE",
     fullName: "Center for structural and functional genomics",
     campus: "LOYOLA",
     info: "A cutting-edge research facility dedicated to genomic studies. It brings together researchers from Biology, Chemistry, and Physics to study molecular life sciences.",
@@ -220,6 +234,36 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     image:
       "https://www.concordia.ca/content/concordia/en/research/genomics/contact/_jcr_content/content-main/image.img.jpg/1449604501174.jpg",
   },
+  {
+    id: "CC",
+    name: "CC",
+    fullName: "Central Building",
+    campus: "LOYOLA",
+    info: "Central Building  includes classrooms, the Guadagni Lounge and the student-run campus radio station, CJLO.",
+    coordinates: [
+      { latitude: 45.458534, longitude: -73.640691 }, // top-left
+      { latitude: 45.458218, longitude: -73.639893 }, // top-right
+      { latitude: 45.458073, longitude: -73.639997 }, // bottom-right
+      { latitude: 45.458366, longitude: -73.640828 }, // bottom-left
+    ],
+    image:
+      "https://www.concordia.ca/content/concordia/en/maps/buildings/cc/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1750701910958.jpg",
+  },
+  {
+    id: "VE",
+    name: "VE",
+    fullName: "Vanier Extension",
+    campus: "LOYOLA",
+    info: "Vanier Extension offers flexible, digitally equipped classrooms and also houses spaces for the Department of Applied Human Sciences.",
+    coordinates: [
+      { latitude: 45.458607, longitude: -73.638470 }, // top-left n
+      { latitude: 45.458727, longitude: -73.638365 }, // top-right
+      { latitude: 45.458795, longitude: -73.638598 }, // bottom-right
+      { latitude: 45.458679, longitude: -73.638684 }, // bottom-left
+    ],
+    image:
+      "https://www.concordia.ca/content/concordia/en/maps/buildings/ve/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1754323922442.jpg",
+  }
 ];
 
 
