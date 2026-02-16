@@ -21,9 +21,9 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   searchBar: {
-    backgroundColor: "white",
+    backgroundColor: "rgba(7, 7, 7, 0.6)",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 25,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   searchText: { color: "#999" },
   searchInput: {
     fontSize: 16,
-    color: "#333",
+    color: "#ffffff",
   },
   routeHeader: {
     backgroundColor: "white",
