@@ -79,6 +79,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         showsUserLocation={true}
         moveOnMarkerPress={false}
         onPress={onMapPress}
+        mapType="hybrid"
       >
         {/* --- DRAW THE ROUTE LINE --- */}
         {routeCoords && routeCoords.length > 0 && (
