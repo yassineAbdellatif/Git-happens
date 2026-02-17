@@ -12,9 +12,10 @@ import {
 import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
-import { SGW_REGION, CONCORDIA_BUILDINGS } from "../../../constants/buildings";
+import { SGW_REGION, CONCORDIA_BUILDINGS, getDisplayStatus } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
+import { isPointInPolygon } from 'geolib';
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
@@ -62,6 +63,15 @@ const MapScreen = () => {
     setSelectedBuilding,
     setTransportMode,
   } = useMapLogic();
+
+  const statusText = getDisplayStatus(
+  userLocation, 
+  currentRegion, 
+  selectedBuilding, 
+  currentBuilding
+  );
+  
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -186,7 +196,7 @@ const MapScreen = () => {
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
                 <Text style={styles.statusValue}>
-                  {currentBuilding ? currentBuilding.id : "--"}
+                  {statusText}
                 </Text>
               </View>
 
@@ -379,7 +389,8 @@ const MapScreen = () => {
                 )}
               </ScrollView>
             </View>
-          )}
+          )} 
+          
 
           {/* STEP BY STEP DIRECTIONS */}
           {isNavigating && (
