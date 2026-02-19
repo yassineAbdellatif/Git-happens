@@ -13,7 +13,11 @@ import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import { MapType } from "react-native-maps";
-import { SGW_REGION, CONCORDIA_BUILDINGS, getDisplayStatus } from "../../../constants/buildings";
+import {
+  SGW_REGION,
+  CONCORDIA_BUILDINGS,
+  getDisplayStatus,
+} from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
 
@@ -43,14 +47,10 @@ const MapScreen = () => {
     routeDistance,
     routeDuration,
     isNavigating,
-    originType,
-    originCoords,
-    originLabel,
+    origin,
+    destination,
     nextShuttleTitle,
     nextShuttleSubtitle,
-    destinationType,
-    destinationCoords,
-    destinationLabel,
 
     // Handlers
     handleRecenter,
@@ -61,26 +61,29 @@ const MapScreen = () => {
     handleCancelNavigation,
     handleFetchRoute,
     setIsRouting,
-    setOriginType,
-    setOriginLabel,
-    setOriginCoords,
-    setOriginCampus,
+    setOrigin,
     setSelectedBuilding,
     setTransportMode,
-    setDestinationType,
-    setDestinationCoords,
-    setDestinationLabel,
-    setDestinationCampus,
+    setDestination,
   } = useMapLogic();
 
-  const statusText = getDisplayStatus(
-  userLocation, 
-  currentRegion, 
-  selectedBuilding, 
-  currentBuilding
-  );
-  
+  // Derive the old properties from origin/destination
+  const originType = origin.type;
+  const originCoords = origin.coords;
+  const originLabel = origin.label;
+  const originCampus = origin.campus;
 
+  const destinationType = destination.type;
+  const destinationCoords = destination.coords;
+  const destinationLabel = destination.label;
+  const destinationCampus = destination.campus;
+
+  const statusText = getDisplayStatus(
+    userLocation,
+    currentRegion,
+    selectedBuilding,
+    currentBuilding
+  );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -177,7 +180,7 @@ const MapScreen = () => {
                   <View style={styles.inputRow}>
                     <MaterialIcons name="place" size={18} color="#912338" />
                     <Text style={styles.routeTextStatic}>
-                      {destinationLabel || "Select destination"}
+                      {destinationLabel || "Select Destination"}
                     </Text>
                   </View>
                 </View>
@@ -207,9 +210,7 @@ const MapScreen = () => {
                 </Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
-                <Text style={styles.statusValue}>
-                  {statusText}
-                </Text>
+                <Text style={styles.statusValue}>{statusText}</Text>
               </View>
 
               <TouchableOpacity
@@ -272,18 +273,26 @@ const MapScreen = () => {
                     </Text>
 
                     <TouchableOpacity
+                      testID="directions-button"
                       style={styles.directionsButton}
                       onPress={() => {
                         if (!selectedBuilding) return;
 
-                        setOriginType("BUILDING");
-                        setOriginCoords({ ...selectedBuilding.coordinates[0] });
-                        setOriginLabel(selectedBuilding.fullName);
-                        setOriginCampus(selectedBuilding.campus);
+                        // Set origin to selected building
+                        setOrigin({
+                          type: "BUILDING",
+                          coords: { ...selectedBuilding.coordinates[0] },
+                          label: selectedBuilding.fullName,
+                          campus: selectedBuilding.campus,
+                        });
 
-                        setDestinationType(null);
-                        setDestinationCoords(null);
-                        setDestinationLabel("Choose destination");
+                        // Reset destination
+                        setDestination({
+                          type: null,
+                          coords: null,
+                          label: "Select Destination",
+                          campus: null,
+                        });
 
                         setIsRouting(true);
                       }}
@@ -304,16 +313,21 @@ const MapScreen = () => {
                       onPress={() => {
                         if (!selectedBuilding) return;
 
-                        setDestinationType("BUILDING");
-                        setDestinationCoords({
-                          ...selectedBuilding.coordinates[0],
+                        // Set destination to selected building
+                        setDestination({
+                          type: "BUILDING",
+                          coords: { ...selectedBuilding.coordinates[0] },
+                          label: selectedBuilding.fullName,
+                          campus: selectedBuilding.campus,
                         });
-                        setDestinationLabel(selectedBuilding.fullName);
-                        setDestinationCampus(selectedBuilding.campus);
 
-                        setOriginType(null);
-                        setOriginCoords(null);
-                        setOriginLabel("Choose starting point");
+                        // Reset origin
+                        setOrigin({
+                          type: null,
+                          coords: null,
+                          label: "Choose starting point",
+                          campus: null,
+                        });
 
                         setIsRouting(true);
                       }}
@@ -343,14 +357,19 @@ const MapScreen = () => {
                           </Text>
 
                           <ScrollView style={{ maxHeight: 180 }}>
-                            {CONCORDIA_BUILDINGS.map((b) => (
+                            {CONCORDIA_BUILDINGS.filter(
+                              (b) => b.fullName !== destinationLabel
+                            ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
                                 style={styles.dropdownItem}
                                 onPress={() => {
-                                  setOriginCoords({ ...b.coordinates[0] });
-                                  setOriginLabel(b.fullName);
-                                  setOriginCampus(b.campus);
+                                  setOrigin({
+                                    type: "BUILDING",
+                                    coords: { ...b.coordinates[0] },
+                                    label: b.fullName,
+                                    campus: b.campus,
+                                  });
                                 }}
                               >
                                 <Text style={styles.dropdownText}>
@@ -370,11 +389,14 @@ const MapScreen = () => {
                             style={styles.originOptionButton}
                             onPress={() => {
                               if (userLocation) {
-                                setOriginType("CURRENT");
-                                setOriginLabel("My Location");
-                                setOriginCoords({
-                                  latitude: userLocation.latitude,
-                                  longitude: userLocation.longitude,
+                                setOrigin({
+                                  type: "CURRENT",
+                                  coords: {
+                                    latitude: userLocation.latitude,
+                                    longitude: userLocation.longitude,
+                                  },
+                                  label: "My Location",
+                                  campus: null,
                                 });
                               }
                             }}
@@ -386,7 +408,12 @@ const MapScreen = () => {
 
                           <TouchableOpacity
                             style={styles.originOptionButton}
-                            onPress={() => setOriginType("BUILDING")}
+                            onPress={() =>
+                              setOrigin((prev) => ({
+                                ...prev,
+                                type: "BUILDING",
+                              }))
+                            }
                           >
                             <Text style={styles.originOptionText}>
                               Choose building
@@ -404,14 +431,19 @@ const MapScreen = () => {
                           </Text>
 
                           <ScrollView style={{ maxHeight: 180 }}>
-                            {CONCORDIA_BUILDINGS.map((b) => (
+                            {CONCORDIA_BUILDINGS.filter(
+                              (b) => b.fullName !== originLabel
+                            ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
                                 style={styles.dropdownItem}
                                 onPress={() => {
-                                  setDestinationCoords({ ...b.coordinates[0] });
-                                  setDestinationLabel(b.fullName);
-                                  setDestinationCampus(b.campus);
+                                  setDestination({
+                                    type: "BUILDING",
+                                    coords: { ...b.coordinates[0] },
+                                    label: b.fullName,
+                                    campus: b.campus,
+                                  });
                                 }}
                               >
                                 <Text style={styles.dropdownText}>
@@ -424,18 +456,21 @@ const MapScreen = () => {
                       ) : (
                         <>
                           <Text style={styles.routingTitle}>
-                            Choose destination
+                            Select Destination
                           </Text>
 
                           <TouchableOpacity
                             style={styles.originOptionButton}
                             onPress={() => {
                               if (userLocation) {
-                                setDestinationType("CURRENT");
-                                setDestinationLabel("My Location");
-                                setDestinationCoords({
-                                  latitude: userLocation.latitude,
-                                  longitude: userLocation.longitude,
+                                setDestination({
+                                  type: "CURRENT",
+                                  coords: {
+                                    latitude: userLocation.latitude,
+                                    longitude: userLocation.longitude,
+                                  },
+                                  label: "My Location",
+                                  campus: null, // campus will be handled by useEffect in your hook
                                 });
                               }
                             }}
@@ -447,7 +482,12 @@ const MapScreen = () => {
 
                           <TouchableOpacity
                             style={styles.originOptionButton}
-                            onPress={() => setDestinationType("BUILDING")}
+                            onPress={() =>
+                              setDestination((prev) => ({
+                                ...prev,
+                                type: "BUILDING",
+                              }))
+                            }
                           >
                             <Text style={styles.originOptionText}>
                               Choose building
@@ -492,6 +532,20 @@ const MapScreen = () => {
                           ))}
                         </View>
 
+                        {transportMode === "SHUTTLE" &&
+                          nextShuttleTitle.length > 0 && (
+                            <View style={styles.shuttleInfo}>
+                              <Text style={styles.shuttleText}>
+                                {nextShuttleTitle}
+                              </Text>
+                              {nextShuttleSubtitle.length > 0 && (
+                                <Text style={styles.shuttleSubtext}>
+                                  {nextShuttleSubtitle}
+                                </Text>
+                              )}
+                            </View>
+                          )}
+
                         <TouchableOpacity
                           style={styles.startButton}
                           onPress={() => handleFetchRoute(transportMode)}
@@ -506,8 +560,7 @@ const MapScreen = () => {
                 )}
               </ScrollView>
             </View>
-          )} 
-          
+          )}
 
           {/* STEP BY STEP DIRECTIONS */}
           {isNavigating && (
