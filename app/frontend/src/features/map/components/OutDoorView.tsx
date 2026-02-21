@@ -1,8 +1,9 @@
-import React, { forwardRef, useMemo } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { forwardRef, useMemo, useState } from "react";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Marker } from "react-native-maps";
 import MapView, {
   PROVIDER_GOOGLE,
+  MapType,
   Polygon,
   Region,
   Polyline,
@@ -17,6 +18,8 @@ interface OutdoorViewProps {
   onMapPress: () => void;
   routeCoords?: { latitude: number; longitude: number }[];
   transportMode?: string;
+  mapType: MapType;
+  onMapTypeChange: (mapType: MapType) => void;
 }
 
 const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
@@ -28,6 +31,8 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     onMapPress,
     routeCoords,
     transportMode,
+    mapType,
+    onMapTypeChange,
   } = props;
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
@@ -79,6 +84,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         showsUserLocation={true}
         moveOnMarkerPress={false}
         onPress={onMapPress}
+        mapType={mapType}
       >
         {/* --- DRAW THE ROUTE LINE --- */}
         {routeCoords && routeCoords.length > 0 && (

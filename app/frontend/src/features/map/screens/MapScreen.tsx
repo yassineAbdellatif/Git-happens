@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -13,6 +13,7 @@ import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import { SGW_REGION, CONCORDIA_BUILDINGS } from "../../../constants/buildings";
+import { MapType } from "react-native-maps";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
 
@@ -24,6 +25,7 @@ const MODE_ICON_MAP = {
 } as const;
 
 const MapScreen = () => {
+  const [mapType, setMapType] = useState<MapType>("hybrid");
   const {
     // State & Refs
     mapRef,
@@ -80,6 +82,8 @@ const MapScreen = () => {
             }
             routeCoords={routeCoords}
             transportMode={transportMode}
+            mapType={mapType}
+            onMapTypeChange={setMapType}
           />
         </View>
 
@@ -199,6 +203,19 @@ const MapScreen = () => {
                   {currentRegion.latitude === SGW_REGION.latitude
                     ? "TO LOYOLA"
                     : "TO SGW"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.toggleButton}
+                onPress={() =>
+                  setMapType((prev) =>
+                    prev === "hybrid" ? "standard" : "hybrid"
+                  )
+                }
+              >
+                <Text style={styles.toggleText}>
+                  {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}
                 </Text>
               </TouchableOpacity>
             </View>
