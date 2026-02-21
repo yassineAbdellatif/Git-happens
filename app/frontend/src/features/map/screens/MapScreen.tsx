@@ -15,7 +15,6 @@ import OutdoorView from "../components/OutDoorView";
 import { SGW_REGION, CONCORDIA_BUILDINGS, getDisplayStatus } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
-import { isPointInPolygon } from 'geolib';
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
