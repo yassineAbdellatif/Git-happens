@@ -9,6 +9,7 @@ import MapView, {
   Polyline,
 } from "react-native-maps";
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
+import { getSegmentColor } from "../utils/shuttleLogic";
 
 interface OutdoorViewProps {
   region: Region;
@@ -17,6 +18,10 @@ interface OutdoorViewProps {
   onBuildingPress: (building: Building) => void;
   onMapPress: () => void;
   routeCoords?: { latitude: number; longitude: number }[];
+  routeSegments?: {
+    mode: string;
+    coords: { latitude: number; longitude: number }[];
+  }[];
   transportMode?: string;
   mapType: MapType;
   onMapTypeChange: (mapType: MapType) => void;
@@ -30,6 +35,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     onBuildingPress,
     onMapPress,
     routeCoords,
+    routeSegments,
     transportMode,
     mapType,
     onMapTypeChange,
@@ -51,6 +57,9 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
       case "TRANSIT":
         console.log("Using TRANSIT mode color:", "#020202");
         return "#020202";
+      case "SHUTTLE":
+        console.log("Using SHUTTLE mode color:", "#912338");
+        return "#912338";
       default:
         console.log("Using default color for mode:", mode);
         return "#912338";
@@ -87,17 +96,35 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         mapType={mapType}
       >
         {/* --- DRAW THE ROUTE LINE --- */}
-        {routeCoords && routeCoords.length > 0 && (
-          <Polyline
-            coordinates={routeCoords}
-            strokeColor={currentColor}
-            strokeWidth={8}
-            lineCap="round"
-            lineJoin="round"
-            lineDashPattern={transportMode === "WALKING" ? [2, 10] : [0]}
-            zIndex={20} // Boost this to ensure it's not hidden
-          />
-        )}
+        {/* When shuttle routing is active, render each leg separately so walking legs use dashed style. */}
+        {routeSegments && routeSegments.length > 0
+          ? routeSegments.map((segment, index) => (
+              <Polyline
+                key={`route-segment-${index}`}
+                coordinates={segment.coords}
+                strokeColor={getSegmentColor(segment.mode)}
+                strokeWidth={8}
+                lineCap="round"
+                lineJoin="round"
+                lineDashPattern={
+                  segment.mode?.toUpperCase() === "WALKING" ? [2, 10] : [0]
+                }
+                zIndex={20}
+              />
+            ))
+          : // End of shuttle segmented coloring; fall back to single route styling.
+            routeCoords &&
+            routeCoords.length > 0 && (
+              <Polyline
+                coordinates={routeCoords}
+                strokeColor={currentColor}
+                strokeWidth={8}
+                lineCap="round"
+                lineJoin="round"
+                lineDashPattern={transportMode === "WALKING" ? [2, 10] : [0]}
+                zIndex={20} // Boost this to ensure it's not hidden
+              />
+            )}
 
         {CONCORDIA_BUILDINGS.map((building) => {
           const isSelected = building.id === selectedBuildingId;
@@ -138,7 +165,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
                 tracksViewChanges={false}
                 pointerEvents="none"
               >
-                <View >
+                <View>
                   <Text>{building.id}</Text>
                 </View>
               </Marker>
