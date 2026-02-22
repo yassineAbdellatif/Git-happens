@@ -10,6 +10,7 @@ import { auth } from "../frontend/src/features/auth/config/firebaseConfig";
 
 import { AppNavigator } from "./src/navigation/AppNavigator";
 import { AuthNavigator } from "./src/navigation/AuthNavigator";
+import { CalendarSelectionProvider } from "./src/context/CalendarSelectionContext";
 
 export default function App() {
   const [initializing, setInitializing] = useState(true);
@@ -40,7 +41,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="dark" />
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      {user ? (
+        <CalendarSelectionProvider>
+          <AppNavigator />
+        </CalendarSelectionProvider>
+      ) : (
+        <AuthNavigator />
+      )}
     </NavigationContainer>
   );
 }
