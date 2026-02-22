@@ -13,7 +13,11 @@ import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import { MapType } from "react-native-maps";
-import { SGW_REGION, CONCORDIA_BUILDINGS, getDisplayStatus } from "../../../constants/buildings";
+import {
+  SGW_REGION,
+  CONCORDIA_BUILDINGS,
+  getDisplayStatus,
+} from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
 
@@ -43,9 +47,8 @@ const MapScreen = () => {
     routeDistance,
     routeDuration,
     isNavigating,
-    originType,
-    originCoords,
-    originLabel,
+    origin,
+    destination,
     nextShuttleTitle,
     nextShuttleSubtitle,
 
@@ -58,22 +61,29 @@ const MapScreen = () => {
     handleCancelNavigation,
     handleFetchRoute,
     setIsRouting,
-    setOriginType,
-    setOriginLabel,
-    setOriginCoords,
-    setOriginCampus,
+    setOrigin,
     setSelectedBuilding,
     setTransportMode,
+    setDestination,
   } = useMapLogic();
 
-  const statusText = getDisplayStatus(
-  userLocation, 
-  currentRegion, 
-  selectedBuilding, 
-  currentBuilding
-  );
-  
+  // Derive the old properties from origin/destination
+  const originType = origin.type;
+  const originCoords = origin.coords;
+  const originLabel = origin.label;
+  const originCampus = origin.campus;
 
+  const destinationType = destination.type;
+  const destinationCoords = destination.coords;
+  const destinationLabel = destination.label;
+  const destinationCampus = destination.campus;
+
+  const statusText = getDisplayStatus(
+    userLocation,
+    currentRegion,
+    selectedBuilding,
+    currentBuilding
+  );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -170,7 +180,7 @@ const MapScreen = () => {
                   <View style={styles.inputRow}>
                     <MaterialIcons name="place" size={18} color="#912338" />
                     <Text style={styles.routeTextStatic}>
-                      {selectedBuilding?.fullName || "Select destination"}
+                      {destinationLabel || "Select Destination"}
                     </Text>
                   </View>
                 </View>
@@ -195,14 +205,12 @@ const MapScreen = () => {
                   {currentBuilding
                     ? currentBuilding.campus
                     : currentRegion.latitude === SGW_REGION.latitude
-                      ? "SGW"
-                      : "LOYOLA"}
+                    ? "SGW"
+                    : "LOYOLA"}
                 </Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
-                <Text style={styles.statusValue}>
-                  {statusText}
-                </Text>
+                <Text style={styles.statusValue}>{statusText}</Text>
               </View>
 
               <TouchableOpacity
@@ -252,7 +260,6 @@ const MapScreen = () => {
                       {selectedBuilding.fullName}
                     </Text>
 
-                    {/* Added Building Image*/}
                     {selectedBuilding.image && (
                       <Image
                         source={{ uri: selectedBuilding.image }}
@@ -261,7 +268,6 @@ const MapScreen = () => {
                       />
                     )}
 
-                    {/* Added Building Info*/}
                     <Text style={styles.buildingInfo}>
                       {selectedBuilding.info}
                     </Text>
@@ -269,89 +275,234 @@ const MapScreen = () => {
                     <TouchableOpacity
                       testID="directions-button"
                       style={styles.directionsButton}
-                      onPress={() => setIsRouting(true)}
+                      onPress={() => {
+                        if (!selectedBuilding) return;
+
+                        // Set origin to selected building
+                        setOrigin({
+                          type: "BUILDING",
+                          coords: { ...selectedBuilding.coordinates[0] },
+                          label: selectedBuilding.fullName,
+                          campus: selectedBuilding.campus,
+                        });
+
+                        // Reset destination
+                        setDestination({
+                          type: null,
+                          coords: null,
+                          label: "Select Destination",
+                          campus: null,
+                        });
+
+                        setIsRouting(true);
+                      }}
                     >
                       <MaterialIcons
-                        name="directions"
+                        name="my-location"
                         size={20}
                         color="white"
+                        style={{ marginRight: 8 }}
                       />
                       <Text style={styles.directionsButtonText}>
-                        Directions
+                        Start from here
                       </Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.directionsButton}
+                      onPress={() => {
+                        if (!selectedBuilding) return;
+
+                        // Set destination to selected building
+                        setDestination({
+                          type: "BUILDING",
+                          coords: { ...selectedBuilding.coordinates[0] },
+                          label: selectedBuilding.fullName,
+                          campus: selectedBuilding.campus,
+                        });
+
+                        // Reset origin
+                        setOrigin({
+                          type: null,
+                          coords: null,
+                          label: "Choose starting point",
+                          campus: null,
+                        });
+
+                        setIsRouting(true);
+                      }}
+                    >
+                      <MaterialIcons
+                        name="place"
+                        size={20}
+                        color="white"
+                        style={{ marginRight: 8 }}
+                      />
+                      <Text style={styles.directionsButtonText}>Go here</Text>
+                    </TouchableOpacity>
+
                     <Text style={styles.sheetSubtitle}>
                       Tap a building to see indoor maps
                     </Text>
                   </>
                 ) : (
                   <View style={{ width: "100%" }}>
-                    {!originType && (
-                      <>
-                        <Text style={styles.routingTitle}>
-                          Choose starting point
-                        </Text>
-                        <TouchableOpacity
-                          style={styles.originOptionButton}
-                          onPress={() => {
-                            if (userLocation) {
-                              setOriginType("CURRENT");
-                              setOriginLabel("My Location");
-                              setOriginCoords({
-                                latitude: userLocation.latitude,
-                                longitude: userLocation.longitude,
-                              });
-                              setOriginCampus(currentBuilding?.campus || null);
-                            } else {
-                              alert("Location not available.");
+                    {/* STEP 1: Picking Origin */}
+
+                    {!originCoords ? (
+                      originType === "BUILDING" ? (
+                        <>
+                          <Text style={styles.routingTitle}>
+                            Select origin building
+                          </Text>
+
+                          <ScrollView style={{ maxHeight: 180 }}>
+                            {CONCORDIA_BUILDINGS.filter(
+                              (b) => b.fullName !== destinationLabel
+                            ).map((b) => (
+                              <TouchableOpacity
+                                key={b.id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setOrigin({
+                                    type: "BUILDING",
+                                    coords: { ...b.coordinates[0] },
+                                    label: b.fullName,
+                                    campus: b.campus,
+                                  });
+                                }}
+                              >
+                                <Text style={styles.dropdownText}>
+                                  {b.fullName}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </ScrollView>
+                        </>
+                      ) : (
+                        <>
+                          <Text style={styles.routingTitle}>
+                            Choose starting point
+                          </Text>
+
+                          <TouchableOpacity
+                            style={styles.originOptionButton}
+                            onPress={() => {
+                              if (userLocation) {
+                                setOrigin({
+                                  type: "CURRENT",
+                                  coords: {
+                                    latitude: userLocation.latitude,
+                                    longitude: userLocation.longitude,
+                                  },
+                                  label: "My Location",
+                                  campus: null,
+                                });
+                              }
+                            }}
+                          >
+                            <Text style={styles.originOptionText}>
+                              Choose current location
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={styles.originOptionButton}
+                            onPress={() =>
+                              setOrigin((prev) => ({
+                                ...prev,
+                                type: "BUILDING",
+                              }))
                             }
-                          }}
-                        >
-                          <Text style={styles.originOptionText}>
-                            Use Current Location
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={styles.originOptionButton}
-                          onPress={() => setOriginType("BUILDING")}
-                        >
-                          <Text style={styles.originOptionText}>
-                            Choose Building
-                          </Text>
-                        </TouchableOpacity>
-                      </>
-                    )}
+                          >
+                            <Text style={styles.originOptionText}>
+                              Choose building
+                            </Text>
+                          </TouchableOpacity>
+                        </>
+                      )
+                    ) : !destinationCoords ? (
+                      /* STEP 2: Picking Destination */
 
-                    {originType === "BUILDING" && !originCoords && (
-                      <View style={{ width: "100%" }}>
-                        <Text style={styles.routingTitle}>
-                          Select origin building
-                        </Text>
-                        <ScrollView style={{ maxHeight: 180 }}>
-                          {CONCORDIA_BUILDINGS.map((b) => (
-                            <TouchableOpacity
-                              key={b.id}
-                              style={styles.dropdownItem}
-                              onPress={() => {
-                                setOriginCoords({ ...b.coordinates[0] });
-                                setOriginLabel(b.fullName);
-                                setOriginCampus(b.campus);
-                              }}
-                            >
-                              <Text style={styles.dropdownText}>
-                                {b.fullName}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
-                        </ScrollView>
-                      </View>
-                    )}
+                      destinationType === "BUILDING" ? (
+                        <>
+                          <Text style={styles.routingTitle}>
+                            Select destination building
+                          </Text>
 
-                    {originCoords && (
+                          <ScrollView style={{ maxHeight: 180 }}>
+                            {CONCORDIA_BUILDINGS.filter(
+                              (b) => b.fullName !== originLabel
+                            ).map((b) => (
+                              <TouchableOpacity
+                                key={b.id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setDestination({
+                                    type: "BUILDING",
+                                    coords: { ...b.coordinates[0] },
+                                    label: b.fullName,
+                                    campus: b.campus,
+                                  });
+                                }}
+                              >
+                                <Text style={styles.dropdownText}>
+                                  {b.fullName}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </ScrollView>
+                        </>
+                      ) : (
+                        <>
+                          <Text style={styles.routingTitle}>
+                            Select Destination
+                          </Text>
+
+                          <TouchableOpacity
+                            style={styles.originOptionButton}
+                            onPress={() => {
+                              if (userLocation) {
+                                setDestination({
+                                  type: "CURRENT",
+                                  coords: {
+                                    latitude: userLocation.latitude,
+                                    longitude: userLocation.longitude,
+                                  },
+                                  label: "My Location",
+                                  campus: null, // campus will be handled by useEffect in your hook
+                                });
+                              }
+                            }}
+                          >
+                            <Text style={styles.originOptionText}>
+                              Choose current location
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={styles.originOptionButton}
+                            onPress={() =>
+                              setDestination((prev) => ({
+                                ...prev,
+                                type: "BUILDING",
+                              }))
+                            }
+                          >
+                            <Text style={styles.originOptionText}>
+                              Choose building
+                            </Text>
+                          </TouchableOpacity>
+                        </>
+                      )
+                    ) : (
+                      /* STEP 3: Travel Mode */
+
                       <>
                         <Text style={styles.routingTitle}>
                           Choose Travel Mode
                         </Text>
+
                         <View style={styles.modeContainer}>
                           {[
                             { id: "WALKING", icon: "directions-walk" },
@@ -380,6 +531,7 @@ const MapScreen = () => {
                             </TouchableOpacity>
                           ))}
                         </View>
+
                         {transportMode === "SHUTTLE" &&
                           nextShuttleTitle.length > 0 && (
                             <View style={styles.shuttleInfo}>
@@ -393,6 +545,7 @@ const MapScreen = () => {
                               )}
                             </View>
                           )}
+
                         <TouchableOpacity
                           style={styles.startButton}
                           onPress={() => handleFetchRoute(transportMode)}
@@ -407,8 +560,7 @@ const MapScreen = () => {
                 )}
               </ScrollView>
             </View>
-          )} 
-          
+          )}
 
           {/* STEP BY STEP DIRECTIONS */}
           {isNavigating && (
