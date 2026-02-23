@@ -239,8 +239,7 @@ export const useMapLogic = () => {
       return;
     }
 
-    const destinationCampus = selectedBuilding?.campus || null;
-
+    const destinationCampus = destination.campus || selectedBuilding?.campus || null;
     const shuttleInfo = getNextShuttleInfo(origin.campus, destinationCampus);
 
     setNextShuttleTitle(shuttleInfo.title);
