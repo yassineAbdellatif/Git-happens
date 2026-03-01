@@ -51,9 +51,16 @@ export const fetchUpcomingEvents = async (
   );
 
   const events: CalendarEvent[] = [];
-  for (const result of results) {
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
     if (result.status === "fulfilled") {
       events.push(...result.value);
+    } else {
+      const calendarId = calendarIds[i];
+      console.warn(
+        `[calendarService] Failed to fetch events for calendar ${calendarId}:`,
+        result.reason
+      );
     }
   }
 

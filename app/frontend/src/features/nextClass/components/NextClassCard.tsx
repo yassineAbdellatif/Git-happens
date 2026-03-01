@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { NextClassStatus, USER_MESSAGES } from "../../../utils/nextClassErrors";
 import { CONCORDIA_BUILDINGS } from "../../../constants/buildings";
-import { styles } from "../styles/nextClassCardStyle";
+import { styles } from "./styles/nextClassCardStyle";
 
 type Props = {
   status: NextClassStatus;
@@ -33,7 +33,8 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
     );
   }
 
-  if (status.kind !== "found" && status.kind !== "location_unavailable" && status.kind !== "building_unknown") {
+  const supportedKinds = ["found", "location_unavailable", "building_unknown"];
+  if (!supportedKinds.includes(status.kind)) {
     const message = USER_MESSAGES[status.kind];
     return (
       <View style={styles.card}>
@@ -71,7 +72,7 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
         <View style={styles.detail}>
           <MaterialIcons name="access-time" size={16} color="#666" />
           <Text style={styles.detailText}>
-            {formatTime(data.startTime)} · in {mins} min
+            {formatTime(data.startTime)} · {mins === 0 ? "Starting now" : `in ${mins} min`}
           </Text>
         </View>
 
