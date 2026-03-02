@@ -7,14 +7,21 @@ coverage:
     patch:
       default:
         target: 80%          # New code must be 80% covered
+        informational: false # Fail PR if patch coverage is below target
 
 comment:
-  layout: "reach,diff,flags,tree"
+  layout: "reach,diff,flags,files,footer"
   behavior: default
   require_changes: false
+  require_base: false
+  require_head: true
 
 ignore:
   - "tests/**"
   - "**/*.test.ts"
   - "**/*.test.tsx"
   - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/coverage/**"
+  - "**/__mocks__/**"
