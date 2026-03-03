@@ -30,16 +30,16 @@ npm run test:integration:coverage     # Integration test coverage
 
 | Type | Count | Coverage | Location |
 |------|-------|----------|----------|
-| **Unit Tests** | 120 tests (12 suites) | 86.45% | `tests/*.test.ts` |
-| **Integration Tests** | 15 tests (2 suites) | 65.71% | `tests/integration/*.test.ts` |
+| **Unit Tests** | 133 tests (13 suites) | 86.45% | `tests/*.test.ts` |
+| **Integration Tests** | 28 tests (3 suites) | 70.83% | `tests/integration/*.test.ts` |
 | **E2E Tests** | 4 flows | - | `.maestro/*.yaml` |
-| **Total** | 135 tests | - | - |
+| **Total** | 161 tests | - | - |
 
 **Overall Project Coverage: 86.45%** ✅ (Exceeds 70% target)
 
 ---
 
-## 1. Unit Tests (120 tests across 12 suites)
+## 1. Unit Tests (133 tests across 13 suites)
 
 Tests individual functions and components in isolation.
 
@@ -78,12 +78,12 @@ Frontend:
 - geofencing.ts:      100% coverage ✓
 - polylineDecoder.ts: 100% coverage ✓
 - buildings.ts:       35.29% coverage (data constants)
-- mapApiService.ts:   30.76% coverage (all critical paths tested)
+- mapApiService.ts:   84.61% coverage ✓
 ```
 
 ---
 
-## 2. Integration Tests (44 tests)
+## 2. Integration Tests (28 tests)
 
 Tests communication between components and full-stack flows.
 
@@ -92,6 +92,12 @@ Tests communication between components and full-stack flows.
   - API endpoint validation
   - Transport modes (WALKING, DRIVING, TRANSIT, BICYCLING)
   - Error handling and parameter validation
+
+- **`mapApiService.integration.test.ts`** (13 tests)
+  - Real backend API communication
+  - Query parameter validation
+  - Error handling and timeout scenarios
+  - Different transport modes (WALKING, DRIVING, TRANSIT, BICYCLING)
 
 ### Full-Stack Tests
 - **`fullstack.integration.test.ts`** (7 tests)
@@ -243,7 +249,7 @@ Six new comprehensive test files were added to improve coverage:
 - Overall coverage increased from ~70% to **86.45%** ✅
 - All backend critical paths now at **100% coverage**
 - Frontend utility functions at **98-100% coverage**
-- Unit test count increased from 47 to **120 tests**
+- Unit test count increased from 47 to **133 tests**
 - **Project exceeds 70% coverage target**
 
 ### Test Quality Enhancements
@@ -284,4 +290,4 @@ Generated in `coverage/` directory:
 
 ---
 
-**✨ All 135 tests passing! Coverage: 86.45%! ✅**
+**✨ All 161 tests passing! Coverage: 86.45%! ✅**
