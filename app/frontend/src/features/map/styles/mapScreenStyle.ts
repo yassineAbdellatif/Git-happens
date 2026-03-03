@@ -28,8 +28,18 @@ export const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  searchText: { color: "#999" },
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(7, 7, 7, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
   searchInput: {
     fontSize: 16,
     color: "#ffffff",
@@ -335,5 +345,49 @@ export const styles = StyleSheet.create({
   stepDistance: {
     fontSize: 12,
     color: "#999",
+  },
+
+  // --- DRAWER STYLES ---
+  drawerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  drawer: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "#912338",
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingTop: 40,
+  },
+  drawerContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  drawerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  drawerItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  drawerItemText: {
+    fontSize: 16,
+    color: "#ffffff",
+    marginLeft: 15,
   },
 });

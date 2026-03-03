@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -8,6 +8,8 @@ import {
   TextInput,
   ScrollView,
   Image,
+  Animated,
+  Dimensions,
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -63,6 +65,22 @@ const MapScreen = () => {
     setTransportMode,
   } = useMapLogic();
 
+  // Drawer state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const drawerAnimation = React.useRef(new Animated.Value(0)).current;  
+  const { width } = Dimensions.get("window");
+  const drawerWidth = width * 0.6;
+  
+  const toggleDrawer = () => {
+    const toValue = isDrawerOpen ? 0 : 1;
+    Animated.timing(drawerAnimation, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
@@ -90,6 +108,12 @@ const MapScreen = () => {
               !isNavigating && (
                 <View style={styles.searchContainer}>
                   <View style={styles.searchBar}>
+                    <TouchableOpacity
+                      style={styles.menuButton}
+                      onPress={toggleDrawer}
+                    >
+                      <MaterialIcons name="menu" size={24} color="#ffffff" />
+                    </TouchableOpacity>
                     <TextInput
                       testID="search-input"
                       style={styles.searchInput}
@@ -426,6 +450,49 @@ const MapScreen = () => {
             </View>
           )}
         </SafeAreaProvider>
+
+        {/* DRAWER MENU */}
+        {isDrawerOpen && (
+        <View style={styles.drawerOverlay}>
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              activeOpacity={1}
+              onPress={toggleDrawer}
+            />
+            <Animated.View
+              style={[
+                styles.drawer,
+                {
+                  width: drawerWidth,
+                  transform: [
+                    {
+                      translateX: drawerAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-drawerWidth, 0],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <View style={styles.drawerContent}>
+                <Text style={styles.drawerTitle}>Menu</Text>
+                <TouchableOpacity style={styles.drawerItem} onPress={toggleDrawer}>
+                  <MaterialIcons name="calendar-today" size={24} color="#ffffff" />
+                  <Text style={styles.drawerItemText}>Calendar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.drawerItem} onPress={toggleDrawer}>
+                  <MaterialIcons name="map" size={24} color="#ffffff" />
+                  <Text style={styles.drawerItemText}>Outdoor Map</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.drawerItem} onPress={toggleDrawer}>
+                  <MaterialIcons name="other-houses" size={24} color="#ffffff" />
+                  <Text style={styles.drawerItemText}>Indoor Map</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
