@@ -1,3 +1,5 @@
+import { isPointInPolygon } from "geolib";
+
 export interface Building {
   id: string;
   name: string;
@@ -266,6 +268,38 @@ export const CONCORDIA_BUILDINGS: Building[] = [
   }
 ];
 
+export const getDisplayStatus = (
+  userLocation: { latitude: number; longitude: number } | null,
+  currentRegion: { latitude: number; longitude: number },
+  selectedBuilding: Building | null, 
+  currentBuilding: Building | null
+): string => {
+  // 1. If we don't have a user location, default to the Map's Center Campus
+  if (!userLocation) {
+    return "--";
+  }
+
+  // 2. If the user clicked a building, show that building's name
+  if (selectedBuilding) {
+    return selectedBuilding.name;
+  }
+
+  if (currentBuilding) {
+    return currentBuilding.name;
+  }
+
+  // 3. Check if the user's point is inside any building's polygon
+  const buildingInside = CONCORDIA_BUILDINGS.find((building: Building) =>
+    isPointInPolygon(userLocation, building.coordinates)
+  );
+
+  // 4. Return the building name if found, otherwise return the Campus name
+  if (buildingInside) {
+    return buildingInside.name;
+  }
+
+  return "--";
+};
 
 export const SGW_REGION = {
   latitude: 45.4971,
