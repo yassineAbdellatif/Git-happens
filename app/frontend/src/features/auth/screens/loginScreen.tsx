@@ -9,14 +9,15 @@ import { auth } from "../config/firebaseConfig";
 import { styles } from "../styles/loginScreenStyle";
 import Constants from "expo-constants";
 
-// Conditionally import GoogleSignin to prevent crashes in Expo Go
+// Import the context hook to set the calendar access token
+import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
+
 let GoogleSignin: any = null;
 let statusCodes: any = null;
 
 const isExpoGo = Constants.appOwnership === "expo";
 
 if (!isExpoGo) {
-  // Only import if we are NOT in Expo Go
   const GSignin = require("@react-native-google-signin/google-signin");
   GoogleSignin = GSignin.GoogleSignin;
   statusCodes = GSignin.statusCodes;
@@ -27,10 +28,15 @@ if (!isExpoGo) {
     iosClientId:
       "332552903248-vb70apsfbeof7en4l4i5tbkn75ifr6nc.apps.googleusercontent.com",
     offlineAccess: true,
+    // MODIFICATION 1: Request Calendar permissions upfront
+    scopes: ["https://www.googleapis.com/auth/calendar.readonly"], 
   });
 }
 
 export const LoginScreen = ({ navigation }: any) => {
+  // MODIFICATION 2: Extract the setter from the context
+  const { setGoogleCalendarAccessToken } = useCalendarSelection();
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -41,7 +47,6 @@ export const LoginScreen = ({ navigation }: any) => {
   }, []);
 
   const handleGoogleSignIn = async () => {
-    //Environment Check
     if (isExpoGo) {
       Alert.alert(
         "Expo Go Limited",
@@ -57,9 +62,18 @@ export const LoginScreen = ({ navigation }: any) => {
 
       if (!idToken) throw new Error("No ID Token found");
 
+      // MODIFICATION 3: Explicitly request the access token and save it
+      const tokens = await GoogleSignin.getTokens();
+      if (tokens.accessToken) {
+        setGoogleCalendarAccessToken(tokens.accessToken);
+        console.log("Calendar Token successfully saved to context!");
+      }
+
+      // Proceed with Firebase Auth
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
       console.log("Google Sign-In successful:", result.user.displayName);
+      
     } catch (error: any) {
       if (error.code === statusCodes?.SIGN_IN_CANCELLED) {
         console.log("User cancelled");
@@ -72,8 +86,6 @@ export const LoginScreen = ({ navigation }: any) => {
       }
     }
   };
-
-
 
   return (
     <View style={styles.container}>
