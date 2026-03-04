@@ -441,8 +441,6 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
   },
-});
-
   logoutButton: {
     backgroundColor: "transparent",
     padding: 8,

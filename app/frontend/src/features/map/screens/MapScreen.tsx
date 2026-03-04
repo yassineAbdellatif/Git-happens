@@ -62,6 +62,7 @@ const MapScreen = () => {
     handleBuildingPress,
     handleSearch,
     handleSelectFromSearch,
+    handleLogout,
     handleCancelNavigation,
     handleFetchRoute,
     setIsRouting,
