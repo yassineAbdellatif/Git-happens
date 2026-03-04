@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -20,6 +20,8 @@ import {
 } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
+import IndoorFloorPlan from "../components/IndoorFloorPlan";
+import { useIndoorFloorPlanState } from "../hooks/useIndoorFloorPlanState";
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
@@ -30,6 +32,8 @@ const MODE_ICON_MAP = {
 
 const MapScreen = () => {
   const [mapType, setMapType] = useState<MapType>("hybrid");
+  const [isIndoorOpen, setIsIndoorOpen] = useState(false);
+  const [isIndoorInteracting, setIsIndoorInteracting] = useState(false);
   const {
     // State & Refs
     mapRef,
@@ -66,6 +70,12 @@ const MapScreen = () => {
     setTransportMode,
     setDestination,
   } = useMapLogic();
+  const indoorState = useIndoorFloorPlanState(selectedBuilding?.id || null);
+
+  useEffect(() => {
+    setIsIndoorOpen(false);
+    setIsIndoorInteracting(false);
+  }, [selectedBuilding?.id]);
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -82,7 +92,7 @@ const MapScreen = () => {
     userLocation,
     currentRegion,
     selectedBuilding,
-    currentBuilding
+    currentBuilding,
   );
 
   return (
@@ -205,8 +215,8 @@ const MapScreen = () => {
                   {currentBuilding
                     ? currentBuilding.campus
                     : currentRegion.latitude === SGW_REGION.latitude
-                    ? "SGW"
-                    : "LOYOLA"}
+                      ? "SGW"
+                      : "LOYOLA"}
                 </Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
@@ -229,7 +239,7 @@ const MapScreen = () => {
                 style={styles.toggleButton}
                 onPress={() =>
                   setMapType((prev) =>
-                    prev === "hybrid" ? "standard" : "hybrid"
+                    prev === "hybrid" ? "standard" : "hybrid",
                   )
                 }
               >
@@ -253,6 +263,7 @@ const MapScreen = () => {
                 style={{ width: "100%" }}
                 contentContainerStyle={{ alignItems: "center" }}
                 showsVerticalScrollIndicator={false}
+                scrollEnabled={!isIndoorInteracting}
               >
                 {!isRouting ? (
                   <>
@@ -341,6 +352,39 @@ const MapScreen = () => {
                       <Text style={styles.directionsButtonText}>Go here</Text>
                     </TouchableOpacity>
 
+                    {indoorState.supportedFloors.length > 0 && (
+                      <TouchableOpacity
+                        style={styles.indoorEntryButton}
+                        onPress={() => setIsIndoorOpen((prev) => !prev)}
+                      >
+                        <MaterialIcons
+                          name={isIndoorOpen ? "layers-clear" : "map"}
+                          size={20}
+                          color="white"
+                          style={{ marginRight: 8 }}
+                        />
+                        <Text style={styles.indoorEntryButtonText}>
+                          {isIndoorOpen
+                            ? "Hide Indoor Floor Plan"
+                            : "Open Indoor Floor Plan"}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {isIndoorOpen &&
+                      selectedBuilding &&
+                      indoorState.selectedFloorNumber && (
+                        <IndoorFloorPlan
+                          floorPlanEntry={indoorState.activeFloorPlanEntry}
+                          selectedFloorNumber={indoorState.selectedFloorNumber}
+                          supportedFloors={indoorState.supportedFloors}
+                          onSelectFloor={(floorNumber) =>
+                            indoorState.setSelectedFloorNumber(floorNumber)
+                          }
+                          onInteractionChange={setIsIndoorInteracting}
+                        />
+                      )}
+
                     <Text style={styles.sheetSubtitle}>
                       Tap a building to see indoor maps
                     </Text>
@@ -358,7 +402,7 @@ const MapScreen = () => {
 
                           <ScrollView style={{ maxHeight: 180 }}>
                             {CONCORDIA_BUILDINGS.filter(
-                              (b) => b.fullName !== destinationLabel
+                              (b) => b.fullName !== destinationLabel,
                             ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
@@ -432,7 +476,7 @@ const MapScreen = () => {
 
                           <ScrollView style={{ maxHeight: 180 }}>
                             {CONCORDIA_BUILDINGS.filter(
-                              (b) => b.fullName !== originLabel
+                              (b) => b.fullName !== originLabel,
                             ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
