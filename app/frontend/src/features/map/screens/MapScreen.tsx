@@ -201,6 +201,15 @@ const MapScreen = () => {
           {/* RIGHT-SIDE CONTROLS */}
           {!isNavigating && (
             <View style={styles.rightControlsContainer}>
+              {/* Log out button */}
+              <TouchableOpacity
+                testID="logout-button"
+                style={styles.logoutButton}
+                onPress={() => handleLogout()} 
+              >
+                <MaterialIcons name="logout" size={24} color="#912338" />
+              </TouchableOpacity>
+
               <TouchableOpacity
                 testID="recenter-button"
                 style={styles.recenterButton}
