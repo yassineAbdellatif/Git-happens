@@ -80,6 +80,8 @@ jobs:
             -Dsonar.pullrequest.github.summary_comment=true
             -Dsonar.pullrequest.provider=github
             -Dsonar.pullrequest.github.repository=yassineAbdellatif/Git-happens
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -X
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
