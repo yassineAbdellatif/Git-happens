@@ -9,6 +9,10 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # Allow commenting on PRs
+      checks: write         # Allow posting check results
 
     steps:
       - name: Checkout code
@@ -74,6 +78,8 @@ jobs:
             -Dsonar.organization=githappens
             -Dsonar.projectKey=yassineAbdellatif_Git-happens
             -Dsonar.pullrequest.github.summary_comment=true
+            -Dsonar.pullrequest.provider=github
+            -Dsonar.pullrequest.github.repository=yassineAbdellatif/Git-happens
             -X
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
