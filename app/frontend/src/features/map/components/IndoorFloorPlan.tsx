@@ -207,14 +207,6 @@ const IndoorFloorPlan = ({
       <Text style={styles.indoorSvgSource}>
         Source: {floorPlanEntry.floorPlanFile}
       </Text>
-      <Text style={styles.indoorRoomsTitle}>Localized Nodes</Text>
-      <View style={styles.indoorNodeList}>
-        {floorPlanEntry.localizedNodes.map((node) => (
-          <Text key={node.id} style={styles.indoorSummaryText}>
-            [{node.nodeType}] {node.label} ({node.x}, {node.y})
-          </Text>
-        ))}
-      </View>
     </View>
   );
 };
