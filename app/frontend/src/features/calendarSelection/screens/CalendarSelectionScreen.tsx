@@ -1,97 +1,28 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  StyleSheet,
-  Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
-import { fetchCalendarList, GoogleCalendarListItem } from "../../../services/calendarListService";
+import { useCalendarLogic } from "../hooks/useCalendarLogic";
+import { styles } from "../styles/CalendarStyle";
 
 export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
   const {
-    googleCalendarAccessToken,
+    hasToken,
+    loading,
+    error,
+    calendars,
     selectedCalendarIds,
-    setSelectedCalendarIds,
-    confirmSelection,
-  } = useCalendarSelection();
+    toggleCalendar,
+    handleConfirm,
+    loadCalendars,
+  } = useCalendarLogic(navigation);
 
-  const [calendars, setCalendars] = useState<GoogleCalendarListItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<{
-    type: "token_expired" | "api_error" | "network_error" | "empty";
-    message: string;
-  } | null>(null);
-
-  const loadCalendars = useCallback(async () => {
-    if (!googleCalendarAccessToken) {
-      setError({ type: "empty", message: "Connect Google Calendar to select calendars." });
-      setCalendars([]);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    const result = await fetchCalendarList(googleCalendarAccessToken);
-    setLoading(false);
-
-    if (result.error) {
-      setError({
-        type: result.error,
-        message: result.message ?? "Something went wrong.",
-      });
-      setCalendars([]);
-      return;
-    }
-
-    if (result.calendars.length === 0) {
-      setError({
-        type: "empty",
-        message: "No calendars found. Create a calendar in Google Calendar first.",
-      });
-      setCalendars([]);
-      return;
-    }
-
-    setCalendars(result.calendars);
-    setError(null);
-
-    setSelectedCalendarIds((prev) =>
-      prev.filter((id) => result.calendars.some((c) => c.id === id))
-    );
-  }, [googleCalendarAccessToken]);
-
-  useEffect(() => {
-    loadCalendars();
-  }, [loadCalendars]);
-
-  const toggleCalendar = (id: string) => {
-    setSelectedCalendarIds((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
-  };
-
-  const handleConfirm = async () => {
-    if (selectedCalendarIds.length === 0) {
-      Alert.alert(
-        "No calendars selected",
-        "Please select at least one calendar to continue.",
-        [{ text: "OK" }]
-      );
-      return;
-    }
-
-    await confirmSelection();
-    Alert.alert("Saved", `${selectedCalendarIds.length} calendar(s) selected.`, [
-      { text: "OK", onPress: () => navigation?.goBack?.() },
-    ]);
-  };
-
-  if (!googleCalendarAccessToken) {
+  if (!hasToken) {
     return (
       <View style={styles.centerContainer}>
         <MaterialIcons name="event-busy" size={64} color="#ccc" />
@@ -217,145 +148,3 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f8f8",
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  header: {
-    backgroundColor: "white",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 6,
-  },
-  list: {
-    flex: 1,
-  },
-  listContent: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  calendarItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 10,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  calendarItemSelected: {
-    borderWidth: 2,
-    borderColor: "#912338",
-    backgroundColor: "#fff5f5",
-  },
-  calendarItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  colorDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  calendarName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  primaryBadge: {
-    fontSize: 11,
-    color: "#912338",
-    marginTop: 2,
-  },
-  footer: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingBottom: 36,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-  },
-  selectedCount: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 12,
-  },
-  confirmButton: {
-    backgroundColor: "#912338",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 14,
-    borderRadius: 10,
-  },
-  confirmButtonDisabled: {
-    backgroundColor: "#ccc",
-    opacity: 0.8,
-  },
-  confirmButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 12,
-    paddingHorizontal: 24,
-  },
-  hint: {
-    fontSize: 12,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 16,
-    fontStyle: "italic",
-  },
-  loadingText: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 12,
-  },
-  retryButton: {
-    marginTop: 20,
-    backgroundColor: "#912338",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-});
