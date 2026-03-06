@@ -24,6 +24,13 @@ export interface FloorPlanRegistryEntry {
   localizedNodes: LocalizedNode[];
 }
 
+const SUPPORTED_INDOOR_BUILDINGS: readonly IndoorBuildingId[] = ["H", "CC"];
+
+const isSupportedIndoorBuildingId = (
+  buildingId: string,
+): buildingId is IndoorBuildingId =>
+  SUPPORTED_INDOOR_BUILDINGS.includes(buildingId as IndoorBuildingId);
+
 const FLOOR_PLAN_REGISTRY: FloorPlanRegistryEntry[] = [
   {
     buildingId: "H",
@@ -450,7 +457,7 @@ const FLOOR_PLAN_REGISTRY: FloorPlanRegistryEntry[] = [
 export const getSupportedFloorsForBuilding = (
   buildingId: string,
 ): FloorNumber[] => {
-  if (buildingId !== "H" && buildingId !== "CC") {
+  if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
   }
 
@@ -464,7 +471,7 @@ export const getFloorPlanRegistryEntry = (
   buildingId: string,
   floorNumber: FloorNumber,
 ): FloorPlanRegistryEntry | null => {
-  if (buildingId !== "H" && buildingId !== "CC") {
+  if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
   }
 
