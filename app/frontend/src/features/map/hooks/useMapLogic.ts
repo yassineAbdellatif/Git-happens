@@ -1,6 +1,6 @@
 // useMapLogic.ts
 import { useState, useEffect, useRef } from "react";
-import { Keyboard } from "react-native";
+import { Alert, Keyboard } from "react-native";
 import * as Location from "expo-location";
 import {
   SGW_REGION,
@@ -16,6 +16,9 @@ import {
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
 import { getRouteFromBackend } from "../../../services/mapApiService";
+import { auth } from "@features/auth/config/firebaseConfig";
+import Constants from "expo-constants";
+
 
 export const useMapLogic = () => {
   const mapRef = useRef<any>(null);
@@ -175,6 +178,17 @@ export const useMapLogic = () => {
       setFilteredBuildings(results);
     } else {
       setFilteredBuildings([]);
+    }
+  };
+
+
+  const handleLogout = async () => {
+    try {
+      // Sign out from Firebase
+      await auth.signOut();
+    } catch (error) {
+      console.error("Logout Error:", error);
+      Alert.alert("Error", "Failed to log out.");
     }
   };
 
@@ -358,6 +372,7 @@ export const useMapLogic = () => {
     handleSelectFromSearch,
     handleCancelNavigation,
     resetRoutingState,
+    handleLogout,
     nextShuttleTitle,
     nextShuttleSubtitle,
   };

@@ -336,4 +336,9 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
   },
+
+  logoutButton: {
+    backgroundColor: "transparent",
+    padding: 8,
+  },
 });
