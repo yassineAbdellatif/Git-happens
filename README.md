@@ -49,10 +49,6 @@ or
 ```bash
 npx expo run:android
 ```
-or
-```bash
-npm start
-```
 
 #### Start Frontend
 In the `app/frontend` terminal:

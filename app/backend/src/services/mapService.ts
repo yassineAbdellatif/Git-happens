@@ -56,7 +56,7 @@ export const getDirections = async (
     const steps = leg.steps.map((step: any, index: number) => ({
       //processing step by step directions
       stepNumber: index + 1,
-      instruction: step.html_instructions.replace(/<[^>]*>/g, ""), //removes html tags
+      instruction: step.html_instructions.replace(/<[^>]{0,1000}>/g, ""), //removes html tags
       distance: step.distance.text,
       duration: step.duration.text,
       maneuver: step.maneuver || "straight",

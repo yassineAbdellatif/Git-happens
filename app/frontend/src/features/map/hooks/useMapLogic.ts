@@ -11,6 +11,7 @@ import {
 import {
   getNextShuttleInfo,
   getOriginCampusFromLocation,
+  buildShuttleRoute,
 } from "../utils/shuttleLogic";
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
@@ -21,14 +22,34 @@ import Constants from "expo-constants";
 
 export const useMapLogic = () => {
   const mapRef = useRef<any>(null);
+  type LocationPoint = {
+    type: "CURRENT" | "BUILDING" | "SEARCH" | null;
+    coords: { latitude: number; longitude: number } | null;
+    label: string;
+    campus: "SGW" | "LOYOLA" | null;
+  };
 
   // States
+  const [origin, setOrigin] = useState<LocationPoint>({
+    type: null,
+    coords: null,
+    label: "Choose starting point",
+    campus: null,
+  });
+
+  const [destination, setDestination] = useState<LocationPoint>({
+    type: null,
+    coords: null,
+    label: "Select Destination",
+    campus: null,
+  });
+
   const [currentRegion, setCurrentRegion] = useState(SGW_REGION);
   const [userLocation, setUserLocation] =
     useState<Location.LocationObjectCoords | null>(null);
   const [currentBuilding, setCurrentBuilding] = useState<Building | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(
-    null,
+    null
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBuildings, setFilteredBuildings] = useState<Building[]>([]);
@@ -38,23 +59,15 @@ export const useMapLogic = () => {
   const [routeCoords, setRouteCoords] = useState<
     { latitude: number; longitude: number }[]
   >([]);
+  const [routeSegments, setRouteSegments] = useState<
+    { mode: string; coords: { latitude: number; longitude: number }[] }[]
+  >([]);
 
   // Navigation States
   const [routeSteps, setRouteSteps] = useState<any[]>([]);
   const [routeDistance, setRouteDistance] = useState("");
   const [routeDuration, setRouteDuration] = useState("");
   const [isNavigating, setIsNavigating] = useState(false);
-  const [originType, setOriginType] = useState<
-    "CURRENT" | "BUILDING" | "SEARCH" | null
-  >(null);
-  const [originCoords, setOriginCoords] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  const [originLabel, setOriginLabel] = useState("My Location");
-  const [originCampus, setOriginCampus] = useState<"SGW" | "LOYOLA" | null>(
-    null,
-  );
   const [nextShuttleTitle, setNextShuttleTitle] = useState("");
   const [nextShuttleSubtitle, setNextShuttleSubtitle] = useState("");
 
@@ -66,13 +79,26 @@ export const useMapLogic = () => {
 
   // Helper: Reset Routing
   const resetRoutingState = () => {
-    setOriginType(null);
-    setOriginCoords(null);
-    setOriginLabel("Choose starting point");
-    setOriginCampus(null);
+    const resetRoutingState = () => {
+      setOrigin({
+        type: null,
+        coords: null,
+        label: "Choose starting point",
+        campus: null,
+      });
+
+      setDestination({
+        type: null,
+        coords: null,
+        label: "Select Destination",
+        campus: null,
+      });
+    };
+
     setNextShuttleTitle("");
     setNextShuttleSubtitle("");
     setRouteCoords([]);
+    setRouteSegments([]);
     setIsNavigating(false);
     setIsRouting(false);
   };
@@ -90,7 +116,7 @@ export const useMapLogic = () => {
         if (!isMounted) return;
         setUserLocation(location.coords);
         const found = CONCORDIA_BUILDINGS.find((b) =>
-          isPointInPolygon(location.coords, b.coordinates),
+          isPointInPolygon(location.coords, b.coordinates)
         );
         setCurrentBuilding(found || null);
       } catch (e) {
@@ -121,7 +147,7 @@ export const useMapLogic = () => {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         },
-        1000,
+        1000
       );
     }
   };
@@ -147,7 +173,7 @@ export const useMapLogic = () => {
       const results = CONCORDIA_BUILDINGS.filter(
         (b) =>
           b.fullName.toLowerCase().includes(text.toLowerCase()) ||
-          b.id.toLowerCase().includes(text.toLowerCase()),
+          b.id.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredBuildings(results);
     } else {
@@ -179,29 +205,46 @@ export const useMapLogic = () => {
           latitudeDelta: 0.003,
           longitudeDelta: 0.003,
         },
-        1000,
+        1000
       );
     }
   };
 
   const handleCancelNavigation = () => {
     setRouteCoords([]);
+    setRouteSegments([]);
     setIsNavigating(false);
     setIsRouting(false);
+    setDestination({
+      type: null,
+      coords: null,
+      label: "Select Destination",
+      campus: null,
+    });
+
+    setOrigin({
+      type: null,
+      coords: null,
+      label: "Choose starting point",
+      campus: null,
+    });
   };
 
   useEffect(() => {
-    if (originType === "CURRENT") {
-      setOriginCampus(
-        getOriginCampusFromLocation(
-          currentBuilding?.campus || null,
-          userLocation,
-          SGW_REGION,
-          LOYOLA_REGION,
-        ),
+    if (origin.type === "CURRENT") {
+      const campus = getOriginCampusFromLocation(
+        currentBuilding?.campus || null,
+        userLocation,
+        SGW_REGION,
+        LOYOLA_REGION
       );
+
+      setOrigin((prev) => ({
+        ...prev,
+        campus,
+      }));
     }
-  }, [originType, currentBuilding, userLocation]);
+  }, [origin.type, currentBuilding, userLocation]);
 
   useEffect(() => {
     if (transportMode !== "SHUTTLE") {
@@ -210,25 +253,79 @@ export const useMapLogic = () => {
       return;
     }
 
-    const destinationCampus = selectedBuilding?.campus || null;
-    const shuttleInfo = getNextShuttleInfo(originCampus, destinationCampus);
+    const destinationCampus = destination.campus || selectedBuilding?.campus || null;
+    const shuttleInfo = getNextShuttleInfo(origin.campus, destinationCampus);
+
     setNextShuttleTitle(shuttleInfo.title);
     setNextShuttleSubtitle(shuttleInfo.subtitle);
-  }, [originCoords, selectedBuilding, transportMode, originCampus]);
+  }, [origin.campus, selectedBuilding, transportMode]);
 
   const handleFetchRoute = async (mode: string) => {
     console.log("Fetching route with mode:", mode);
 
-    if (!originCoords || !selectedBuilding) return;
+    if (!origin.coords || !destination.coords) return;
+
     try {
-      const origin = `${originCoords.latitude},${originCoords.longitude}`;
-      const destination = `${selectedBuilding.coordinates[0].latitude},${selectedBuilding.coordinates[0].longitude}`;
-      const data = await getRouteFromBackend(origin, destination, mode);
+      if (mode === "SHUTTLE") {
+        const originCampus = origin.campus;
+        const originCoords = origin.coords;
+        const destinationCampus =
+          destination.campus || selectedBuilding?.campus;
+        const destinationCoords =
+          destination.coords || selectedBuilding?.coordinates?.[0] || null;
+
+        if (
+          !originCampus ||
+          !destinationCampus ||
+          !originCoords ||
+          !destination.coords
+        ) {
+          alert("Select origin and destination campuses.");
+          return;
+        }
+
+        if (originCampus === destinationCampus) {
+          alert("Shuttle runs between campuses only.");
+          return;
+        }
+
+        const shuttleRoute = await buildShuttleRoute({
+          originCoords,
+          destinationCoords,
+          originCampus,
+          destinationCampus,
+        });
+
+        if (!shuttleRoute) {
+          alert("Unable to calculate shuttle route.");
+          return;
+        }
+
+        setRouteCoords(shuttleRoute.coords);
+        setRouteSegments(shuttleRoute.segments || []);
+        setRouteDistance(shuttleRoute.distance);
+        setRouteDuration(shuttleRoute.duration);
+        setRouteSteps(shuttleRoute.steps);
+        setIsNavigating(true);
+
+        mapRef.current?.fitToCoordinates(shuttleRoute.coords, {
+          edgePadding: { top: 50, right: 50, bottom: 300, left: 50 },
+          animated: true,
+        });
+        return;
+      }
+
+      const originStr = `${origin.coords.latitude},${origin.coords.longitude}`;
+      const destinationStr = `${destination.coords.latitude},${destination.coords.longitude}`;
+
+      const data = await getRouteFromBackend(originStr, destinationStr, mode);
 
       if (data.routes?.length > 0) {
         const route = data.routes[0];
         const decoded = decodePolyline(route.overview_polyline.points);
+
         setRouteCoords(decoded);
+        setRouteSegments([]);
         setRouteDistance(route.legs[0].distance.text);
         setRouteDuration(route.legs[0].duration.text);
         setRouteSteps(data.processedRoute?.steps || []);
@@ -255,20 +352,18 @@ export const useMapLogic = () => {
     isRouting,
     transportMode,
     routeCoords,
+    routeSegments,
     routeSteps,
     routeDistance,
     routeDuration,
     isNavigating,
-    originType,
-    originCoords,
-    originLabel,
+    origin,
+    destination,
+    setOrigin,
+    setDestination,
     setSelectedBuilding,
     setIsRouting,
     setTransportMode,
-    setOriginType,
-    setOriginCoords,
-    setOriginLabel,
-    setOriginCampus,
     handleRecenter,
     handleFetchRoute,
     toggleCampus,

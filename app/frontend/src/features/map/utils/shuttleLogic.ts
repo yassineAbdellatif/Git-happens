@@ -1,6 +1,27 @@
 import { SHUTTLE_SCHEDULE } from "../../../constants/shuttleSchedule";
+import { shuttleStops } from "../../../constants/shuttleStops";
+import { decodePolyline } from "../../../utils/polylineDecoder";
+import { getRouteFromBackend } from "../../../services/mapApiService";
 
 type Campus = "SGW" | "LOYOLA";
+
+export const SHUTTLE_TRAVEL_MINUTES = 40;
+
+export const getSegmentColor = (mode?: string) => {
+  const normalized = mode?.toUpperCase();
+  console.log("Current transport mode:", normalized);
+  switch (normalized) {
+    case "WALKING":
+      console.log("Using WALKING mode color:", "#4285F4");
+      return "#4285F4";
+    case "SHUTTLE":
+      console.log("Using SHUTTLE mode color:", "#912338");
+      return "#912338";
+    default:
+      console.log("Using default color for mode:", normalized);
+      return "#912338";
+  }
+};
 
 type ShuttleResult = {
   title: string;
@@ -109,4 +130,111 @@ export const getOriginCampusFromLocation = (
     Math.pow(userLocation.longitude - loyolaRegion.longitude, 2);
 
   return sgwDistance <= loyolaDistance ? "SGW" : "LOYOLA";
+};
+
+type ShuttleRouteInput = {
+  originCoords: Coordinates;
+  destinationCoords: Coordinates;
+  originCampus: Campus;
+  destinationCampus: Campus;
+};
+
+type ShuttleRouteResult = {
+  coords: Coordinates[];
+  segments: { mode: "WALKING" | "SHUTTLE"; coords: Coordinates[] }[];
+  steps: { instruction: string; distance: string; duration: string }[];
+  distance: string;
+  duration: string;
+};
+
+export const buildShuttleRoute = async (
+  input: ShuttleRouteInput,
+): Promise<ShuttleRouteResult | null> => {
+  const originStop = shuttleStops[input.originCampus];
+  const destinationStop = shuttleStops[input.destinationCampus];
+
+  const origin = `${input.originCoords.latitude},${input.originCoords.longitude}`;
+  const destination = `${input.destinationCoords.latitude},${input.destinationCoords.longitude}`;
+  const originStopCoords = `${originStop.latitude},${originStop.longitude}`;
+  const destinationStopCoords = `${destinationStop.latitude},${destinationStop.longitude}`;
+
+  const [walkToStop, shuttleLeg, walkToDestination] = await Promise.all([
+    getRouteFromBackend(origin, originStopCoords, "WALKING"),
+    getRouteFromBackend(originStopCoords, destinationStopCoords, "DRIVING"),
+    getRouteFromBackend(destinationStopCoords, destination, "WALKING"),
+  ]);
+
+  const getLeg = (data: any) => data.routes?.[0]?.legs?.[0] || null;
+  const getPolyline = (data: any) =>
+    data.routes?.[0]?.overview_polyline?.points || "";
+
+  const walkToStopLeg = getLeg(walkToStop);
+  const shuttleLegData = getLeg(shuttleLeg);
+  const walkToDestinationLeg = getLeg(walkToDestination);
+
+  if (!walkToStopLeg || !shuttleLegData || !walkToDestinationLeg) {
+    return null;
+  }
+
+  const walkToStopCoords = decodePolyline(getPolyline(walkToStop));
+  const shuttleCoords = decodePolyline(getPolyline(shuttleLeg));
+  const walkToDestinationCoords = decodePolyline(
+    getPolyline(walkToDestination),
+  );
+
+  const combinedCoords = [
+    ...walkToStopCoords,
+    ...shuttleCoords,
+    ...walkToDestinationCoords,
+  ];
+
+  const segments = [
+    { mode: "WALKING" as const, coords: walkToStopCoords },
+    { mode: "SHUTTLE" as const, coords: shuttleCoords },
+    { mode: "WALKING" as const, coords: walkToDestinationCoords },
+  ].filter((segment) => segment.coords.length > 0);
+
+  const walkingSteps = walkToStop.processedRoute?.steps || [];
+  const shuttleStep = {
+    instruction: `Take shuttle from ${input.originCampus} stop to ${input.destinationCampus} stop`,
+    distance: shuttleLegData.distance?.text || "",
+    duration: `${SHUTTLE_TRAVEL_MINUTES} min`,
+  };
+  const destinationSteps = walkToDestination.processedRoute?.steps || [];
+  const combinedSteps = [...walkingSteps, shuttleStep, ...destinationSteps];
+
+  const totalDistanceMeters =
+    (walkToStopLeg.distance?.value || 0) +
+    (shuttleLegData.distance?.value || 0) +
+    (walkToDestinationLeg.distance?.value || 0);
+  const totalDurationMinutes =
+    Math.round((walkToStopLeg.duration?.value || 0) / 60) +
+    SHUTTLE_TRAVEL_MINUTES +
+    Math.round((walkToDestinationLeg.duration?.value || 0) / 60);
+
+  const formatDistance = (meters: number) => {
+    if (meters >= 1000) {
+      const km = meters / 1000;
+      const rounded = Math.round(km * 10) / 10;
+      return `${rounded} km`;
+    }
+    return `${Math.round(meters)} m`;
+  };
+
+  const formatDuration = (minutes: number) => {
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remaining = minutes % 60;
+      return remaining > 0 ? `${hours} hr ${remaining} min` : `${hours} hr`;
+    }
+    return `${minutes} min`;
+  };
+
+  return {
+    coords: combinedCoords,
+    segments,
+    steps: combinedSteps,
+    distance: formatDistance(totalDistanceMeters),
+    duration: formatDuration(totalDurationMinutes),
+  };
 };
