@@ -36,7 +36,7 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
 
     if (result.error) {
       setError({
-        type: result.error,
+        type: result.error as CalendarErrorType,
         message: result.message ?? "Something went wrong.",
       });
       setCalendars([]);
