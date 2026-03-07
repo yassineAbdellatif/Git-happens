@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { NextClassStatus, USER_MESSAGES } from "../../../utils/nextClassErrors";
 import { CONCORDIA_BUILDINGS } from "../../../constants/buildings";
-import { styles } from "./styles/nextClassCardStyle";
+import { styles } from "../components/NextClassCard/styles/nextClassCardStyle";
 
 type Props = {
   status: NextClassStatus;
@@ -33,8 +33,7 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
     );
   }
 
-  const supportedKinds = ["found", "location_unavailable", "building_unknown"];
-  if (!supportedKinds.includes(status.kind)) {
+  if (status.kind === "no_upcoming" || status.kind === "api_error") {
     const message = USER_MESSAGES[status.kind];
     return (
       <View style={styles.card}>
@@ -44,7 +43,10 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
     );
   }
 
-  const { data } = status;
+  const { data } = status as Extract<
+    NextClassStatus,
+    { kind: "found" | "location_unavailable" | "building_unknown" }
+  >;
   const mins = minutesUntil(data.startTime);
   const building = data.location
     ? CONCORDIA_BUILDINGS.find((b) => b.id === data.location!.building)
@@ -72,7 +74,8 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
         <View style={styles.detail}>
           <MaterialIcons name="access-time" size={16} color="#666" />
           <Text style={styles.detailText}>
-            {formatTime(data.startTime)} · {mins === 0 ? "Starting now" : `in ${mins} min`}
+            {formatTime(data.startTime)} ·{" "}
+            {mins === 0 ? "Starting now" : `in ${mins} min`}
           </Text>
         </View>
 
@@ -85,16 +88,15 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
           <View style={styles.detail}>
             <MaterialIcons name="location-off" size={16} color="#999" />
             <Text style={styles.detailTextMuted}>
-              {USER_MESSAGES[status.kind as keyof typeof USER_MESSAGES] ?? "Location not available"}
+              {USER_MESSAGES[status.kind as keyof typeof USER_MESSAGES] ??
+                "Location not available"}
             </Text>
           </View>
         )}
       </View>
 
       {building && (
-        <Text style={styles.campusBadge}>
-          {building.campus} Campus
-        </Text>
+        <Text style={styles.campusBadge}>{building.campus} Campus</Text>
       )}
 
       {showDirectionsButton && (

@@ -65,6 +65,7 @@ const MapScreen = () => {
     setSelectedBuilding,
     setTransportMode,
     setDestination,
+    handleLogout,
   } = useMapLogic();
 
   // Derive the old properties from origin/destination
