@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   TouchableOpacity,
@@ -12,7 +12,6 @@ import {
 import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
-import { MapType } from "react-native-maps";
 import {
   SGW_REGION,
   CONCORDIA_BUILDINGS,
@@ -22,6 +21,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
 import IndoorFloorPlan from "../components/IndoorFloorPlan";
 import { useIndoorFloorPlanState } from "../hooks/useIndoorFloorPlanState";
+import { useMapScreenUiState } from "../hooks/useMapScreenUiState";
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
@@ -31,9 +31,6 @@ const MODE_ICON_MAP = {
 } as const;
 
 const MapScreen = () => {
-  const [mapType, setMapType] = useState<MapType>("hybrid");
-  const [isIndoorOpen, setIsIndoorOpen] = useState(false);
-  const [isIndoorInteracting, setIsIndoorInteracting] = useState(false);
   const {
     // State & Refs
     mapRef,
@@ -71,12 +68,16 @@ const MapScreen = () => {
     setDestination,
     handleLogout,
   } = useMapLogic();
+  const {
+    mapType,
+    setMapType,
+    toggleMapType,
+    isIndoorOpen,
+    setIsIndoorOpen,
+    isIndoorInteracting,
+    setIsIndoorInteracting,
+  } = useMapScreenUiState(selectedBuilding?.id || null);
   const indoorState = useIndoorFloorPlanState(selectedBuilding?.id || null);
-
-  useEffect(() => {
-    setIsIndoorOpen(false);
-    setIsIndoorInteracting(false);
-  }, [selectedBuilding?.id]);
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -247,11 +248,7 @@ const MapScreen = () => {
 
               <TouchableOpacity
                 style={styles.toggleButton}
-                onPress={() =>
-                  setMapType((prev) =>
-                    prev === "hybrid" ? "standard" : "hybrid",
-                  )
-                }
+                onPress={toggleMapType}
               >
                 <Text style={styles.toggleText}>
                   {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}

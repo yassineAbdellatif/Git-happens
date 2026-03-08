@@ -1,17 +1,11 @@
-import React, { useMemo, useRef, useState } from "react";
-import {
-  Animated,
-  Image,
-  PanResponder,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React from "react";
+import { Animated, Image, Text, TouchableOpacity, View } from "react-native";
 import { SvgUri } from "react-native-svg";
 import {
   FloorNumber,
   FloorPlanRegistryEntry,
 } from "../../../services/floorPlanService";
+import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
 import { styles } from "../styles/mapScreenStyle";
 
 interface IndoorFloorPlanProps {
@@ -21,8 +15,6 @@ interface IndoorFloorPlanProps {
   onSelectFloor: (floor: FloorNumber) => void;
   onInteractionChange?: (isInteracting: boolean) => void;
 }
-
-const clampScale = (value: number) => Math.min(3, Math.max(1, value));
 
 const SVG_ASSET_MAP: Record<string, number> = {
   "assets/floor_plans/Hall-8.svg": require("../../../../assets/floor_plans/Hall-8.svg"),
@@ -48,73 +40,8 @@ const IndoorFloorPlan = ({
   onSelectFloor,
   onInteractionChange,
 }: IndoorFloorPlanProps) => {
-  const [zoom, setZoom] = useState(1);
-  const translate = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const lastPan = useRef({ x: 0, y: 0 });
-  const pinchStartDistance = useRef<number | null>(null);
-  const pinchStartZoom = useRef(1);
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onStartShouldSetPanResponderCapture: () => true,
-        onMoveShouldSetPanResponderCapture: () => true,
-        onPanResponderGrant: () => {
-          onInteractionChange?.(true);
-        },
-        onPanResponderMove: (evt, gestureState) => {
-          const touches = evt.nativeEvent.touches;
-
-          if (touches.length === 2) {
-            const [touchA, touchB] = touches;
-            const dx = touchA.pageX - touchB.pageX;
-            const dy = touchA.pageY - touchB.pageY;
-            const distance = Math.hypot(dx, dy);
-
-            if (pinchStartDistance.current === null) {
-              pinchStartDistance.current = distance;
-              pinchStartZoom.current = zoom;
-            } else {
-              const nextZoom = clampScale(
-                pinchStartZoom.current * (distance / pinchStartDistance.current)
-              );
-              setZoom(nextZoom);
-            }
-            return;
-          }
-
-          pinchStartDistance.current = null;
-          translate.setValue({
-            x: lastPan.current.x + gestureState.dx,
-            y: lastPan.current.y + gestureState.dy,
-          });
-        },
-        onPanResponderRelease: () => {
-          pinchStartDistance.current = null;
-          translate.stopAnimation((value: { x: number; y: number }) => {
-            lastPan.current = { x: value.x, y: value.y };
-          });
-          onInteractionChange?.(false);
-        },
-        onPanResponderTerminate: () => {
-          pinchStartDistance.current = null;
-          onInteractionChange?.(false);
-        },
-      }),
-    [translate, zoom, onInteractionChange]
-  );
-
-  const handleZoomChange = (delta: number) => {
-    setZoom((prev) => clampScale(prev + delta));
-  };
-
-  const handleResetView = () => {
-    setZoom(1);
-    translate.setValue({ x: 0, y: 0 });
-    lastPan.current = { x: 0, y: 0 };
-    pinchStartDistance.current = null;
-  };
+  const { zoom, translate, panResponder, handleZoomChange, handleResetView } =
+    useIndoorFloorPlanInteraction(onInteractionChange);
 
   if (!floorPlanEntry) {
     return (
