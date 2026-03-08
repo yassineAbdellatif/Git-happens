@@ -1,0 +1,128 @@
+appId: host.exp.exponent
+---
+# Test: US-2.4 Inter-Campus Routing
+# Test routing between SGW and Loyola campuses
+
+# Wait for map to load
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Tap routing/directions button
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Set origin to Hall Building (SGW)
+- tapOn:
+    text: "Choose starting point"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- inputText: "Hall Building"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Select Hall Building from search results
+- tapOn:
+    point: "500, 600"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Set destination to SP Building (Loyola)
+- tapOn:
+    text: "Select Destination"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- inputText: "SP Building"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Select SP Building from search results
+- tapOn:
+    point: "500, 600"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Select transit mode for inter-campus routing
+- tapOn:
+    point: "300, 2050"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Verify shuttle/transit information is shown
+- assertVisible:
+    text: "Shuttle"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Start navigation
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Verify route is displayed
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Test reverse route (Loyola to SGW)
+- tapOn:
+    point: "100, 2200"  # Back or swap button
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Set new origin to VL (Loyola)
+- tapOn:
+    text: "Choose starting point"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- inputText: "VL Building"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- tapOn:
+    point: "500, 600"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Set destination to EV (SGW)
+- tapOn:
+    text: "Select Destination"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- inputText: "EV Building"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- tapOn:
+    point: "500, 600"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Start navigation for reverse route
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 3000

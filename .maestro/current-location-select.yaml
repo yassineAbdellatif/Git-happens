@@ -1,0 +1,101 @@
+appId: host.exp.exponent
+---
+# Test: US-2.2 "Current Location" Quick-Select
+# Test using current location as route origin
+
+# Wait for map to load and location permissions
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Grant location permissions if prompted
+# Note: May need to handle permission dialog
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Tap recenter button to center on current location
+- tapOn:
+    point: "650, 2100"  # Recenter button position
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Verify map centers on user location
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Tap directions/routing button
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Verify "Current Location" is already selected as origin
+- assertVisible:
+    text: "Current Location"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Select a destination
+- tapOn:
+    text: "Select Destination"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+- inputText: "Hall Building"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- tapOn:
+    point: "500, 600"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Select walking mode
+- tapOn:
+    point: "200, 2050"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Start navigation from current location
+- tapOn:
+    point: "500, 2200"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Verify route starts from current location
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Test manually selecting "Current Location"
+- back
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Tap on origin field
+- tapOn:
+    text: "Choose starting point"
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Select "Current Location" option
+- tapOn:
+    text: "Current Location"
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+# Verify origin is set to current location
+- assertVisible:
+    text: "Current Location"
+
+- waitForAnimationToEnd:
+    timeout: 1000

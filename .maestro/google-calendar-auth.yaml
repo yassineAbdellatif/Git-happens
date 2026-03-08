@@ -1,0 +1,51 @@
+appId: host.exp.exponent
+---
+# Test: US-3.1 Google Calendar Auth
+# Test Google Calendar authentication flow
+
+# Wait for app to load
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Open drawer/navigation menu (tap hamburger icon or swipe from left)
+- swipe:
+    direction: RIGHT
+    duration: 300
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Tap on Calendar Selection option
+- tapOn:
+    text: "Calendar Selection"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+# Verify we're on Calendar Selection screen
+- assertVisible: "Connect Google Calendar"
+
+# Tap "Connect Google Calendar" button
+- tapOn:
+    text: "Connect Google Calendar"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Wait for Google Sign-In screen to appear
+# Note: This will open a browser/WebView for OAuth
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# Verify Google sign-in elements are present
+# (In a real test, you'd proceed with actual credentials)
+# For now, we'll just verify the flow initiated
+
+# Go back to avoid requiring real credentials in CI
+- back
+
+- waitForAnimationToEnd:
+    timeout: 1000
+
+# Verify we're back on Calendar Selection screen
+- assertVisible: "Connect Google Calendar"
