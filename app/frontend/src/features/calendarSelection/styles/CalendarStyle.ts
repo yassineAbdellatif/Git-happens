@@ -141,3 +141,5 @@ export const calendarStyles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export const styles = calendarStyles;
