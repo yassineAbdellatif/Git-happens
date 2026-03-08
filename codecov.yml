@@ -7,14 +7,31 @@ coverage:
     patch:
       default:
         target: 80%          # New code must be 80% covered
-        informational: false # Fail PR if patch coverage is below target
+        informational: false # Fail PR if patch coverage is below target (optional)
 
 comment:
-  layout: "reach,diff,flags,files,footer"
+  layout: "reach,diff,flags,components,files,footer"
   behavior: default
   require_changes: false
   require_base: false
   require_head: true
+
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+        branches:
+          - "!main"
+  individual_components:
+    - component_id: frontend
+      name: Frontend
+      paths:
+        - app/frontend/**
+    - component_id: backend
+      name: Backend
+      paths:
+        - app/backend/**
 
 ignore:
   - "tests/**"

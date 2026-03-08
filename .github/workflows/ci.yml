@@ -52,6 +52,9 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
 
+      - name: Run integration tests with coverage
+        run: npm run test:integration:coverage
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -60,6 +63,16 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true  # Fail if CodeCov upload fails
+          verbose: true
+
+      - name: Upload integration coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/integration/lcov.info
+          flags: integration
+          name: codecov-integration
+          fail_ci_if_error: false
           verbose: true
 
       - name: Debug Secret Visibility
