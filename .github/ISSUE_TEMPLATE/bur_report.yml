@@ -1,0 +1,78 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[BUG] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 🐛 Description
+      description: A clear and concise description of the bug.
+      placeholder: Describe what the bug is and where it occurs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to Reproduce
+      description: List the steps required to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe the expected result.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 💥 Actual Behavior
+      description: What actually happened?
+      placeholder: Clearly describe what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots
+      description: Add screenshots if applicable.
+      placeholder: Drag and drop images here if relevant.
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 💻 Environment
+      description: Provide environment details.
+      placeholder: |
+        - OS:
+        - Browser:
+        - Version:
+    validations:
+      required: true
+
+  - type: textarea
+    id: traceability
+    attributes:
+      label: 🔗 Traceability (To be filled when resolved)
+      description: Fill this section when the bug is resolved.
+      placeholder: |
+        Fix Commit(s): fixes #123
+        Test Commit(s): Link the test commit(s) added or updated.
+    validations:
+      required: false
