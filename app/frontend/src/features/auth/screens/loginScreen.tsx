@@ -23,18 +23,15 @@ if (!isExpoGo) {
   statusCodes = GSignin.statusCodes;
 
   GoogleSignin.configure({
-    webClientId:
-      "332552903248-0mra762jsq6vqirkeim0bef7p4jno3vg.apps.googleusercontent.com",
-    iosClientId:
-      "332552903248-vb70apsfbeof7en4l4i5tbkn75ifr6nc.apps.googleusercontent.com",
-    offlineAccess: true,
-    // MODIFICATION 1: Request Calendar permissions upfront
-    scopes: ["https://www.googleapis.com/auth/calendar.readonly"], 
+    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+
+    offlineAccess: false,
+    scopes: ["https://www.googleapis.com/auth/calendar.readonly"],
   });
 }
 
 export const LoginScreen = ({ navigation }: any) => {
-  // MODIFICATION 2: Extract the setter from the context
   const { setGoogleCalendarAccessToken } = useCalendarSelection();
 
   useEffect(() => {
@@ -57,26 +54,53 @@ export const LoginScreen = ({ navigation }: any) => {
 
     try {
       await GoogleSignin.hasPlayServices();
+      // Force sign out to clear any cached sessions without the calendar scope
+      try {
+        await GoogleSignin.signOut();
+      } catch (signOutError) {
+        console.log("User was not signed in, proceeding to sign in...");
+      }
+
       const response = await GoogleSignin.signIn();
-      const idToken = response.data?.idToken;
+      const idToken = response.data?.idToken || response.idToken;
 
-      if (!idToken) throw new Error("No ID Token found");
+      if (!idToken) {
+        console.error(
+          "DEBUG - Full Google Sign-In Response (Missing ID Token):",
+          response,
+        );
 
-      // MODIFICATION 3: Explicitly request the access token and save it
+        throw new Error("No ID Token found");
+      }
+
+      // Explicitly request the access token
       const tokens = await GoogleSignin.getTokens();
+      console.log("DEBUG - Raw tokens object retrieved:", tokens);
+
       if (tokens.accessToken) {
+        console.log(
+          "DEBUG - SUCCESS! Calendar Access Token:",
+          tokens.accessToken,
+        );
+
         setGoogleCalendarAccessToken(tokens.accessToken);
         console.log("Calendar Token successfully saved to context!");
+      } else {
+        console.warn(
+          "DEBUG - Warning: getTokens() fired, but 'accessToken' was undefined.",
+        );
       }
 
       // Proceed with Firebase Auth
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
-      console.log("Google Sign-In successful:", result.user.displayName);
-      
+      console.log(
+        "Google Sign-In successful for Firebase user:",
+        result.user.displayName,
+      );
     } catch (error: any) {
       if (error.code === statusCodes?.SIGN_IN_CANCELLED) {
-        console.log("User cancelled");
+        console.log("User cancelled the login flow");
       } else {
         console.error("Detailed Login Error:", error);
         Alert.alert(
