@@ -67,7 +67,6 @@ const MapScreen = () => {
     setSelectedBuilding,
     setTransportMode,
     setDestination,
-    handleLogout,
   } = useMapLogic();
   const {
     mapType,

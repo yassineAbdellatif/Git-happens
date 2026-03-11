@@ -1,6 +1,5 @@
 import React from "react";
 import { Animated, Image, Text, TouchableOpacity, View } from "react-native";
-import { SvgUri } from "react-native-svg";
 import {
   FloorNumber,
   FloorPlanRegistryEntry,
@@ -16,21 +15,12 @@ interface IndoorFloorPlanProps {
   onInteractionChange?: (isInteracting: boolean) => void;
 }
 
-const SVG_ASSET_MAP: Record<string, number> = {
-  "assets/floor_plans/Hall-8.svg": require("../../../../assets/floor_plans/Hall-8.svg"),
-  "assets/floor_plans/Hall-9.svg": require("../../../../assets/floor_plans/Hall-9.svg"),
-  "assets/floor_plans/MB-1.svg": require("../../../../assets/floor_plans/MB-1.svg"),
-  "assets/floor_plans/MB-S2.svg": require("../../../../assets/floor_plans/MB-S2.svg"),
-  "assets/floor_plans/VL-1.svg": require("../../../../assets/floor_plans/VL-1.svg"),
-  "assets/floor_plans/VL-2.svg": require("../../../../assets/floor_plans/VL-2.svg"),
-  "assets/floor_plans/VE-1.svg": require("../../../../assets/floor_plans/VE-1.svg"),
-  "assets/floor_plans/VE-2.svg": require("../../../../assets/floor_plans/VE-2.svg"),
-};
-
 const PNG_ASSET_MAP: Record<string, number> = {
-  "assets/floor_plans/Hall-1.png": require("../../../../assets/floor_plans/Hall-1.png"),
-  "assets/floor_plans/Hall-2.png": require("../../../../assets/floor_plans/Hall-2.png"),
-  "assets/floor_plans/CC1.png": require("../../../../assets/floor_plans/CC1.png"),
+  "assets/updated_floor_plans/h1.png": require("../../../../assets/updated_floor_plans/h1.png"),
+  "assets/updated_floor_plans/h2.png": require("../../../../assets/updated_floor_plans/h2.png"),
+  "assets/updated_floor_plans/h8.png": require("../../../../assets/updated_floor_plans/h8.png"),
+  "assets/updated_floor_plans/h9.png": require("../../../../assets/updated_floor_plans/h9.png"),
+  "assets/updated_floor_plans/cc1.png": require("../../../../assets/updated_floor_plans/cc1.png"),
 };
 
 const IndoorFloorPlan = ({
@@ -109,15 +99,7 @@ const IndoorFloorPlan = ({
             ],
           }}
         >
-          {SVG_ASSET_MAP[floorPlanEntry.floorPlanFile] ? (
-            <SvgUri
-              uri={Image.resolveAssetSource(
-                SVG_ASSET_MAP[floorPlanEntry.floorPlanFile]
-              ).uri}
-              width={740}
-              height={500}
-            />
-          ) : PNG_ASSET_MAP[floorPlanEntry.floorPlanFile] ? (
+          {PNG_ASSET_MAP[floorPlanEntry.floorPlanFile] ? (
             <Image
               source={PNG_ASSET_MAP[floorPlanEntry.floorPlanFile]}
               style={styles.indoorRasterImage}

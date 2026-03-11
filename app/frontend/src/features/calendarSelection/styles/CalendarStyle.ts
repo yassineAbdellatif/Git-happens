@@ -142,4 +142,3 @@ export const styles = StyleSheet.create({
   },
 });
 
-export const styles = calendarStyles;
