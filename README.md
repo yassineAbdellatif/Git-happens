@@ -12,10 +12,10 @@ In each terminal, run:
 npm install
 ```
 
-### 2. Google Maps API Keys
+### 2. Google Maps and Calendar API Keys
 You need to obtain **two separate Google Maps API keys** from the [Google Cloud Console](https://console.cloud.google.com/):
-- One for the frontend (with Maps JavaScript API enabled)
-- One for the backend (with Directions API enabled)
+- One for the frontend (with Maps JavaScript API and Google Calendar API enabled)
+- One for the backend (with Directions API and Google Calendar API enabled)
 
 ### 3. Configure Environment Variables
 
@@ -35,8 +35,8 @@ GOOGLE_MAPS_API_KEY=your_backend_api_key_here
 
 ### 4. Run the Application
 
-#### Start Backend
-In the `app/backend` terminal:
+#### Start Frontend
+In the `app/frontend` terminal:
 1.
 ```bash
 npx expo prebuild
@@ -50,9 +50,12 @@ or
 npx expo run:android
 ```
 
-#### Start Frontend
-In the `app/frontend` terminal:
+#### Start Backend
+In the `app/backend` terminal:
 ```bash
 npm start
 ```
-On the application "expo go" on your phone, scan the QR code displayed in the frontend terminal with your phone connected to the same network.
+or
+```bash
+npm run dev
+```
