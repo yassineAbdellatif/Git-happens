@@ -123,7 +123,7 @@ export const getFloorPlanRegistryEntry = (
 
   // Return the exact object structure that IndoorFloorPlan.tsx expects
   return {
-    buildingId: buildingId as IndoorBuildingId,
+    buildingId,
     floorNumber,
     localizedNodes,
   };
