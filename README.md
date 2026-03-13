@@ -10,7 +10,7 @@ Open two terminals:
 In each terminal, run:
 ```bash
 npm install
-```
+``
 
 ### 2. Google Maps API Keys
 You need to obtain **two separate Google Maps API keys** from the [Google Cloud Console](https://console.cloud.google.com/):
