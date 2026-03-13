@@ -15,12 +15,18 @@ interface IndoorFloorPlanProps {
   onInteractionChange?: (isInteracting: boolean) => void;
 }
 
-const PNG_ASSET_MAP: Record<string, number> = {
-  "assets/updated_floor_plans/h1.png": require("../../../../assets/updated_floor_plans/h1.png"),
-  "assets/updated_floor_plans/h2.png": require("../../../../assets/updated_floor_plans/h2.png"),
-  "assets/updated_floor_plans/h8.png": require("../../../../assets/updated_floor_plans/h8.png"),
-  "assets/updated_floor_plans/h9.png": require("../../../../assets/updated_floor_plans/h9.png"),
-  "assets/updated_floor_plans/cc1.png": require("../../../../assets/updated_floor_plans/cc1.png"),
+const PNG_ASSET_MAP: Record<string, any> = {
+  H_1: require("../../../../assets/updated_floor_plans/h1.png"),
+  H_2: require("../../../../assets/updated_floor_plans/h2.png"),
+  H_8: require("../../../../assets/updated_floor_plans/h8.png"),
+  H_9: require("../../../../assets/updated_floor_plans/h9.png"),
+  CC_1: require("../../../../assets/updated_floor_plans/cc1.png"),
+  MB_1: require("../../../../assets/updated_floor_plans/mb1.png"),
+  MB_S2: require("../../../../assets/updated_floor_plans/mbs2.png"),
+  VE_1: require("../../../../assets/updated_floor_plans/ve1.png"),
+  VE_2: require("../../../../assets/updated_floor_plans/ve2.png"),
+  VL_1: require("../../../../assets/updated_floor_plans/vl1.png"),
+  VL_2: require("../../../../assets/updated_floor_plans/vl2.png"),
 };
 
 const IndoorFloorPlan = ({
@@ -40,6 +46,9 @@ const IndoorFloorPlan = ({
       </View>
     );
   }
+
+  const mapImageKey = `${floorPlanEntry.buildingId}_${selectedFloorNumber}`;
+  const MapImageSource = PNG_ASSET_MAP[mapImageKey];
 
   return (
     <View style={styles.indoorPanel}>
@@ -99,22 +108,22 @@ const IndoorFloorPlan = ({
             ],
           }}
         >
-          {PNG_ASSET_MAP[floorPlanEntry.floorPlanFile] ? (
+          {MapImageSource ? (
             <Image
-              source={PNG_ASSET_MAP[floorPlanEntry.floorPlanFile]}
+              source={MapImageSource}
               style={styles.indoorRasterImage}
               resizeMode="contain"
             />
           ) : (
             <Text style={styles.indoorSummaryText}>
-              Missing floor-plan asset mapping for: {floorPlanEntry.floorPlanFile}
+              Missing floor-plan asset mapping for: {mapImageKey}
             </Text>
           )}
         </Animated.View>
       </View>
 
       <Text style={styles.indoorSvgSource}>
-        Source: {floorPlanEntry.floorPlanFile}
+        Source: {mapImageKey}
       </Text>
     </View>
   );
