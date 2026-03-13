@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "status": "testing"
+  },
+  "nodes": [
+    {
+      "id": "H_TEST_ROOM",
+      "type": "room",
+      "buildingId": "H",
+      "floor": 1,
+      "x": 500,
+      "y": 500,
+      "label": "Test Room"
+    }
+  ],
+  "edges": []
+}
