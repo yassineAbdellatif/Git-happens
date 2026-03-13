@@ -68,7 +68,29 @@ export const getSupportedFloorsForBuilding = (
   ).map((node) => String(node.floor) as FloorNumber);
 
   // Return unique floors in sorted order
-  return [...new Set(floors)].sort();
+  return [...new Set(floors)].sort((a, b) => {
+    // Check if the floor strings are purely numeric
+    const isNumA = /^\d+$/.test(a);
+    const isNumB = /^\d+$/.test(b);
+
+    if (isNumA && isNumB) {
+      // If both are numbers, sort them numerically (so 2 comes before 10)
+      return parseInt(a, 10) - parseInt(b, 10);
+    }
+
+    if (!isNumA && isNumB) {
+      // If 'a' is a letter (like S2) and 'b' is a number, put 'a' first
+      return -1;
+    }
+
+    if (isNumA && !isNumB) {
+      // If 'a' is a number and 'b' is a letter, put 'b' first
+      return 1;
+    }
+
+    // If both are letters (like S1 and S2), sort them alphabetically
+    return a.localeCompare(b);
+  });
 };
 
 export const getFloorPlanRegistryEntry = (
