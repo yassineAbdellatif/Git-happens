@@ -33,9 +33,9 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Home to the Webster Library (open 24/7), the Birks Student Service Centre, and Cinema Politica. It also contains the Leonard & Bina Ellen Art Gallery and is the primary gateway to the Guy-Concordia Metro station via the underground tunnel.",
     coordinates: [
-      { latitude: 45.497282, longitude: -73.578036 }, 
-      { latitude: 45.496910, longitude: -73.577255 }, 
-      { latitude: 45.496560, longitude: -73.577590 }, 
+      { latitude: 45.497282, longitude: -73.578036 },
+      { latitude: 45.49691, longitude: -73.577255 },
+      { latitude: 45.49656, longitude: -73.57759 },
       { latitude: 45.496485, longitude: -73.577435 },
       { latitude: 45.496221, longitude: -73.577682 },
       { latitude: 45.496676, longitude: -73.578626 },
@@ -55,7 +55,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
       { latitude: 45.495947, longitude: -73.578416 },
       { latitude: 45.495755, longitude: -73.578009 },
       { latitude: 45.496088, longitude: -73.577684 },
-      { latitude: 45.495855, longitude: -73.577180 },
+      { latitude: 45.495855, longitude: -73.57718 },
       { latitude: 45.495153, longitude: -73.577883 },
     ],
     image:
@@ -70,7 +70,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     coordinates: [
       { latitude: 45.495531, longitude: -73.579224 },
       { latitude: 45.495197, longitude: -73.578468 },
-      { latitude: 45.494941, longitude: -73.578800 },
+      { latitude: 45.494941, longitude: -73.5788 },
       { latitude: 45.495129, longitude: -73.579111 },
       { latitude: 45.495189, longitude: -73.579111 },
       { latitude: 45.495377, longitude: -73.579465 },
@@ -101,7 +101,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     coordinates: [
       { latitude: 45.496172, longitude: -73.573791 },
       { latitude: 45.496051, longitude: -73.573539 },
-      { latitude: 45.495780, longitude: -73.573802 },
+      { latitude: 45.49578, longitude: -73.573802 },
       { latitude: 45.495634, longitude: -73.573496 },
       { latitude: 45.495356, longitude: -73.573743 },
       { latitude: 45.495615, longitude: -73.574321 },
@@ -116,7 +116,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "SGW",
     info: "Located in a former shopping mall, it houses the Mel Hoppenheim School of Cinema and the Department of Education. Features a food court on the ground level and large, quiet classrooms on the upper floors.",
     coordinates: [
-      { latitude: 45.494910, longitude: -73.577770 },
+      { latitude: 45.49491, longitude: -73.57777 },
       { latitude: 45.494658, longitude: -73.577181 },
       { latitude: 45.494318, longitude: -73.577578 },
       { latitude: 45.494412, longitude: -73.577718 },
@@ -135,12 +135,12 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "The primary research and study hub for the Loyola campus. It offers 24/7 access during exam periods, specialized science resources, and silent study zones overlooking the campus greenery.",
     coordinates: [
-      { latitude: 45.459095, longitude: -73.637839 },
-      { latitude: 45.458727, longitude: -73.638365 }, 
-      { latitude: 45.458795, longitude: -73.638598 }, 
-      { latitude: 45.458679, longitude: -73.638684 }, 
-      { latitude: 45.458825, longitude: -73.639086 },
       { latitude: 45.459318, longitude: -73.638657 },
+      { latitude: 45.458825, longitude: -73.639086 },
+      { latitude: 45.458679, longitude: -73.638684 },
+      { latitude: 45.458795, longitude: -73.638598 },
+      { latitude: 45.458727, longitude: -73.638365 },
+      { latitude: 45.459095, longitude: -73.637839 },
     ],
     image:
       "https://www.concordia.ca/content/dam/concordia/now/2014/02/vanier-library-620.jpg",
@@ -154,7 +154,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     coordinates: [
       { latitude: 45.458327, longitude: -73.639403 },
       { latitude: 45.457691, longitude: -73.639831 },
-      { latitude: 45.457810, longitude: -73.640190 },
+      { latitude: 45.45781, longitude: -73.64019 },
       { latitude: 45.458446, longitude: -73.639762 },
     ],
     image:
@@ -172,7 +172,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
       { latitude: 45.457522, longitude: -73.641462 },
       { latitude: 45.457195, longitude: -73.640636 },
       { latitude: 45.456958, longitude: -73.640826 },
-      { latitude: 45.457481, longitude: -73.642150 },
+      { latitude: 45.457481, longitude: -73.64215 },
     ],
     image:
       "https://jlp.ca/image/1/955/0/uploads/media/complexe-sciences-concordia_04-fr-1509468196.jpg",
@@ -200,7 +200,7 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     info: "The social hub of Loyola. Contains the Hive Cafe (vegan-friendly), student union offices, and a multi-faith space. Great for community events and grabbing a coffee between classes.",
     coordinates: [
       { latitude: 45.459106, longitude: -73.639467 },
-      { latitude: 45.459516, longitude: -73.639160 },
+      { latitude: 45.459516, longitude: -73.63916 },
       { latitude: 45.459371, longitude: -73.638716 },
       { latitude: 45.458942, longitude: -73.639081 },
     ],
@@ -258,14 +258,15 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     campus: "LOYOLA",
     info: "Vanier Extension offers flexible, digitally equipped classrooms and also houses spaces for the Department of Applied Human Sciences.",
     coordinates: [
-      { latitude: 45.458607, longitude: -73.638470 }, // top-left n
-      { latitude: 45.458727, longitude: -73.638365 }, // top-right
-      { latitude: 45.458795, longitude: -73.638598 }, // bottom-right
-      { latitude: 45.458679, longitude: -73.638684 }, // bottom-left
+      { latitude: 45.458607, longitude: -73.63847 }, // top-left
+      // Micro-offsetting the next 3 shared points by 0.000001
+      { latitude: 45.458726, longitude: -73.638364 }, // top-right
+      { latitude: 45.458794, longitude: -73.638597 }, // bottom-right
+      { latitude: 45.458678, longitude: -73.638683 }, // bottom-left
     ],
     image:
       "https://www.concordia.ca/content/concordia/en/maps/buildings/ve/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1754323922442.jpg",
-  }
+  },
 ];
 
 export const getDisplayStatus = (
