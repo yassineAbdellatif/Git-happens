@@ -12,7 +12,7 @@ export interface GoogleCalendarListItem {
 }
 
 export interface FetchCalendarListResult {
-  error: "token_expired" | "api_error" | "network_error" | null;
+  error: string | null;
   message?: string;
   calendars: GoogleCalendarListItem[];
 }

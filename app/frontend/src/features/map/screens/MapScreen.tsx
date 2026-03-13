@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -12,6 +12,7 @@ import {
 import { styles } from "../styles/mapScreenStyle";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
+import { MapType } from "react-native-maps";
 import {
   SGW_REGION,
   CONCORDIA_BUILDINGS,
@@ -19,9 +20,6 @@ import {
 } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
-import IndoorFloorPlan from "../components/IndoorFloorPlan";
-import { useIndoorFloorPlanState } from "../hooks/useIndoorFloorPlanState";
-import { useMapScreenUiState } from "../hooks/useMapScreenUiState";
 
 const MODE_ICON_MAP = {
   WALKING: "directions-walk",
@@ -31,6 +29,7 @@ const MODE_ICON_MAP = {
 } as const;
 
 const MapScreen = () => {
+  const [mapType, setMapType] = useState<MapType>("hybrid");
   const {
     // State & Refs
     mapRef,
@@ -61,23 +60,13 @@ const MapScreen = () => {
     handleSelectFromSearch,
     handleCancelNavigation,
     handleFetchRoute,
-    handleLogout,
     setIsRouting,
     setOrigin,
     setSelectedBuilding,
     setTransportMode,
     setDestination,
+    handleLogout,
   } = useMapLogic();
-  const {
-    mapType,
-    setMapType,
-    toggleMapType,
-    isIndoorOpen,
-    setIsIndoorOpen,
-    isIndoorInteracting,
-    setIsIndoorInteracting,
-  } = useMapScreenUiState(selectedBuilding?.id || null);
-  const indoorState = useIndoorFloorPlanState(selectedBuilding?.id || null);
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -94,7 +83,7 @@ const MapScreen = () => {
     userLocation,
     currentRegion,
     selectedBuilding,
-    currentBuilding,
+    currentBuilding
   );
 
   return (
@@ -226,8 +215,8 @@ const MapScreen = () => {
                   {currentBuilding
                     ? currentBuilding.campus
                     : currentRegion.latitude === SGW_REGION.latitude
-                      ? "SGW"
-                      : "LOYOLA"}
+                    ? "SGW"
+                    : "LOYOLA"}
                 </Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
@@ -248,7 +237,11 @@ const MapScreen = () => {
 
               <TouchableOpacity
                 style={styles.toggleButton}
-                onPress={toggleMapType}
+                onPress={() =>
+                  setMapType((prev) =>
+                    prev === "hybrid" ? "standard" : "hybrid"
+                  )
+                }
               >
                 <Text style={styles.toggleText}>
                   {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}
@@ -270,7 +263,6 @@ const MapScreen = () => {
                 style={{ width: "100%" }}
                 contentContainerStyle={{ alignItems: "center" }}
                 showsVerticalScrollIndicator={false}
-                scrollEnabled={!isIndoorInteracting}
               >
                 {!isRouting ? (
                   <>
@@ -359,39 +351,6 @@ const MapScreen = () => {
                       <Text style={styles.directionsButtonText}>Go here</Text>
                     </TouchableOpacity>
 
-                    {indoorState.supportedFloors.length > 0 && (
-                      <TouchableOpacity
-                        style={styles.indoorEntryButton}
-                        onPress={() => setIsIndoorOpen((prev) => !prev)}
-                      >
-                        <MaterialIcons
-                          name={isIndoorOpen ? "layers-clear" : "map"}
-                          size={20}
-                          color="white"
-                          style={{ marginRight: 8 }}
-                        />
-                        <Text style={styles.indoorEntryButtonText}>
-                          {isIndoorOpen
-                            ? "Hide Indoor Floor Plan"
-                            : "Open Indoor Floor Plan"}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    {isIndoorOpen &&
-                      selectedBuilding &&
-                      indoorState.selectedFloorNumber && (
-                        <IndoorFloorPlan
-                          floorPlanEntry={indoorState.activeFloorPlanEntry}
-                          selectedFloorNumber={indoorState.selectedFloorNumber}
-                          supportedFloors={indoorState.supportedFloors}
-                          onSelectFloor={(floorNumber) =>
-                            indoorState.setSelectedFloorNumber(floorNumber)
-                          }
-                          onInteractionChange={setIsIndoorInteracting}
-                        />
-                      )}
-
                     <Text style={styles.sheetSubtitle}>
                       Tap a building to see indoor maps
                     </Text>
@@ -409,7 +368,7 @@ const MapScreen = () => {
 
                           <ScrollView style={{ maxHeight: 180 }}>
                             {CONCORDIA_BUILDINGS.filter(
-                              (b) => b.fullName !== destinationLabel,
+                              (b) => b.fullName !== destinationLabel
                             ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
@@ -483,7 +442,7 @@ const MapScreen = () => {
 
                           <ScrollView style={{ maxHeight: 180 }}>
                             {CONCORDIA_BUILDINGS.filter(
-                              (b) => b.fullName !== originLabel,
+                              (b) => b.fullName !== originLabel
                             ).map((b) => (
                               <TouchableOpacity
                                 key={b.id}
