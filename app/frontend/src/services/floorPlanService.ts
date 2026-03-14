@@ -34,6 +34,17 @@ export interface FloorPlanRegistryEntry {
   localizedNodes: LocalizedNode[];
 }
 
+export interface RawMapNode {
+  id: string;
+  type: string;
+  buildingId: string;
+  floor: number | string;
+  x: number;
+  y: number;
+  label?: string;
+  accessible?: boolean;
+}
+
 const SUPPORTED_INDOOR_BUILDINGS = new Set<string>([
   "H",
   "CC",
@@ -46,7 +57,8 @@ const isSupportedIndoorBuildingId = (
   buildingId: string,
 ): buildingId is IndoorBuildingId => SUPPORTED_INDOOR_BUILDINGS.has(buildingId);
 
-const ALL_RAW_NODES: any[] = [
+
+const ALL_RAW_NODES: RawMapNode[] = [
   ...(hData?.nodes || []),
   ...(ccData?.nodes || []),
   ...(mbData?.nodes || []),
@@ -55,7 +67,7 @@ const ALL_RAW_NODES: any[] = [
 ];
 
 export const getSupportedFloorsForBuilding = (
-  buildingId: string,
+  buildingId: string
 ): FloorNumber[] => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
@@ -80,7 +92,7 @@ export const getSupportedFloorsForBuilding = (
 
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
-  floorNumber: FloorNumber,
+  floorNumber: FloorNumber
 ): FloorPlanRegistryEntry | null => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
