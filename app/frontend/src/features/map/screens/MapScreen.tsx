@@ -120,6 +120,10 @@ const MapScreen = () => {
     }
   };
 
+  const hasSupportedFloors = selectedBuilding
+    ? getSupportedFloorsForBuilding(selectedBuilding.id).length > 0
+    : false;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
@@ -382,7 +386,7 @@ const MapScreen = () => {
                       <Text style={styles.directionsButtonText}>Go here</Text>
                     </TouchableOpacity>
 
-                    {indoorState.supportedFloors.length > 0 && (
+                    {hasSupportedFloors && (
                       <TouchableOpacity
                         style={styles.indoorEntryButton}
                         onPress={handleOpenIndoorMap}
