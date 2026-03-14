@@ -1,4 +1,3 @@
-// src/features/map/components/FloorPlanDisplay.tsx
 import React from "react";
 import {
   Animated,
@@ -7,9 +6,12 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  Dimensions
 } from "react-native";
 import { FloorPlanRegistryEntry } from "../../../services/floorPlanService";
 import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
+
+const { width, height } = Dimensions.get("window");
 
 interface FloorPlanDisplayProps {
   floorPlanEntry: FloorPlanRegistryEntry;
@@ -132,12 +134,13 @@ const styles = StyleSheet.create({
   },
   viewerFrame: {
     flex: 1,
+    width: "100%", 
     justifyContent: "center",
     alignItems: "center",
   },
   rasterImage: {
-    width: 800,
-    height: 800,
+    width: width, //Use full screen width to allow for better zooming and panning
+    height: height * 0.6, // Use 60% of the screen height to ensure it fits well with zooming
   },
   errorText: {
     color: "#d9534f",
