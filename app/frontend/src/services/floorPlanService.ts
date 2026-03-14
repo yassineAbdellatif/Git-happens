@@ -34,6 +34,17 @@ export interface FloorPlanRegistryEntry {
   localizedNodes: LocalizedNode[];
 }
 
+export interface RawMapNode {
+  id: string;
+  type: string;
+  buildingId: string;
+  floor: number | string;
+  x: number;
+  y: number;
+  label?: string;
+  accessible?: boolean;
+}
+
 const SUPPORTED_INDOOR_BUILDINGS: readonly IndoorBuildingId[] = [
   "H",
   "CC",
@@ -43,11 +54,11 @@ const SUPPORTED_INDOOR_BUILDINGS: readonly IndoorBuildingId[] = [
 ];
 
 const isSupportedIndoorBuildingId = (
-  buildingId: string,
+  buildingId: string
 ): buildingId is IndoorBuildingId =>
   SUPPORTED_INDOOR_BUILDINGS.includes(buildingId as IndoorBuildingId);
 
-const ALL_RAW_NODES: any[] = [
+const ALL_RAW_NODES: RawMapNode[] = [
   ...(hData?.nodes || []),
   ...(ccData?.nodes || []),
   ...(mbData?.nodes || []),
@@ -56,7 +67,7 @@ const ALL_RAW_NODES: any[] = [
 ];
 
 export const getSupportedFloorsForBuilding = (
-  buildingId: string,
+  buildingId: string
 ): FloorNumber[] => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
@@ -64,7 +75,7 @@ export const getSupportedFloorsForBuilding = (
 
   // Scan JSON to find which floors exist
   const floors = ALL_RAW_NODES.filter(
-    (node) => node.buildingId === buildingId,
+    (node) => node.buildingId === buildingId
   ).map((node) => String(node.floor) as FloorNumber);
 
   // Return unique floors in sorted order
@@ -95,7 +106,7 @@ export const getSupportedFloorsForBuilding = (
 
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
-  floorNumber: FloorNumber,
+  floorNumber: FloorNumber
 ): FloorPlanRegistryEntry | null => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
@@ -104,7 +115,7 @@ export const getFloorPlanRegistryEntry = (
   // Find all raw JSON nodes that match the requested building and floor
   const rawNodesForFloor = ALL_RAW_NODES.filter(
     (node) =>
-      node.buildingId === buildingId && String(node.floor) === floorNumber,
+      node.buildingId === buildingId && String(node.floor) === floorNumber
   );
 
   // If there are no nodes, return null (meaning no map exists for this floor)
