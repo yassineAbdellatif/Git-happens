@@ -1,4 +1,7 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
+
 import {
   View,
   TouchableOpacity,
@@ -19,8 +22,6 @@ import {
 } from "../../../constants/buildings";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapLogic } from "../hooks/useMapLogic"; // Path to your new hook
-import IndoorFloorPlan from "../components/IndoorFloorPlan";
-import { useIndoorFloorPlanState } from "../hooks/useIndoorFloorPlanState";
 import { useMapScreenUiState } from "../hooks/useMapScreenUiState";
 
 const MODE_ICON_MAP = {
@@ -77,7 +78,6 @@ const MapScreen = () => {
     isIndoorInteracting,
     setIsIndoorInteracting,
   } = useMapScreenUiState(selectedBuilding?.id || null);
-  const indoorState = useIndoorFloorPlanState(selectedBuilding?.id || null);
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -96,6 +96,29 @@ const MapScreen = () => {
     selectedBuilding,
     currentBuilding,
   );
+
+  const navigation = useNavigation<any>();
+
+  const handleOpenIndoorMap = () => {
+    if (!selectedBuilding) return;
+
+    const supportedFloors = getSupportedFloorsForBuilding(selectedBuilding.id);
+    if (supportedFloors.length === 1) {
+      // If only one floor, go straight to indoor map
+      navigation.navigate("IndoorMapScreen", {
+        buildingId: selectedBuilding.id,
+        buildingName: selectedBuilding.fullName,
+        selectedFloorNumber: supportedFloors[0],
+      });
+    } else if (supportedFloors.length > 1) {
+      // If multiple floors, open floor selection
+      navigation.navigate("FloorSelectionScreen", {
+        buildingId: selectedBuilding.id,
+        buildingName: selectedBuilding.fullName,
+        supportedFloors,
+      });
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -207,7 +230,7 @@ const MapScreen = () => {
               <TouchableOpacity
                 testID="logout-button"
                 style={styles.logoutButton}
-                onPress={() => handleLogout()} 
+                onPress={() => handleLogout()}
               >
                 <MaterialIcons name="logout" size={24} color="#912338" />
               </TouchableOpacity>
@@ -362,35 +385,19 @@ const MapScreen = () => {
                     {indoorState.supportedFloors.length > 0 && (
                       <TouchableOpacity
                         style={styles.indoorEntryButton}
-                        onPress={() => setIsIndoorOpen((prev) => !prev)}
+                        onPress={handleOpenIndoorMap}
                       >
                         <MaterialIcons
-                          name={isIndoorOpen ? "layers-clear" : "map"}
+                          name="map"
                           size={20}
                           color="white"
                           style={{ marginRight: 8 }}
                         />
                         <Text style={styles.indoorEntryButtonText}>
-                          {isIndoorOpen
-                            ? "Hide Indoor Floor Plan"
-                            : "Open Indoor Floor Plan"}
+                          Open Indoor Floor Plan
                         </Text>
                       </TouchableOpacity>
                     )}
-
-                    {isIndoorOpen &&
-                      selectedBuilding &&
-                      indoorState.selectedFloorNumber && (
-                        <IndoorFloorPlan
-                          floorPlanEntry={indoorState.activeFloorPlanEntry}
-                          selectedFloorNumber={indoorState.selectedFloorNumber}
-                          supportedFloors={indoorState.supportedFloors}
-                          onSelectFloor={(floorNumber) =>
-                            indoorState.setSelectedFloorNumber(floorNumber)
-                          }
-                          onInteractionChange={setIsIndoorInteracting}
-                        />
-                      )}
 
                     <Text style={styles.sheetSubtitle}>
                       Tap a building to see indoor maps
