@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Keyboard,
   Text,
   TextInput,
@@ -10,7 +9,6 @@ import {
   Image,
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import {
   SGW_REGION,
@@ -97,30 +95,33 @@ const MapScreen = () => {
     currentBuilding,
   );
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        {/* MAP LAYER */}
-        <View style={styles.mapContainer}>
-          <OutdoorView
-            ref={mapRef}
-            region={currentRegion}
-            currentBuildingId={currentBuilding?.id}
-            selectedBuildingId={selectedBuilding?.id}
-            onBuildingPress={handleBuildingPress}
-            // When navigating, we want to disable deselecting buildings by tapping the map, to prevent accidental taps from disrupting navigation. --- IGNORE ---
-            onMapPress={
-              isNavigating ? () => {} : () => setSelectedBuilding(null)
-            }
-            routeCoords={routeCoords}
-            routeSegments={routeSegments}
-            transportMode={transportMode}
-            mapType={mapType}
-            onMapTypeChange={setMapType}
-          />
-        </View>
+  const handleMapLayerPress = () => {
+    Keyboard.dismiss();
+    if (!isNavigating) {
+      setSelectedBuilding(null);
+    }
+  };
 
-        <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
+  return (
+    <View style={styles.container}>
+      {/* MAP LAYER */}
+      <View style={styles.mapContainer}>
+        <OutdoorView
+          ref={mapRef}
+          region={currentRegion}
+          currentBuildingId={currentBuilding?.id}
+          selectedBuildingId={selectedBuilding?.id}
+          onBuildingPress={handleBuildingPress}
+          onMapPress={handleMapLayerPress}
+          routeCoords={routeCoords}
+          routeSegments={routeSegments}
+          transportMode={transportMode}
+          mapType={mapType}
+          onMapTypeChange={setMapType}
+        />
+      </View>
+
+      <View style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
             {!isRouting ? (
@@ -657,9 +658,8 @@ const MapScreen = () => {
               </ScrollView>
             </View>
           )}
-        </SafeAreaProvider>
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 

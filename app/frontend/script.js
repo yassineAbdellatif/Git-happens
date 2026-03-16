@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = __dirname;
 const source = path.join(projectRoot, 'google-services.json');
 const destination = path.join(projectRoot, 'android', 'app', 'google-services.json');
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "sync:google-services": "node scripts/sync-google-services.js",
+    "sync:google-services": "node script.js",
     "start": "npm run sync:google-services && expo start",
     "android": "npm run sync:google-services && expo run:android",
     "ios": "expo run:ios",
