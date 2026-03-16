@@ -73,10 +73,7 @@ const MapScreen = () => {
     mapType,
     setMapType,
     toggleMapType,
-    isIndoorOpen,
-    setIsIndoorOpen,
     isIndoorInteracting,
-    setIsIndoorInteracting,
   } = useMapScreenUiState(selectedBuilding?.id || null);
 
   // Derive the old properties from origin/destination

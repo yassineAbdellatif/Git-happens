@@ -34,18 +34,17 @@ export interface FloorPlanRegistryEntry {
   localizedNodes: LocalizedNode[];
 }
 
-const SUPPORTED_INDOOR_BUILDINGS: readonly IndoorBuildingId[] = [
+const SUPPORTED_INDOOR_BUILDINGS = new Set<string>([
   "H",
   "CC",
   "MB",
   "VE",
   "VL",
-];
+]);
 
 const isSupportedIndoorBuildingId = (
   buildingId: string,
-): buildingId is IndoorBuildingId =>
-  SUPPORTED_INDOOR_BUILDINGS.includes(buildingId as IndoorBuildingId);
+): buildingId is IndoorBuildingId => SUPPORTED_INDOOR_BUILDINGS.has(buildingId);
 
 const ALL_RAW_NODES: any[] = [
   ...(hData?.nodes || []),
@@ -123,7 +122,7 @@ export const getFloorPlanRegistryEntry = (
   }));
 
   return {
-    buildingId: buildingId as IndoorBuildingId,
+    buildingId,
     floorNumber,
     localizedNodes,
   };
