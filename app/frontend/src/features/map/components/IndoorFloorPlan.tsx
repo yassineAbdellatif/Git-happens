@@ -1,5 +1,12 @@
 import React from "react";
-import { Animated, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+  ImageSourcePropType,
+} from "react-native";
 import {
   FloorNumber,
   FloorPlanRegistryEntry,
@@ -15,7 +22,7 @@ interface IndoorFloorPlanProps {
   onInteractionChange?: (isInteracting: boolean) => void;
 }
 
-const PNG_ASSET_MAP: Record<string, any> = {
+const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
   H_1: require("../../../../assets/updated_floor_plans/h1.png"),
   H_2: require("../../../../assets/updated_floor_plans/h2.png"),
   H_8: require("../../../../assets/updated_floor_plans/h8.png"),
@@ -91,7 +98,10 @@ const IndoorFloorPlan = ({
         >
           <Text style={styles.indoorZoomButtonText}>-</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.indoorZoomButton} onPress={handleResetView}>
+        <TouchableOpacity
+          style={styles.indoorZoomButton}
+          onPress={handleResetView}
+        >
           <Text style={styles.indoorZoomButtonText}>Reset</Text>
         </TouchableOpacity>
         <Text style={styles.indoorZoomText}>Zoom {zoom.toFixed(2)}x</Text>
@@ -122,9 +132,7 @@ const IndoorFloorPlan = ({
         </Animated.View>
       </View>
 
-      <Text style={styles.indoorSvgSource}>
-        Source: {mapImageKey}
-      </Text>
+      <Text style={styles.indoorSvgSource}>Source: {mapImageKey}</Text>
     </View>
   );
 };
