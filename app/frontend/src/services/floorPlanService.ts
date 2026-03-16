@@ -61,8 +61,7 @@ export const getSupportedFloorsForBuilding = (
     return [];
   }
 
-  // Bypass the JSON scanning completely!
-  // We know exactly what PNG assets exist for each building.
+  // We know what PNG assets exist for each building and what floors they have.
   switch (buildingId) {
     case "H":
       return ["1", "2", "8", "9"];
