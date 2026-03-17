@@ -34,20 +34,31 @@ export interface FloorPlanRegistryEntry {
   localizedNodes: LocalizedNode[];
 }
 
-const SUPPORTED_INDOOR_BUILDINGS: readonly IndoorBuildingId[] = [
+export interface RawMapNode {
+  id: string;
+  type: string;
+  buildingId: string;
+  floor: number | string;
+  x: number;
+  y: number;
+  label?: string;
+  accessible?: boolean;
+}
+
+const SUPPORTED_INDOOR_BUILDINGS = new Set<string>([
   "H",
   "CC",
   "MB",
   "VE",
   "VL",
-];
+]);
 
 const isSupportedIndoorBuildingId = (
   buildingId: string,
-): buildingId is IndoorBuildingId =>
-  SUPPORTED_INDOOR_BUILDINGS.includes(buildingId as IndoorBuildingId);
+): buildingId is IndoorBuildingId => SUPPORTED_INDOOR_BUILDINGS.has(buildingId);
 
-const ALL_RAW_NODES: any[] = [
+
+const ALL_RAW_NODES: RawMapNode[] = [
   ...(hData?.nodes || []),
   ...(ccData?.nodes || []),
   ...(mbData?.nodes || []),
@@ -56,63 +67,63 @@ const ALL_RAW_NODES: any[] = [
 ];
 
 export const getSupportedFloorsForBuilding = (
-  buildingId: string,
+  buildingId: string
 ): FloorNumber[] => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
   }
 
-  // Scan JSON to find which floors exist
-  const floors = ALL_RAW_NODES.filter(
-    (node) => node.buildingId === buildingId,
-  ).map((node) => String(node.floor) as FloorNumber);
-
-  // Return unique floors in sorted order
-  return [...new Set(floors)].sort((a, b) => {
-    // Check if the floor strings are purely numeric
-    const isNumA = /^\d+$/.test(a);
-    const isNumB = /^\d+$/.test(b);
-
-    if (isNumA && isNumB) {
-      // If both are numbers, sort them numerically (so 2 comes before 10)
-      return parseInt(a, 10) - parseInt(b, 10);
-    }
-
-    if (!isNumA && isNumB) {
-      // If 'a' is a letter (like S2) and 'b' is a number, put 'a' first
-      return -1;
-    }
-
-    if (isNumA && !isNumB) {
-      // If 'a' is a number and 'b' is a letter, put 'b' first
-      return 1;
-    }
-
-    // If both are letters (like S1 and S2), sort them alphabetically
-    return a.localeCompare(b);
-  });
+  // We know what PNG assets exist for each building and what floors they have.
+  switch (buildingId) {
+    case "H":
+      return ["1", "2", "8", "9"];
+    case "MB":
+      return ["1", "S2"];
+    case "CC":
+      return ["1"];
+    case "VE":
+      return ["1", "2"];
+    case "VL":
+      return ["1", "2"];
+    default:
+      return [];
+  }
 };
 
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
-  floorNumber: FloorNumber,
+  floorNumber: FloorNumber
 ): FloorPlanRegistryEntry | null => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
   }
 
-  // Find all raw JSON nodes that match the requested building and floor
-  const rawNodesForFloor = ALL_RAW_NODES.filter(
-    (node) =>
-      node.buildingId === buildingId && String(node.floor) === floorNumber,
-  );
+  // Find all raw JSON nodes that match the requested building and floor,
+  const rawNodesForFloor = ALL_RAW_NODES.filter((node) => {
+    const nodeBuilding = String(node.buildingId);
+    const nodeFloor = String(node.floor);
 
-  // If there are no nodes, return null (meaning no map exists for this floor)
+    // 1. Handle the Hall Building mismatch ("H" -> "Hall")
+    if (buildingId === "H") {
+      return nodeBuilding === "Hall" && nodeFloor === String(floorNumber);
+    }
+
+    // 2. Handle the MB S2 mismatch (Building "MB" + Floor "S2" -> Building "MB-S2" + Floor "1")
+    if (buildingId === "MB" && floorNumber === "S2") {
+      return nodeBuilding === "MB-S2" && nodeFloor === "1";
+    }
+
+    // 3. Handle standard matches (CC, MB Floor 1, VE, VL)
+    return nodeBuilding === buildingId && nodeFloor === String(floorNumber);
+  });
+
+  //If no nodes are found, return null
   if (rawNodesForFloor.length === 0) {
+    console.warn(`No JSON nodes found for ${buildingId} Floor ${floorNumber}`);
     return null;
   }
 
-  // Map the flat JSON shape into the LocalizedNode structure expected by IndoorFloorPlan.tsx
+  // Map the flat JSON shape into the LocalizedNode structure expected by the app
   const localizedNodes: LocalizedNode[] = rawNodesForFloor.map((node) => ({
     id: node.id,
     label: node.label || node.id,
@@ -121,7 +132,6 @@ export const getFloorPlanRegistryEntry = (
     y: node.y,
   }));
 
-  // Return the exact object structure that IndoorFloorPlan.tsx expects
   return {
     buildingId,
     floorNumber,
