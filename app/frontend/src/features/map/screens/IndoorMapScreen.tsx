@@ -10,9 +10,13 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FloorNumber, getFloorPlanRegistryEntry, IndoorBuildingId } from "../../../services/floorPlanService";
+import {
+  FloorNumber,
+  getFloorPlanRegistryEntry,
+  IndoorBuildingId,
+} from "../../../services/floorPlanService";
 import FloorPlanDisplay from "../components/FloorPlanDisplay";
-import { IndoorBuildingEvent } from "react-native-maps";
+import { useIndoorNavigation } from "../hooks/useIndoorNavigation";
 
 type IndoorMapRouteParams = {
   buildingId: IndoorBuildingId;
@@ -23,7 +27,16 @@ type IndoorMapRouteParams = {
 const IndoorMapScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute();
-  const { buildingId, buildingName, selectedFloorNumber } = route.params as IndoorMapRouteParams;
+  const { buildingId, buildingName, selectedFloorNumber } =
+    route.params as IndoorMapRouteParams;
+  const {
+    startPoint,
+    destinationPoint,
+    handleStartSearch,
+    handleDestinationSearch,
+    handleStartNavigation,
+    swapPoints,
+  } = useIndoorNavigation();
 
   // Fetch JSON map data based on the route params
   const floorPlanEntry = useMemo(() => {
@@ -38,14 +51,19 @@ const IndoorMapScreen = () => {
           <FloorPlanDisplay floorPlanEntry={floorPlanEntry} />
         ) : (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>Map not available for Floor {selectedFloorNumber}.</Text>
+            <Text style={styles.errorText}>
+              Map not available for Floor {selectedFloorNumber}.
+            </Text>
           </View>
         )}
       </View>
 
       {/* FLOATING TOP HEADER */}
       <View style={styles.floatingHeader}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={navigation.goBack}
+          style={styles.backButton}
+        >
           <MaterialIcons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
@@ -66,6 +84,8 @@ const IndoorMapScreen = () => {
               style={styles.searchInput}
               placeholder="Search rooms by name or number"
               placeholderTextColor="#999"
+              value={startPoint}
+              onChangeText={handleStartSearch}
             />
           </View>
         </View>
@@ -83,12 +103,19 @@ const IndoorMapScreen = () => {
               style={styles.searchInput}
               placeholder="Search rooms by name or number"
               placeholderTextColor="#999"
+              value={destinationPoint}
+              onChangeText={handleDestinationSearch}
             />
           </View>
         </View>
 
-        <TouchableOpacity style={styles.startNavigationButton}>
-          <MaterialIcons name="near-me" size={20} color="white" style={{ marginRight: 8 }} />
+        <TouchableOpacity style={styles.startNavigationButton} onPress={handleStartNavigation}>
+          <MaterialIcons
+            name="near-me"
+            size={20}
+            color="white"
+            style={{ marginRight: 8 }}
+          />
           <Text style={styles.startNavigationText}>Start Navigation</Text>
         </TouchableOpacity>
       </View>
@@ -114,8 +141,7 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 16,
   },
-  
-  
+
   floatingHeader: {
     position: "absolute",
     top: 50,
@@ -150,7 +176,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  
   floatingBottomCard: {
     position: "absolute",
     bottom: 30,

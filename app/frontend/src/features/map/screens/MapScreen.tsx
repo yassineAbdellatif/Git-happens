@@ -235,7 +235,7 @@ const MapScreen = () => {
               <TouchableOpacity
                 testID="logout-button"
                 style={styles.logoutButton}
-                onPress={() => handleLogout()}
+                onPress={handleLogout}
               >
                 <MaterialIcons name="logout" size={24} color="#912338" />
               </TouchableOpacity>
