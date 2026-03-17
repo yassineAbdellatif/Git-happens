@@ -35,7 +35,7 @@ const IndoorMapScreen = () => {
     handleStartSearch,
     handleDestinationSearch,
     handleStartNavigation,
-    swapPoints,
+    // swapPoints, commented out for now since the swap functionality is not yet implemented in the UI
   } = useIndoorNavigation();
 
   // Fetch JSON map data based on the route params
