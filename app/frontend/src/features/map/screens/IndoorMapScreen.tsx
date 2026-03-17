@@ -10,13 +10,14 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getFloorPlanRegistryEntry } from "../../../services/floorPlanService";
+import { FloorNumber, getFloorPlanRegistryEntry, IndoorBuildingId } from "../../../services/floorPlanService";
 import FloorPlanDisplay from "../components/FloorPlanDisplay";
+import { IndoorBuildingEvent } from "react-native-maps";
 
 type IndoorMapRouteParams = {
-  buildingId: string;
+  buildingId: IndoorBuildingId;
   buildingName: string;
-  selectedFloorNumber: string;
+  selectedFloorNumber: FloorNumber;
 };
 
 const IndoorMapScreen = () => {
