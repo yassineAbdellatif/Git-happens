@@ -56,16 +56,34 @@ const FloorSelectionScreen = () => {
       <View style={styles.content}>
         <Text style={styles.subtitle}>Select a floor to view</Text>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {supportedFloors.map((floor) => (
-            <TouchableOpacity
-              key={floor}
-              style={styles.floorItem}
-              onPress={() => handleSelectFloor(floor)}
-            >
-              <Text style={styles.floorText}>Floor {floor}</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#912338" />
-            </TouchableOpacity>
-          ))}
+          {supportedFloors.length === 0 ? (
+            <Text style={{ textAlign: "center", marginTop: 20, color: "#666" }}>
+              No floor plans available for this building yet.
+            </Text>
+          ) : (
+            [...supportedFloors]
+              .sort((a, b) => {
+                // Force "S" (Sub-basement) floors to the top
+                if (a.startsWith("S") && !b.startsWith("S")) return -1;
+                if (!a.startsWith("S") && b.startsWith("S")) return 1;
+                // Otherwise sort alphanumerically (1, 2, 8, 9)
+                return a.localeCompare(b, undefined, { numeric: true });
+              })
+              .map((floor) => (
+                <TouchableOpacity
+                  key={floor}
+                  style={styles.floorItem}
+                  onPress={() => handleSelectFloor(floor)}
+                >
+                  <Text style={styles.floorText}>Floor {floor}</Text>
+                  <MaterialIcons
+                    name="chevron-right"
+                    size={24}
+                    color="#912338"
+                  />
+                </TouchableOpacity>
+              ))
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>
