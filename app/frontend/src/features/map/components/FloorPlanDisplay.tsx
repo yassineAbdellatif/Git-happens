@@ -4,6 +4,7 @@ import {
   Image,
   Text,
   TouchableOpacity,
+  ImageSourcePropType,
   View,
   StyleSheet,
   Dimensions
@@ -18,7 +19,7 @@ interface FloorPlanDisplayProps {
   onInteractionChange?: (isInteracting: boolean) => void;
 }
 
-const PNG_ASSET_MAP: Record<string, any> = {
+const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
   H_1: require("../../../../assets/updated_floor_plans/h1.png"),
   H_2: require("../../../../assets/updated_floor_plans/h2.png"),
   H_8: require("../../../../assets/updated_floor_plans/h8.png"),

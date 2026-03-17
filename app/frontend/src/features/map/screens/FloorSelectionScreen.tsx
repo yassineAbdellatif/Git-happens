@@ -6,7 +6,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { IndoorBuildingId, FloorNumber } from "../../../services/floorPlanService"
@@ -17,8 +17,16 @@ type FloorSelectionRouteParams = {
   supportedFloors: FloorNumber[];
 };
 
+type RootStackParamList = {
+  IndoorMapScreen: {
+    buildingId: IndoorBuildingId;
+    buildingName: string;
+    selectedFloorNumber: FloorNumber;
+  };
+};
+
 const FloorSelectionScreen = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { buildingId, buildingName, supportedFloors } =
     route.params as FloorSelectionRouteParams;
