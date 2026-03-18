@@ -4,7 +4,7 @@ import { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
  // (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)
  
 function heuristic(a: LocalizedNode, b: LocalizedNode): number {
-  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+  return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function reconstructPath(
