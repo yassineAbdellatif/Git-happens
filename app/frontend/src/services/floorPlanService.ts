@@ -32,6 +32,7 @@ export interface FloorPlanRegistryEntry {
   buildingId: IndoorBuildingId;
   floorNumber: FloorNumber;
   localizedNodes: LocalizedNode[];
+  edges: RawEdge[];
 }
 
 export interface RawMapNode {
@@ -42,6 +43,14 @@ export interface RawMapNode {
   x: number;
   y: number;
   label?: string;
+  accessible?: boolean;
+}
+
+export interface RawEdge {
+  source: string;
+  target: string;
+  type: string;
+  weight: number;
   accessible?: boolean;
 }
 
@@ -64,6 +73,14 @@ const ALL_RAW_NODES: RawMapNode[] = [
   ...(mbData?.nodes || []),
   ...(veData?.nodes || []),
   ...(vlData?.nodes || []),
+];
+
+const ALL_RAW_EDGES: RawEdge[] = [
+  ...((hData as any)?.edges || []),
+  ...((ccData as any)?.edges || []),
+  ...((mbData as any)?.edges || []),
+  ...((veData as any)?.edges || []),
+  ...((vlData as any)?.edges || []),
 ];
 
 export const getSupportedFloorsForBuilding = (
@@ -132,9 +149,15 @@ export const getFloorPlanRegistryEntry = (
     y: node.y,
   }));
 
+  const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
+  const edges = ALL_RAW_EDGES.filter(
+    (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target)
+  );
+
   return {
     buildingId,
     floorNumber,
     localizedNodes,
+    edges,
   };
 };
