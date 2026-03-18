@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { LocalizedNode } from "../../../services/floorPlanService";
+import { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
+import { findPath } from "../utils/pathfinding";
 
-export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
+export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {
   const [startPoint, setStartPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
 
@@ -10,6 +11,8 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
 
   const [selectedStartNode, setSelectedStartNode] = useState<LocalizedNode | null>(null);
   const [selectedDestinationNode, setSelectedDestinationNode] = useState<LocalizedNode | null>(null);
+
+  const [path, setPath] = useState<LocalizedNode[]>([]);
 
   const filterNodes = (text: string) => {
     if (!text) return [];
@@ -23,24 +26,28 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     setStartPoint(text);
     setSelectedStartNode(null);
     setStartResults(filterNodes(text));
+    setPath([]);
   };
 
   const handleDestinationSearch = (text: string) => {
     setDestinationPoint(text);
     setSelectedDestinationNode(null);
     setDestinationResults(filterNodes(text));
+    setPath([]);
   };
 
   const selectStartNode = (node: LocalizedNode) => {
     setSelectedStartNode(node);
     setStartPoint(node.label);
     setStartResults([]);
+    setPath([]);
   };
 
   const selectDestinationNode = (node: LocalizedNode) => {
     setSelectedDestinationNode(node);
     setDestinationPoint(node.label);
     setDestinationResults([]);
+    setPath([]);
   };
 
   const handleStartNavigation = () => {
@@ -50,10 +57,28 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     }
 
     console.log(
-    `[NAV] ${selectedStartNode.label} → ${selectedDestinationNode.label}`
+      `[NAV] ${selectedStartNode.label} → ${selectedDestinationNode.label}`
     );
 
-    // to be implemented later: Trigger pathfinding algorithm
+    const result = findPath(
+      selectedStartNode.id,
+      selectedDestinationNode.id,
+      nodes,
+      edges
+    );
+
+    if (result.length === 0) {
+      console.warn(
+        `[NAV] No path found between ${selectedStartNode.id} and ${selectedDestinationNode.id}`
+      );
+    } else {
+      console.log(
+        `[NAV] Path found: ${result.length} nodes`,
+        result.map((n) => n.label)
+      );
+    }
+
+    setPath(result);
   };
 
   const swapPoints = () => {
@@ -63,6 +88,7 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     setSelectedDestinationNode(selectedStartNode);
     setStartResults([]);
     setDestinationResults([]);
+    setPath([]);
   };
 
   return {
@@ -70,6 +96,7 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     destinationPoint,
     startResults,
     destinationResults,
+    path,
     handleStartSearch,
     handleDestinationSearch,
     selectStartNode,
