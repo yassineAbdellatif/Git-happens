@@ -4,9 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   TextInput,
-  ScrollView,
   Keyboard,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -20,6 +18,7 @@ import {
 import FloorPlanDisplay from "../components/FloorPlanDisplay";
 import { useIndoorNavigation } from "../hooks/useIndoorNavigation";
 import SearchResults from "../components/SearchResults";
+import { styles } from "../../map/styles/IndoorMapScreenStyle";
 
 type IndoorMapRouteParams = {
   buildingId: IndoorBuildingId;
@@ -32,7 +31,7 @@ const IndoorMapScreen = () => {
   const route = useRoute();
   const { buildingId, buildingName, selectedFloorNumber } =
     route.params as IndoorMapRouteParams;
-    // Fetch JSON map data based on the route params
+  // Fetch JSON map data based on the route params
   const floorPlanEntry = useMemo(() => {
     return getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any);
   }, [buildingId, selectedFloorNumber]);
@@ -152,123 +151,5 @@ const IndoorMapScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  mapContainer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1, // Map is on the bottom
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    color: "#666",
-    fontSize: 16,
-  },
-
-  floatingHeader: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    padding: 12,
-    borderRadius: 12,
-    zIndex: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#912338",
-    fontWeight: "600",
-  },
-
-  floatingBottomCard: {
-    position: "absolute",
-    bottom: 30,
-    left: 20,
-    right: 20,
-    backgroundColor: "#912338", // Maroon background
-    borderRadius: 24,
-    padding: 20,
-    zIndex: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-  cardTitle: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  inputGroup: {
-    marginBottom: 12,
-  },
-  inputLabel: {
-    color: "white",
-    fontSize: 12,
-    marginBottom: 6,
-    marginLeft: 4,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: 14,
-    color: "#333",
-  },
-  swapIconContainer: {
-    alignItems: "center",
-    marginVertical: 4,
-    zIndex: 2,
-  },
-  startNavigationButton: {
-    backgroundColor: "#1976D2",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    borderRadius: 25,
-    marginTop: 16,
-  },
-  startNavigationText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default IndoorMapScreen;
