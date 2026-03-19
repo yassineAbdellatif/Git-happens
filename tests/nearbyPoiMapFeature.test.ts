@@ -44,6 +44,26 @@ describe("Nearby POI map feature", () => {
     expect(source).toContain("clearTimeout(poiFetchTimeoutRef.current)");
     expect(source).toContain("setTimeout(() => {");
     expect(source).toContain("}, 700)");
+    expect(source).toContain("shouldFetchPoisForRegion");
+    expect(source).toContain("fetchNearbyPoisForRegion(region)");
+    expect(source).toContain("setCurrentRegion((prev) => ({");
+  });
+
+  it("handles denied nearby errors and shows alert once", () => {
+    const source = readFile(mapLogicPath);
+
+    expect(source).toContain("hasShownPoiDeniedRef");
+    expect(source).toContain("(entry.reason as any)?.response?.status === 403");
+    expect(source).toContain("Alert.alert(");
+    expect(source).toContain("Nearby Search Unavailable");
+  });
+
+  it("tracks loading state and stores deduped POIs", () => {
+    const source = readFile(mapLogicPath);
+
+    expect(source).toContain("setIsPoiLoading(true)");
+    expect(source).toContain("setNearbyPois(Array.from(mergedById.values()))");
+    expect(source).toContain("setIsPoiLoading(false)");
   });
 
   it("renders nearby POI markers as small icon circles in OutDoorView", () => {
@@ -55,6 +75,16 @@ describe("Nearby POI map feature", () => {
     expect(source).toContain('poi.poiType === "library"');
     expect(source).toContain('poi.poiType === "restaurant"');
     expect(source).toContain('"local-cafe"');
+    expect(source).toContain("style={styles.poiMarkerDot}");
+    expect(source).toContain("backgroundColor: \"#1f6feb\"");
+  });
+
+  it("renders segmented route polylines with dashed walking segments", () => {
+    const source = readFile(outdoorViewPath);
+
+    expect(source).toContain("routeSegments && routeSegments.length > 0");
+    expect(source).toContain("getSegmentColor(segment.mode)");
+    expect(source).toContain('segment.mode?.toUpperCase() === "WALKING" ? [2, 10] : [0]');
   });
 
   it("uses plain overlay View in MapScreen instead of SafeAreaProvider", () => {
@@ -63,5 +93,14 @@ describe("Nearby POI map feature", () => {
     expect(source).not.toContain("SafeAreaProvider");
     expect(source).toContain('<View style={styles.overlay} pointerEvents="box-none">');
     expect(source).toContain("nearbyPois={nearbyPois}");
+  });
+
+  it("keeps map interactions by avoiding full-screen touch blockers", () => {
+    const source = readFile(mapScreenPath);
+
+    expect(source).not.toContain("TouchableWithoutFeedback");
+    expect(source).toContain("const handleMapLayerPress = () => {");
+    expect(source).toContain("setSelectedBuilding(null)");
+    expect(source).toContain("onMapPress={handleMapLayerPress}");
   });
 });
