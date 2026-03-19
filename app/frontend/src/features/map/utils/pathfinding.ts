@@ -22,34 +22,87 @@ function reconstructPath(
   return path;
 }
 
-// A* pathfinding on the indoor flat floor graph (only same-floor navigation for now).
+function buildAdjacency(
+  nodes: LocalizedNode[],
+  edges: RawEdge[]
+): Map<string, { id: string; weight: number }[]> {
+  const adjacency = new Map<string, { id: string; weight: number }[]>(
+    nodes.map((n) => [n.id, []])
+  );
 
+  for (const edge of edges) {
+    adjacency.get(edge.source)?.push({ id: edge.target, weight: edge.weight });
+    adjacency.get(edge.target)?.push({ id: edge.source, weight: edge.weight });
+  }
+
+  return adjacency;
+}
+
+function getLowestFScoreNode(
+  openSet: Set<string>,
+  fScore: Map<string, number>
+): string {
+  let bestNode = "";
+  let lowest = Infinity;
+
+  for (const id of openSet) {
+    const score = fScore.get(id) ?? Infinity;
+    if (score < lowest) {
+      lowest = score;
+      bestNode = id;
+    }
+  }
+
+  return bestNode;
+}
+
+function updateNeighbor(
+  current: string,
+  neighbor: { id: string; weight: number },
+  endNode: LocalizedNode,
+  nodeMap: Map<string, LocalizedNode>,
+  gScore: Map<string, number>,
+  fScore: Map<string, number>,
+  cameFrom: Map<string, string>,
+  openSet: Set<string>
+) {
+  const tentativeG = (gScore.get(current) ?? Infinity) + neighbor.weight;
+
+  if (tentativeG >= (gScore.get(neighbor.id) ?? Infinity)) return;
+
+  cameFrom.set(neighbor.id, current);
+  gScore.set(neighbor.id, tentativeG);
+
+  const neighborNode = nodeMap.get(neighbor.id);
+  if (!neighborNode) return;
+
+  fScore.set(
+    neighbor.id,
+    tentativeG + heuristic(neighborNode, endNode)
+  );
+
+  openSet.add(neighbor.id);
+}
+
+// A* pathfinding on the indoor flat floor graph (only same-floor navigation for now).
 export function findPath(
   startId: string,
   endId: string,
   nodes: LocalizedNode[],
   edges: RawEdge[]
 ): LocalizedNode[] {
-  const nodeMap = new Map<string, LocalizedNode>(nodes.map((n) => [n.id, n]));
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
   const startNode = nodeMap.get(startId);
   const endNode = nodeMap.get(endId);
   if (!startNode || !endNode) return [];
   if (startId === endId) return [startNode];
 
-  // build undirected adjacency list from edges
-  const adjacency = new Map<string, { id: string; weight: number }[]>(
-    nodes.map((n) => [n.id, []])
-  );
-  for (const edge of edges) {
-    adjacency.get(edge.source)?.push({ id: edge.target, weight: edge.weight });
-    adjacency.get(edge.target)?.push({ id: edge.source, weight: edge.weight });
-  }
+  const adjacency = buildAdjacency(nodes, edges);
 
-  const openSet = new Set<string>([startId]); // node IDs to explore
-  const closedSet = new Set<string>(); //already evaluated
+  const openSet = new Set<string>([startId]);
+  const closedSet = new Set<string>();
 
-  // g = actual cost from start; f = g + h
   const gScore = new Map<string, number>([[startId, 0]]);
   const fScore = new Map<string, number>([
     [startId, heuristic(startNode, endNode)],
@@ -57,15 +110,7 @@ export function findPath(
   const cameFrom = new Map<string, string>();
 
   while (openSet.size > 0) {
-    let current = "";
-    let lowestF = Infinity;
-    for (const id of openSet) {
-      const f = fScore.get(id) ?? Infinity;
-      if (f < lowestF) {
-        lowestF = f;
-        current = id;
-      }
-    }
+    const current = getLowestFScoreNode(openSet, fScore);
 
     if (current === endId) {
       return reconstructPath(cameFrom, endId, nodeMap);
@@ -76,22 +121,18 @@ export function findPath(
 
     for (const neighbor of adjacency.get(current) ?? []) {
       if (closedSet.has(neighbor.id)) continue;
-
-      const tentativeG = (gScore.get(current) ?? Infinity) + neighbor.weight;
-      if (tentativeG < (gScore.get(neighbor.id) ?? Infinity)) {
-        cameFrom.set(neighbor.id, current);
-        gScore.set(neighbor.id, tentativeG);
-        const neighborNode = nodeMap.get(neighbor.id);
-        if (neighborNode) {
-          fScore.set(
-            neighbor.id,
-            tentativeG + heuristic(neighborNode, endNode)
-          );
-        }
-        openSet.add(neighbor.id);
-      }
+      updateNeighbor(                            
+        current,
+        neighbor,
+        endNode,
+        nodeMap,
+        gScore,
+        fScore,
+        cameFrom,
+        openSet
+      );
     }
   }
 
-  return []; // if no path found
+  return [];
 }
