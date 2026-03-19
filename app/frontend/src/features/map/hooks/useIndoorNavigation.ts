@@ -19,16 +19,18 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     );
   };
 
+  const handleSearch = (text: string, setPoint: React.Dispatch<React.SetStateAction<string>>, setSelectedNode: React.Dispatch<React.SetStateAction<LocalizedNode | null>>, setResults: React.Dispatch<React.SetStateAction<LocalizedNode[]>>) => {
+    setPoint(text);
+    setSelectedNode(null);
+    setResults(filterNodes(text));
+  };
+
   const handleStartSearch = (text: string) => {
-    setStartPoint(text);
-    setSelectedStartNode(null);
-    setStartResults(filterNodes(text));
+    handleSearch(text, setStartPoint, setSelectedStartNode, setStartResults);
   };
 
   const handleDestinationSearch = (text: string) => {
-    setDestinationPoint(text);
-    setSelectedDestinationNode(null);
-    setDestinationResults(filterNodes(text));
+    handleSearch(text, setDestinationPoint, setSelectedDestinationNode, setDestinationResults);
   };
 
   const selectStartNode = (node: LocalizedNode) => {
