@@ -19,6 +19,7 @@ import {
 } from "../../../services/floorPlanService";
 import FloorPlanDisplay from "../components/FloorPlanDisplay";
 import { useIndoorNavigation } from "../hooks/useIndoorNavigation";
+import SearchResults from "../components/SearchResults";
 
 type IndoorMapRouteParams = {
   buildingId: IndoorBuildingId;
@@ -86,7 +87,7 @@ const IndoorMapScreen = () => {
           onPress={navigation.goBack}
           style={styles.backButton}
         >
-        <MaterialIcons name="arrow-back" size={24} color="#333" />
+          <MaterialIcons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
           <Text style={styles.headerTitle}>{buildingName}</Text>
@@ -95,83 +96,59 @@ const IndoorMapScreen = () => {
       </View>
 
       {/* FLOATING BOTTOM NAVIGATION CARD */}
-        <View style={[
-          styles.floatingBottomCard,
-          { bottom: 30 + keyboardHeight },
-          ]}
-        >
-          <Text style={styles.cardTitle}>Navigation Points</Text>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Start Point</Text>
-            <View style={styles.searchBar}>
-              <MaterialIcons name="search" size={20} color="#999" />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search rooms by name or number"
-                placeholderTextColor="#999"
-                value={startPoint}
-                onChangeText={handleStartSearch}
-              />
-            </View>
-
-            {startResults.length > 0 && (
-            <ScrollView style={styles.resultsContainer}>
-              {startResults.map((node) => (
-                <TouchableOpacity
-                  key={node.id}
-                  onPress={() => selectStartNode(node)}
-                  style={styles.resultItem}
-                >
-                  <Text>{node.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            )}
-          </View>
-
-          {/* Swap Arrow Icon */}
-          <TouchableOpacity onPress={swapPoints} style={styles.swapIconContainer}>
-            <MaterialIcons name="swap-vert" size={28} color="#333" />
-          </TouchableOpacity>
-
-          <View style={[styles.inputGroup, { marginTop: -10 }]}>
-            <Text style={styles.inputLabel}>Destination Point</Text>
-            <View style={styles.searchBar}>
-              <MaterialIcons name="search" size={20} color="#999" />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search rooms by name or number"
-                placeholderTextColor="#999"
-                value={destinationPoint}
-                onChangeText={handleDestinationSearch}
-              />
-            </View>
-
-            {destinationResults.length > 0 && (
-                <ScrollView style={styles.resultsContainer}>
-                  {destinationResults.map((node) => (
-                    <TouchableOpacity
-                      key={node.id}
-                      onPress={() => selectDestinationNode(node)}
-                      style={styles.resultItem}
-                    >
-                      <Text>{node.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              )}
-          </View>
-
-          <TouchableOpacity style={styles.startNavigationButton} onPress={handleStartNavigation}>
-            <MaterialIcons
-              name="near-me"
-              size={20}
-              color="white"
-              style={{ marginRight: 8 }}
+      <View style={[styles.floatingBottomCard, { bottom: 30 + keyboardHeight }]}>
+        <Text style={styles.cardTitle}>Navigation Points</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Start Point</Text>
+          <View style={styles.searchBar}>
+            <MaterialIcons name="search" size={20} color="#999" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search rooms by name or number"
+              placeholderTextColor="#999"
+              value={startPoint}
+              onChangeText={handleStartSearch}
             />
-            <Text style={styles.startNavigationText}>Start Navigation</Text>
-          </TouchableOpacity>
+          </View>
+
+          {/* Using SearchResults component */}
+          <SearchResults results={startResults} onSelectNode={selectStartNode} />
         </View>
+
+        {/* Swap Arrow Icon */}
+        <TouchableOpacity onPress={swapPoints} style={styles.swapIconContainer}>
+          <MaterialIcons name="swap-vert" size={28} color="#333" />
+        </TouchableOpacity>
+
+        <View style={[styles.inputGroup, { marginTop: -10 }]}>
+          <Text style={styles.inputLabel}>Destination Point</Text>
+          <View style={styles.searchBar}>
+            <MaterialIcons name="search" size={20} color="#999" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search rooms by name or number"
+              placeholderTextColor="#999"
+              value={destinationPoint}
+              onChangeText={handleDestinationSearch}
+            />
+          </View>
+
+          <SearchResults results={destinationResults} onSelectNode={selectDestinationNode} />
+        </View>
+
+        <TouchableOpacity
+          style={styles.startNavigationButton}
+          onPress={handleStartNavigation}
+        >
+          <MaterialIcons
+            name="near-me"
+            size={20}
+            color="white"
+            style={{ marginRight: 8 }}
+          />
+          <Text style={styles.startNavigationText}>Start Navigation</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -291,19 +268,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-  },
-  resultsContainer: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    marginTop: 4,
-    maxHeight: 170,
-  },
-
-  resultItem: {
-    padding: 10,
-    marginLeft: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
 });
 
