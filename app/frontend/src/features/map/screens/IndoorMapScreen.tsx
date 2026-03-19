@@ -46,7 +46,10 @@ const IndoorMapScreen = () => {
     selectDestinationNode,
     handleStartNavigation,
     swapPoints,
-  } = useIndoorNavigation(floorPlanEntry?.localizedNodes || []);
+  } = useIndoorNavigation(
+    floorPlanEntry?.localizedNodes || [],
+    floorPlanEntry?.edges || []
+  );
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
