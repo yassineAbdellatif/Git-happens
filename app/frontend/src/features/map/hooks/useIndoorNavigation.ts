@@ -15,7 +15,7 @@ export const useIndoorNavigation = (nodes: LocalizedNode[]) => {
     if (!text) return [];
 
     return nodes.filter((node) =>
-      node.label.toLowerCase().includes(text.toLowerCase())
+      (node.label || "").toLowerCase().includes(text.toLowerCase())
     );
   };
 
