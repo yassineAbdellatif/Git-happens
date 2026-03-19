@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Animated,
   Image,
@@ -52,7 +52,10 @@ const FloorPlanDisplay = ({
     ? Image.resolveAssetSource(MapImageSource as number)
     : null;
 
-  const polylinePoints = path.map((n) => `${n.x},${n.y}`).join(" ");
+    const polylinePoints = useMemo(
+      () => path.map((n) => `${n.x},${n.y}`).join(" "),
+      [path]
+  );
 
   return (
     <View style={styles.container}>
@@ -129,8 +132,8 @@ const FloorPlanDisplay = ({
               />
               {/* Destination point */}
               <Circle
-                cx={path[path.length - 1].x}
-                cy={path[path.length - 1].y}
+                cx={path.at(-1)!.x}
+                cy={path.at(-1)!.y}
                 r={18}
                 fill="#642222"
                 stroke="white"

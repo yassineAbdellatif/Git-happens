@@ -99,7 +99,6 @@ const IndoorMapScreen = () => {
       </View>
 
       {/* FLOATING BOTTOM NAVIGATION CARD */}
-      {path.length === 0 && (
         <View style={[
           styles.floatingBottomCard,
           { bottom: 30 + keyboardHeight },
@@ -177,7 +176,6 @@ const IndoorMapScreen = () => {
             <Text style={styles.startNavigationText}>Start Navigation</Text>
           </TouchableOpacity>
         </View>
-      )}
     </SafeAreaView>
   );
 };
