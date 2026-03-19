@@ -1,5 +1,6 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Marker } from "react-native-maps";
 import MapView, {
   PROVIDER_GOOGLE,
@@ -17,11 +18,18 @@ interface OutdoorViewProps {
   selectedBuildingId?: string | null;
   onBuildingPress: (building: Building) => void;
   onMapPress: () => void;
+  onRegionChangeComplete?: (region: Region) => void;
   routeCoords?: { latitude: number; longitude: number }[];
   routeSegments?: {
     mode: string;
     coords: { latitude: number; longitude: number }[];
   }[];
+  nearbyPois?: Array<{
+    id: string;
+    name: string;
+    location: { lat: number; lng: number };
+    poiType?: "cafe" | "restaurant" | "library";
+  }>;
   transportMode?: string;
   mapType: MapType;
   onMapTypeChange: (mapType: MapType) => void;
@@ -34,8 +42,10 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     selectedBuildingId,
     onBuildingPress,
     onMapPress,
+    onRegionChangeComplete,
     routeCoords,
     routeSegments,
+    nearbyPois,
     transportMode,
     mapType,
     onMapTypeChange,
@@ -93,6 +103,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         showsUserLocation={true}
         moveOnMarkerPress={false}
         onPress={onMapPress}
+        onRegionChangeComplete={onRegionChangeComplete}
         mapType={mapType}
       >
         {/* --- DRAW THE ROUTE LINE --- */}
@@ -172,6 +183,31 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
             </React.Fragment>
           );
         })}
+
+        {nearbyPois?.map((poi) => (
+          <Marker
+            key={`poi-${poi.id}`}
+            coordinate={{
+              latitude: poi.location.lat,
+              longitude: poi.location.lng,
+            }}
+            title={poi.name}
+          >
+            <View style={styles.poiMarkerDot}>
+              <MaterialIcons
+                name={
+                  poi.poiType === "library"
+                    ? "local-library"
+                    : poi.poiType === "restaurant"
+                      ? "restaurant"
+                      : "local-cafe"
+                }
+                size={12}
+                color="#ffffff"
+              />
+            </View>
+          </Marker>
+        ))}
       </MapView>
     </View>
   );
@@ -182,6 +218,16 @@ OutdoorView.displayName = "OutdoorView";
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
+  poiMarkerDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#1f6feb",
+    borderWidth: 2,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default OutdoorView;

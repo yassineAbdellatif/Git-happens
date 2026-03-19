@@ -5,6 +5,31 @@ import axios from "axios";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
+export type NearbyPoiType = "cafe" | "restaurant" | "library";
+
+export interface NearbyPoiRequest {
+  lat: number;
+  lng: number;
+  type: NearbyPoiType;
+  radius?: number;
+  limit?: number;
+  keyword?: string;
+}
+
+export interface NearbyPoiResult {
+  status: string;
+  results: Array<{
+    id: string;
+    name: string;
+    location: { lat: number; lng: number };
+    address: string;
+    types: string[];
+    rating?: number;
+    userRatingsTotal?: number;
+    isOpenNow?: boolean;
+  }>;
+}
+
 export const getRouteFromBackend = async (
   origin: string,
   destination: string,
@@ -29,6 +54,70 @@ export const getRouteFromBackend = async (
   } catch (error) {
     console.error("Failed to connect to backend:", error);
     // Rethrow so the UI can catch it and show an alert
+    throw error;
+  }
+};
+
+export const getNearbyPlacesFromGoogle = async (
+  request: NearbyPoiRequest
+): Promise<NearbyPoiResult> => {
+  const googleMapsApiKey =
+    process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() || "";
+
+  if (!googleMapsApiKey) {
+    throw new Error("EXPO_PUBLIC_GOOGLE_MAPS_API_KEY is missing");
+  }
+
+  try {
+    const response = await axios.get(
+      "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+      {
+      params: {
+        location: `${request.lat},${request.lng}`,
+        type: request.type,
+        radius: request.radius,
+        keyword: request.keyword,
+        key: googleMapsApiKey,
+      },
+      timeout: 10000,
+      }
+    );
+
+    const status = response.data?.status;
+    if (status === "REQUEST_DENIED") {
+      throw new Error(
+        response.data?.error_message ||
+          "Google Places request denied. Check API key and Places API access."
+      );
+    }
+
+    if (status !== "OK" && status !== "ZERO_RESULTS") {
+      throw new Error(`Google Places failed with status: ${status}`);
+    }
+
+    const limit = request.limit ?? 10;
+    const mappedResults = (response.data?.results || [])
+      .slice(0, limit)
+      .map((place: any) => ({
+        id: place.place_id,
+        name: place.name,
+        location: {
+          lat: place.geometry?.location?.lat,
+          lng: place.geometry?.location?.lng,
+        },
+        address: place.vicinity || place.formatted_address || "",
+        types: Array.isArray(place.types) ? place.types : [],
+        rating: place.rating,
+        userRatingsTotal: place.user_ratings_total,
+        isOpenNow: place.opening_hours?.open_now,
+      }));
+
+    return {
+      status,
+      results: mappedResults,
+    };
+  } catch (error) {
+    console.error("Failed to fetch nearby places from Google:", error);
     throw error;
   }
 };

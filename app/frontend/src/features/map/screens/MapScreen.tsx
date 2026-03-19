@@ -5,7 +5,6 @@ import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
 import {
   View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Keyboard,
   Text,
   TextInput,
@@ -13,7 +12,6 @@ import {
   Image,
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import {
   SGW_REGION,
@@ -41,6 +39,7 @@ const MapScreen = () => {
     selectedBuilding,
     searchQuery,
     filteredBuildings,
+    nearbyPois,
     isRouting,
     transportMode,
     routeCoords,
@@ -58,6 +57,7 @@ const MapScreen = () => {
     handleRecenter,
     toggleCampus,
     handleBuildingPress,
+    handleRegionChangeComplete,
     handleSearch,
     handleSelectFromSearch,
     handleCancelNavigation,
@@ -129,26 +129,27 @@ const MapScreen = () => {
     : false;
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        {/* MAP LAYER */}
-        <View style={styles.mapContainer}>
-          <OutdoorView
-            ref={mapRef}
-            region={currentRegion}
-            currentBuildingId={currentBuilding?.id}
-            selectedBuildingId={selectedBuilding?.id}
-            onBuildingPress={handleBuildingPress}
-            onMapPress={handleMapLayerPress}
-            routeCoords={routeCoords}
-            routeSegments={routeSegments}
-            transportMode={transportMode}
-            mapType={mapType}
-            onMapTypeChange={setMapType}
-          />
-        </View>
+    <View style={styles.container}>
+      {/* MAP LAYER */}
+      <View style={styles.mapContainer}>
+        <OutdoorView
+          ref={mapRef}
+          region={currentRegion}
+          currentBuildingId={currentBuilding?.id}
+          selectedBuildingId={selectedBuilding?.id}
+          onBuildingPress={handleBuildingPress}
+          onMapPress={handleMapLayerPress}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          routeCoords={routeCoords}
+          routeSegments={routeSegments}
+          nearbyPois={nearbyPois}
+          transportMode={transportMode}
+          mapType={mapType}
+          onMapTypeChange={setMapType}
+        />
+      </View>
 
-      <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
+      <View style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
             {!isRouting ? (
@@ -669,9 +670,8 @@ const MapScreen = () => {
               </ScrollView>
             </View>
           )}
-        </SafeAreaProvider>
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 
