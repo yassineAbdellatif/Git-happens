@@ -9,7 +9,8 @@ import {
   StyleSheet,
   Dimensions
 } from "react-native";
-import { FloorPlanRegistryEntry } from "../../../services/floorPlanService";
+import { FloorPlanRegistryEntry, LocalizedNode } from "../../../services/floorPlanService";
+import Svg, { Circle, Polyline } from "react-native-svg";
 import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
 
 const { width, height } = Dimensions.get("window");
@@ -17,6 +18,7 @@ const { width, height } = Dimensions.get("window");
 interface FloorPlanDisplayProps {
   floorPlanEntry: FloorPlanRegistryEntry;
   onInteractionChange?: (isInteracting: boolean) => void;
+  path?: LocalizedNode[];
 }
 
 const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
@@ -36,6 +38,7 @@ const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
 const FloorPlanDisplay = ({
   floorPlanEntry,
   onInteractionChange,
+  path = [],
 }: FloorPlanDisplayProps) => {
   const { zoom, translate, panResponder, handleZoomChange, handleResetView } =
     useIndoorFloorPlanInteraction(onInteractionChange);
@@ -43,6 +46,13 @@ const FloorPlanDisplay = ({
   // Map the building ID and floor number to the correct PNG
   const mapImageKey = `${floorPlanEntry.buildingId}_${floorPlanEntry.floorNumber}`;
   const MapImageSource = PNG_ASSET_MAP[mapImageKey];
+
+  // To use image as SVG viewBox so node coordinates align correctly
+  const naturalSize = MapImageSource
+    ? Image.resolveAssetSource(MapImageSource as number)
+    : null;
+
+  const polylinePoints = path.map((n) => `${n.x},${n.y}`).join(" ");
 
   return (
     <View style={styles.container}>
@@ -90,6 +100,43 @@ const FloorPlanDisplay = ({
             <Text style={styles.errorText}>
               Missing floor-plan asset mapping for: {mapImageKey}
             </Text>
+          )}
+
+          {/* Path overlay */}
+          {path.length > 1 && naturalSize && (
+            <Svg
+              style={StyleSheet.absoluteFill}
+              width={width}
+              height={height * 0.6}
+              viewBox={`0 0 ${naturalSize.width} ${naturalSize.height}`}
+            >
+              <Polyline
+                points={polylinePoints}
+                fill="none"
+                stroke="#2d8bf0"
+                strokeWidth={14}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Start point */}
+              <Circle
+                cx={path[0].x}
+                cy={path[0].y}
+                r={18}
+                fill="#2d8bf0"
+                stroke="white"
+                strokeWidth={4}
+              />
+              {/* Destination point */}
+              <Circle
+                cx={path[path.length - 1].x}
+                cy={path[path.length - 1].y}
+                r={18}
+                fill="#642222"
+                stroke="white"
+                strokeWidth={4}
+              />
+            </Svg>
           )}
         </Animated.View>
       </View>

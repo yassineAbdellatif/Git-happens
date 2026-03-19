@@ -40,6 +40,7 @@ const IndoorMapScreen = () => {
     destinationPoint,
     startResults,
     destinationResults,
+    path,
     handleStartSearch,
     handleDestinationSearch,
     selectStartNode,
@@ -73,7 +74,7 @@ const IndoorMapScreen = () => {
       {/* MAP LAYER */}
       <View style={styles.mapContainer}>
         {floorPlanEntry ? (
-          <FloorPlanDisplay floorPlanEntry={floorPlanEntry} />
+          <FloorPlanDisplay floorPlanEntry={floorPlanEntry} path={path} />
         ) : (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
