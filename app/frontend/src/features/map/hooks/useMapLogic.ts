@@ -168,10 +168,17 @@ export const useMapLogic = () => {
   };
 
   const toggleCampus = () => {
+    const distanceToSgw =
+      Math.abs(currentRegion.latitude - SGW_REGION.latitude) +
+      Math.abs(currentRegion.longitude - SGW_REGION.longitude);
+    const distanceToLoyola =
+      Math.abs(currentRegion.latitude - LOYOLA_REGION.latitude) +
+      Math.abs(currentRegion.longitude - LOYOLA_REGION.longitude);
+
+    const isCloserToSgw = distanceToSgw <= distanceToLoyola;
     const newRegion =
-      currentRegion.latitude === SGW_REGION.latitude
-        ? LOYOLA_REGION
-        : SGW_REGION;
+      isCloserToSgw ? LOYOLA_REGION : SGW_REGION;
+
     setCurrentRegion(newRegion);
     mapRef.current?.animateToRegion(newRegion, 1000);
   };

@@ -15,6 +15,7 @@ import { styles } from "../styles/mapScreenStyle";
 import OutdoorView from "../components/OutDoorView";
 import {
   SGW_REGION,
+  LOYOLA_REGION,
   CONCORDIA_BUILDINGS,
   getDisplayStatus,
 } from "../../../constants/buildings";
@@ -93,6 +94,14 @@ const MapScreen = () => {
     selectedBuilding,
     currentBuilding,
   );
+
+  const distanceToSgw =
+    Math.abs(currentRegion.latitude - SGW_REGION.latitude) +
+    Math.abs(currentRegion.longitude - SGW_REGION.longitude);
+  const distanceToLoyola =
+    Math.abs(currentRegion.latitude - LOYOLA_REGION.latitude) +
+    Math.abs(currentRegion.longitude - LOYOLA_REGION.longitude);
+  const isCloserToSgw = distanceToSgw <= distanceToLoyola;
 
   const handleMapLayerPress = () => {
     Keyboard.dismiss();
@@ -254,7 +263,7 @@ const MapScreen = () => {
                 <Text style={styles.statusValue}>
                   {currentBuilding
                     ? currentBuilding.campus
-                    : currentRegion.latitude === SGW_REGION.latitude
+                    : isCloserToSgw
                       ? "SGW"
                       : "LOYOLA"}
                 </Text>
@@ -269,7 +278,7 @@ const MapScreen = () => {
                 onPress={toggleCampus}
               >
                 <Text style={styles.toggleText}>
-                  {currentRegion.latitude === SGW_REGION.latitude
+                  {isCloserToSgw
                     ? "TO LOYOLA"
                     : "TO SGW"}
                 </Text>
