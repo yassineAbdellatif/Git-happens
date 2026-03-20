@@ -58,7 +58,11 @@ export const AppNavigator = () => {
       <Drawer.Screen
         name="CampusMap"
         component={MapStackNavigator}
-        options={{ title: "Campus Map", drawerLabel: "Map", headerShown: false }}
+        options={{
+          title: "Campus Map",
+          drawerLabel: "Map",
+          headerShown: false,
+        }}
       />
       <Drawer.Screen
         name="Calendar"
