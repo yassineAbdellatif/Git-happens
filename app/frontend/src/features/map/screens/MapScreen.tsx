@@ -69,12 +69,8 @@ const MapScreen = () => {
     setTransportMode,
     setDestination,
   } = useMapLogic();
-  const {
-    mapType,
-    setMapType,
-    toggleMapType,
-    isIndoorInteracting,
-  } = useMapScreenUiState(selectedBuilding?.id || null);
+  const { mapType, setMapType, toggleMapType, isIndoorInteracting } =
+    useMapScreenUiState(selectedBuilding?.id || null);
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -148,7 +144,7 @@ const MapScreen = () => {
           />
         </View>
 
-      <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
+        <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
             {!isRouting ? (
@@ -281,6 +277,12 @@ const MapScreen = () => {
                 <Text style={styles.toggleText}>
                   {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}
                 </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.toggleButton}
+                onPress={() => navigation.navigate("Calendar")}
+              >
+                <Text style={styles.toggleText}>Calendar Selection</Text>
               </TouchableOpacity>
             </View>
           )}
