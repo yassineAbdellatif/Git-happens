@@ -32,6 +32,7 @@ export interface FloorPlanRegistryEntry {
   buildingId: IndoorBuildingId;
   floorNumber: FloorNumber;
   localizedNodes: LocalizedNode[];
+  edges: RawEdge[];
 }
 
 export interface RawMapNode {
@@ -42,6 +43,14 @@ export interface RawMapNode {
   x: number;
   y: number;
   label?: string;
+  accessible?: boolean;
+}
+
+export interface RawEdge {
+  source: string;
+  target: string;
+  type: string;
+  weight: number;
   accessible?: boolean;
 }
 
@@ -57,7 +66,6 @@ const isSupportedIndoorBuildingId = (
   buildingId: string,
 ): buildingId is IndoorBuildingId => SUPPORTED_INDOOR_BUILDINGS.has(buildingId);
 
-
 const ALL_RAW_NODES: RawMapNode[] = [
   ...(hData?.nodes || []),
   ...(ccData?.nodes || []),
@@ -66,8 +74,16 @@ const ALL_RAW_NODES: RawMapNode[] = [
   ...(vlData?.nodes || []),
 ];
 
+const ALL_RAW_EDGES: RawEdge[] = [
+  ...((hData as any)?.edges || []),
+  ...((ccData as any)?.edges || []),
+  ...((mbData as any)?.edges || []),
+  ...((veData as any)?.edges || []),
+  ...((vlData as any)?.edges || []),
+];
+
 export const getSupportedFloorsForBuilding = (
-  buildingId: string
+  buildingId: string,
 ): FloorNumber[] => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
@@ -92,7 +108,7 @@ export const getSupportedFloorsForBuilding = (
 
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
-  floorNumber: FloorNumber
+  floorNumber: FloorNumber,
 ): FloorPlanRegistryEntry | null => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
@@ -108,12 +124,7 @@ export const getFloorPlanRegistryEntry = (
       return nodeBuilding === "Hall" && nodeFloor === String(floorNumber);
     }
 
-    // 2. Handle the MB S2 mismatch (Building "MB" + Floor "S2" -> Building "MB-S2" + Floor "1")
-    if (buildingId === "MB" && floorNumber === "S2") {
-      return nodeBuilding === "MB-S2" && nodeFloor === "1";
-    }
-
-    // 3. Handle standard matches (CC, MB Floor 1, VE, VL)
+    // 2. Handle standard matches (CC, MB, VE, VL)
     return nodeBuilding === buildingId && nodeFloor === String(floorNumber);
   });
 
@@ -132,9 +143,15 @@ export const getFloorPlanRegistryEntry = (
     y: node.y,
   }));
 
+  const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
+  const edges = ALL_RAW_EDGES.filter(
+    (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target),
+  );
+
   return {
     buildingId,
     floorNumber,
     localizedNodes,
+    edges,
   };
 };
