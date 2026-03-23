@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
+import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
 import { findPath } from "../utils/pathfinding";
 
 export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {
