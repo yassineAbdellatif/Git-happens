@@ -53,7 +53,8 @@ describe("Nearby POI map feature", () => {
     const source = readFile(mapLogicPath);
 
     expect(source).toContain("hasShownPoiDeniedRef");
-    expect(source).toContain("(entry.reason as any)?.response?.status === 403");
+    expect(source).toContain("const hasErrorResponseStatus = (");
+    expect(source).toContain("hasErrorResponseStatus(entry.reason, 403)");
     expect(source).toContain("Alert.alert(");
     expect(source).toContain("Nearby Search Unavailable");
   });
@@ -69,12 +70,13 @@ describe("Nearby POI map feature", () => {
   it("renders nearby POI markers as small icon circles in OutDoorView", () => {
     const source = readFile(outdoorViewPath);
 
-    expect(source).toContain("nearbyPois?.map((poi) => (");
+    expect(source).toContain("nearbyPois?.map((poi) => {");
     expect(source).toContain('key={`poi-${poi.id}`}');
     expect(source).toContain("style={styles.poiMarkerDot}");
     expect(source).toContain('poi.poiType === "library"');
     expect(source).toContain('poi.poiType === "restaurant"');
     expect(source).toContain('"local-cafe"');
+    expect(source).toContain("name={poiIconName}");
     expect(source).toContain("style={styles.poiMarkerDot}");
     expect(source).toContain("backgroundColor: \"#1f6feb\"");
   });

@@ -10,6 +10,7 @@ import MapView, {
   Polyline,
 } from "react-native-maps";
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
+import type { NearbyPoiType } from "../../../services/mapApiService";
 import { getSegmentColor } from "../utils/shuttleLogic";
 
 interface OutdoorViewProps {
@@ -28,7 +29,7 @@ interface OutdoorViewProps {
     id: string;
     name: string;
     location: { lat: number; lng: number };
-    poiType?: "cafe" | "restaurant" | "library";
+    poiType?: NearbyPoiType;
   }>;
   transportMode?: string;
   mapType: MapType;
@@ -142,16 +143,20 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
           const isCurrent = building.id === currentBuildingId;
           const buildingCenter = getPolygonCenter(building.coordinates);
 
-          let fillColor = "rgba(145, 35, 56, 0.15)";
-          let strokeColor = "#912338";
+          let fillColor = "rgba(145, 35, 56, 0.12)";
+          let strokeColor = "#6e1528";
+          let strokeWidth = 3;
           let zIndex = 1;
 
           if (isSelected) {
             fillColor = "rgba(145, 35, 56, 0.8)";
-            strokeColor = "#000000";
+            strokeColor = "#111111";
+            strokeWidth = 4;
             zIndex = 10;
           } else if (isCurrent) {
             fillColor = "rgba(255, 215, 0, 0.6)";
+            strokeColor = "#7a5d00";
+            strokeWidth = 3.5;
             zIndex = 5;
           }
 
@@ -162,7 +167,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
                 coordinates={building.coordinates}
                 fillColor={fillColor}
                 strokeColor={strokeColor}
-                strokeWidth={isSelected ? 3 : 2}
+                strokeWidth={strokeWidth}
                 zIndex={zIndex}
                 tappable={true}
                 onPress={(e) => {
@@ -184,30 +189,35 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
           );
         })}
 
-        {nearbyPois?.map((poi) => (
-          <Marker
-            key={`poi-${poi.id}`}
-            coordinate={{
-              latitude: poi.location.lat,
-              longitude: poi.location.lng,
-            }}
-            title={poi.name}
-          >
-            <View style={styles.poiMarkerDot}>
-              <MaterialIcons
-                name={
-                  poi.poiType === "library"
-                    ? "local-library"
-                    : poi.poiType === "restaurant"
-                      ? "restaurant"
-                      : "local-cafe"
-                }
-                size={12}
-                color="#ffffff"
-              />
-            </View>
-          </Marker>
-        ))}
+        {nearbyPois?.map((poi) => {
+          let poiIconName: "local-library" | "restaurant" | "local-cafe" =
+            "local-cafe";
+
+          if (poi.poiType === "library") {
+            poiIconName = "local-library";
+          } else if (poi.poiType === "restaurant") {
+            poiIconName = "restaurant";
+          }
+
+          return (
+            <Marker
+              key={`poi-${poi.id}`}
+              coordinate={{
+                latitude: poi.location.lat,
+                longitude: poi.location.lng,
+              }}
+              title={poi.name}
+            >
+              <View style={styles.poiMarkerDot}>
+                <MaterialIcons
+                  name={poiIconName}
+                  size={12}
+                  color="#ffffff"
+                />
+              </View>
+            </Marker>
+          );
+        })}
       </MapView>
     </View>
   );

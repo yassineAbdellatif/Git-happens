@@ -29,6 +29,23 @@ type NearbyPoiMapItem = NearbyPoiResult["results"][number] & {
 
 const POI_TYPES: NearbyPoiType[] = ["cafe", "restaurant", "library"];
 
+type ErrorWithResponseStatus = {
+  response?: {
+    status?: number;
+  };
+};
+
+const hasErrorResponseStatus = (
+  reason: unknown,
+  expectedStatus: number,
+): boolean => {
+  if (typeof reason !== "object" || reason === null) {
+    return false;
+  }
+
+  return (reason as ErrorWithResponseStatus).response?.status === expectedStatus;
+};
+
 
 export const useMapLogic = () => {
   const mapRef = useRef<any>(null);
@@ -242,7 +259,7 @@ export const useMapLogic = () => {
       const hasDeniedError = settled.some(
         (entry) =>
           entry.status === "rejected" &&
-          (entry.reason as any)?.response?.status === 403
+          hasErrorResponseStatus(entry.reason, 403)
       );
 
       if (hasDeniedError && !hasShownPoiDeniedRef.current) {

@@ -102,6 +102,11 @@ const MapScreen = () => {
     Math.abs(currentRegion.latitude - LOYOLA_REGION.latitude) +
     Math.abs(currentRegion.longitude - LOYOLA_REGION.longitude);
   const isCloserToSgw = distanceToSgw <= distanceToLoyola;
+  const campusLabel = currentBuilding
+    ? currentBuilding.campus
+    : isCloserToSgw
+      ? "SGW"
+      : "LOYOLA";
 
   const handleMapLayerPress = () => {
     Keyboard.dismiss();
@@ -260,13 +265,7 @@ const MapScreen = () => {
 
               <View style={styles.statusCard}>
                 <Text style={styles.statusLabel}>CAMPUS</Text>
-                <Text style={styles.statusValue}>
-                  {currentBuilding
-                    ? currentBuilding.campus
-                    : isCloserToSgw
-                      ? "SGW"
-                      : "LOYOLA"}
-                </Text>
+                <Text style={styles.statusValue}>{campusLabel}</Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
                 <Text style={styles.statusValue}>{statusText}</Text>
