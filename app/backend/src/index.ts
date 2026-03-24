@@ -1,6 +1,6 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
+import express = require('express');
+import dotenv = require('dotenv');
+import cors = require('cors');
 import mapRoutes from './routes/mapRoutes'; // Adjust path if needed
 
 dotenv.config();

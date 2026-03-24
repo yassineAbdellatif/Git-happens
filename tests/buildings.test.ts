@@ -1,4 +1,8 @@
-import { CONCORDIA_BUILDINGS, Building } from '../app/frontend/src/constants/buildings';
+import {
+  CONCORDIA_BUILDINGS,
+  Building,
+  getDisplayStatus,
+} from '../app/frontend/src/constants/buildings';
 
 describe('buildings constants', () => {
   describe('CONCORDIA_BUILDINGS', () => {
@@ -130,6 +134,71 @@ describe('buildings constants', () => {
 
       expect(exampleBuilding).toBeDefined();
       expect(exampleBuilding.campus).toBe('SGW');
+    });
+  });
+
+  describe('getDisplayStatus', () => {
+    const currentRegion = { latitude: 45.4971, longitude: -73.5788 };
+
+    it('returns -- when user location is missing', () => {
+      const result = getDisplayStatus(null, currentRegion, null, null);
+      expect(result).toBe('--');
+    });
+
+    it('returns selected building name when selected building exists', () => {
+      const selected = CONCORDIA_BUILDINGS[0];
+
+      const result = getDisplayStatus(
+        { latitude: 45.497, longitude: -73.579 },
+        currentRegion,
+        selected,
+        null
+      );
+
+      expect(result).toBe(selected.name);
+    });
+
+    it('returns current building name when no selected building exists', () => {
+      const current = CONCORDIA_BUILDINGS[1];
+
+      const result = getDisplayStatus(
+        { latitude: 45.497, longitude: -73.579 },
+        currentRegion,
+        null,
+        current
+      );
+
+      expect(result).toBe(current.name);
+    });
+
+    it('returns containing building when user is inside polygon', () => {
+      const target = CONCORDIA_BUILDINGS[0];
+      const centroid = target.coordinates.reduce(
+        (acc, point) => ({
+          latitude: acc.latitude + point.latitude,
+          longitude: acc.longitude + point.longitude,
+        }),
+        { latitude: 0, longitude: 0 }
+      );
+
+      const insidePoint = {
+        latitude: centroid.latitude / target.coordinates.length,
+        longitude: centroid.longitude / target.coordinates.length,
+      };
+
+      const result = getDisplayStatus(insidePoint, currentRegion, null, null);
+      expect(result).toBe(target.name);
+    });
+
+    it('returns -- when no selected/current and user not in a building', () => {
+      const result = getDisplayStatus(
+        { latitude: 46.0, longitude: -74.0 },
+        currentRegion,
+        null,
+        null
+      );
+
+      expect(result).toBe('--');
     });
   });
 });
