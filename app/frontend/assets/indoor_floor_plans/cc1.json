@@ -4,13 +4,13 @@
   },
   "nodes": [
     {
-      "id": "CC_F1_men_washroom_224",
+      "id": "CC_F1_washroom_224",
       "type": "washroom",
       "buildingId": "CC",
       "floor": 1,
       "x": 1188,
       "y": 645,
-      "label": "men.washroom",
+      "label": "washroom",
       "accessible": true
     },
     {
@@ -75,12 +75,12 @@
     },
     {
       "id": "CC_F1_washroom_231",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "CC",
       "floor": 1,
       "x": 6897,
       "y": 538,
-      "label": "women.washroom",
+      "label": "washroom",
       "accessible": true
     },
     {
