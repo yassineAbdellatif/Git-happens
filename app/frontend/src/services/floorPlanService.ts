@@ -66,7 +66,6 @@ const isSupportedIndoorBuildingId = (
   buildingId: string,
 ): buildingId is IndoorBuildingId => SUPPORTED_INDOOR_BUILDINGS.has(buildingId);
 
-
 const ALL_RAW_NODES: RawMapNode[] = [
   ...(hData?.nodes || []),
   ...(ccData?.nodes || []),
@@ -84,7 +83,7 @@ const ALL_RAW_EDGES: RawEdge[] = [
 ];
 
 export const getSupportedFloorsForBuilding = (
-  buildingId: string
+  buildingId: string,
 ): FloorNumber[] => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return [];
@@ -109,7 +108,7 @@ export const getSupportedFloorsForBuilding = (
 
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
-  floorNumber: FloorNumber
+  floorNumber: FloorNumber,
 ): FloorPlanRegistryEntry | null => {
   if (!isSupportedIndoorBuildingId(buildingId)) {
     return null;
@@ -125,12 +124,7 @@ export const getFloorPlanRegistryEntry = (
       return nodeBuilding === "Hall" && nodeFloor === String(floorNumber);
     }
 
-    // 2. Handle the MB S2 mismatch (Building "MB" + Floor "S2" -> Building "MB-S2" + Floor "1")
-    if (buildingId === "MB" && floorNumber === "S2") {
-      return nodeBuilding === "MB-S2" && nodeFloor === "1";
-    }
-
-    // 3. Handle standard matches (CC, MB Floor 1, VE, VL)
+    // 2. Handle standard matches (CC, MB, VE, VL)
     return nodeBuilding === buildingId && nodeFloor === String(floorNumber);
   });
 
@@ -151,7 +145,7 @@ export const getFloorPlanRegistryEntry = (
 
   const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
   const edges = ALL_RAW_EDGES.filter(
-    (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target)
+    (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target),
   );
 
   return {

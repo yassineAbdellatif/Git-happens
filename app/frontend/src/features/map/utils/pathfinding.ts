@@ -1,4 +1,4 @@
-import { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
+import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
 
  // Euclidean distance heuristic between two nodes (in floor plan pixels).
  // (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)

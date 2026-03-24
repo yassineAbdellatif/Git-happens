@@ -20,9 +20,9 @@ describe("IndoorMapScreen source contract", () => {
   it("initializes indoor navigation with localized nodes fallback", () => {
     const source = readScreenSource();
 
-    expect(source).toContain(
-      "useIndoorNavigation(floorPlanEntry?.localizedNodes || [])"
-    );
+    expect(source).toContain("useIndoorNavigation(");
+    expect(source).toContain("floorPlanEntry?.localizedNodes || []");
+    expect(source).toContain("floorPlanEntry?.edges || []");
   });
 
   it("registers keyboard show and hide listeners", () => {

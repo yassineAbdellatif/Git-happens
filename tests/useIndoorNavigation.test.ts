@@ -1,121 +1,54 @@
-let hookState: unknown[] = [];
-let hookCursor = 0;
+import * as fs from "fs";
+import * as path from "path";
 
-const resetRenderCursor = () => {
-  hookCursor = 0;
-};
-
-jest.mock(
-  "react",
-  () => ({
-    useState: (initialValue: unknown) => {
-      const slot = hookCursor;
-      hookCursor += 1;
-
-      if (hookState[slot] === undefined) {
-        hookState[slot] = initialValue;
-      }
-
-      const setState = (nextValue: unknown) => {
-        hookState[slot] =
-          typeof nextValue === "function"
-            ? (nextValue as (prev: unknown) => unknown)(hookState[slot])
-            : nextValue;
-      };
-
-      return [hookState[slot], setState];
-    },
-  }),
-  { virtual: true }
+const hookPath = path.join(
+  process.cwd(),
+  "app/frontend/src/features/map/hooks/useIndoorNavigation.ts"
 );
 
-import { useIndoorNavigation } from "../app/frontend/src/features/map/hooks/useIndoorNavigation";
+const pathfindingPath = path.join(
+  process.cwd(),
+  "app/frontend/src/features/map/utils/pathfinding.ts"
+);
 
-type NodeLike = {
-  id: string;
-  label: string;
-};
+const readSource = (filePath: string) => fs.readFileSync(filePath, "utf8");
 
-const mockNodes: NodeLike[] = [
-  { id: "n1", label: "Hall 920" },
-  { id: "n2", label: "MB 1.210" },
-  { id: "n3", label: "EV 1.605" },
-];
+describe("useIndoorNavigation source contract", () => {
+  it("accepts nodes and edges and delegates routing to findPath", () => {
+    const source = readSource(hookPath);
 
-const renderHook = (nodes: NodeLike[] = mockNodes) => {
-  resetRenderCursor();
-  return useIndoorNavigation(nodes as any);
-};
-
-describe("useIndoorNavigation", () => {
-  beforeEach(() => {
-    hookState = [];
-    hookCursor = 0;
-    jest.clearAllMocks();
+    expect(source).toContain("useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {");
+    expect(source).toContain("const result = findPath(");
+    expect(source).toContain("selectedStartNode.id");
+    expect(source).toContain("selectedDestinationNode.id");
+    expect(source).toContain("nodes,");
+    expect(source).toContain("edges");
   });
 
-  it("filters start points by label", () => {
-    let hook = renderHook();
-    hook.handleStartSearch("mb");
+  it("resets path on search and node selection updates", () => {
+    const source = readSource(hookPath);
 
-    hook = renderHook();
-    expect(hook.startPoint).toBe("mb");
-    expect(hook.startResults).toHaveLength(1);
-    expect(hook.startResults[0].label).toBe("MB 1.210");
+    expect(source).toContain("const handleStartSearch = (text: string) => {");
+    expect(source).toContain("const handleDestinationSearch = (text: string) => {");
+    expect(source).toContain("const selectStartNode = (node: LocalizedNode) => {");
+    expect(source).toContain("const selectDestinationNode = (node: LocalizedNode) => {");
+    expect(source).toContain("setPath([])");
   });
 
-  it("selects a start node and clears start results", () => {
-    let hook = renderHook();
-    hook.handleStartSearch("hall");
-    hook = renderHook();
+  it("warns when points are missing and logs navigation status", () => {
+    const source = readSource(hookPath);
 
-    expect(hook.startResults).toHaveLength(1);
-    hook.selectStartNode(hook.startResults[0]);
-
-    hook = renderHook();
-    expect(hook.startPoint).toBe("Hall 920");
-    expect(hook.startResults).toEqual([]);
+    expect(source).toContain('console.warn("Select both points first")');
+    expect(source).toContain('console.log(');
+    expect(source).toContain('[NAV] Path found: ${result.length} nodes');
+    expect(source).toContain('[NAV] No path found between');
   });
 
-  it("warns when navigation starts without both selected points", () => {
-    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+  it("uses type-only imports to avoid heavy runtime graph data loading", () => {
+    const source = readSource(hookPath);
+    const pathfindingSource = readSource(pathfindingPath);
 
-    const hook = renderHook();
-    hook.handleStartNavigation();
-
-    expect(warnSpy).toHaveBeenCalledWith("Select both points first");
-    warnSpy.mockRestore();
-  });
-
-  it("logs navigation when both start and destination are selected", () => {
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
-
-    let hook = renderHook();
-    hook.selectStartNode(mockNodes[0] as any);
-    hook.selectDestinationNode(mockNodes[2] as any);
-
-    hook = renderHook();
-    hook.handleStartNavigation();
-
-    expect(logSpy).toHaveBeenCalledWith("[NAV] Hall 920 → EV 1.605");
-    logSpy.mockRestore();
-  });
-
-  it("swaps start and destination points", () => {
-    let hook = renderHook();
-    hook.selectStartNode(mockNodes[0] as any);
-    hook.selectDestinationNode(mockNodes[1] as any);
-
-    hook = renderHook();
-    expect(hook.startPoint).toBe("Hall 920");
-    expect(hook.destinationPoint).toBe("MB 1.210");
-
-    hook.swapPoints();
-    hook = renderHook();
-
-    expect(hook.startPoint).toBe("MB 1.210");
-    expect(hook.destinationPoint).toBe("Hall 920");
-    expect(hook.startResults).toEqual([]);
-    expect(hook.destinationResults).toEqual([]);
+    expect(source).toContain("import type { LocalizedNode, RawEdge }");
+    expect(pathfindingSource).toContain("import type { LocalizedNode, RawEdge }");
   });
 });

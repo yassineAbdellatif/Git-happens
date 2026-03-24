@@ -5,7 +5,6 @@ import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
 import {
   View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Keyboard,
   Text,
   TextInput,
@@ -13,12 +12,12 @@ import {
   Image,
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import OutdoorView from "../components/OutDoorView";
 import { POIPanel } from "../components/POIPanel";
 import { usePOI } from "../hooks/usePOI";
 import {
   SGW_REGION,
+  LOYOLA_REGION,
   CONCORDIA_BUILDINGS,
   getDisplayStatus,
 } from "../../../constants/buildings";
@@ -43,6 +42,7 @@ const MapScreen = () => {
     selectedBuilding,
     searchQuery,
     filteredBuildings,
+    nearbyPois,
     isRouting,
     transportMode,
     routeCoords,
@@ -60,6 +60,7 @@ const MapScreen = () => {
     handleRecenter,
     toggleCampus,
     handleBuildingPress,
+    handleRegionChangeComplete,
     handleSearch,
     handleSelectFromSearch,
     handleCancelNavigation,
@@ -71,12 +72,8 @@ const MapScreen = () => {
     setTransportMode,
     setDestination,
   } = useMapLogic();
-  const {
-    mapType,
-    setMapType,
-    toggleMapType,
-    isIndoorInteracting,
-  } = useMapScreenUiState(selectedBuilding?.id || null);
+  const { mapType, setMapType, toggleMapType, isIndoorInteracting } =
+    useMapScreenUiState(selectedBuilding?.id || null);
 
   const poi = usePOI();
 
@@ -97,6 +94,19 @@ const MapScreen = () => {
     selectedBuilding,
     currentBuilding,
   );
+
+  const distanceToSgw =
+    Math.abs(currentRegion.latitude - SGW_REGION.latitude) +
+    Math.abs(currentRegion.longitude - SGW_REGION.longitude);
+  const distanceToLoyola =
+    Math.abs(currentRegion.latitude - LOYOLA_REGION.latitude) +
+    Math.abs(currentRegion.longitude - LOYOLA_REGION.longitude);
+  const isCloserToSgw = distanceToSgw <= distanceToLoyola;
+  const campusLabel = currentBuilding
+    ? currentBuilding.campus
+    : isCloserToSgw
+      ? "SGW"
+      : "LOYOLA";
 
   const handleMapLayerPress = () => {
     Keyboard.dismiss();
@@ -133,28 +143,27 @@ const MapScreen = () => {
     : false;
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        {/* MAP LAYER */}
-        <View style={styles.mapContainer}>
-          <OutdoorView
-            ref={mapRef}
-            region={currentRegion}
-            currentBuildingId={currentBuilding?.id}
-            selectedBuildingId={selectedBuilding?.id}
-            onBuildingPress={handleBuildingPress}
-            onMapPress={handleMapLayerPress}
-            routeCoords={routeCoords}
-            routeSegments={routeSegments}
-            transportMode={transportMode}
-            mapType={mapType}
-            onMapTypeChange={setMapType}
-            poiResults={poi.results}
-            poiColor={poi.selectedType?.color}
-          />
-        </View>
+    <View style={styles.container}>
+      {/* MAP LAYER */}
+      <View style={styles.mapContainer}>
+        <OutdoorView
+          ref={mapRef}
+          region={currentRegion}
+          currentBuildingId={currentBuilding?.id}
+          selectedBuildingId={selectedBuilding?.id}
+          onBuildingPress={handleBuildingPress}
+          onMapPress={handleMapLayerPress}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          routeCoords={routeCoords}
+          routeSegments={routeSegments}
+          nearbyPois={nearbyPois}
+          transportMode={transportMode}
+          mapType={mapType}
+          onMapTypeChange={setMapType}
+        />
+      </View>
 
-      <SafeAreaProvider style={styles.overlay} pointerEvents="box-none">
+      <View style={styles.overlay} pointerEvents="box-none">
           {/* TOP SEARCH BAR / ROUTE HEADER */}
           <View style={styles.searchContainer}>
             {!isRouting ? (
@@ -279,13 +288,7 @@ const MapScreen = () => {
 
               <View style={styles.statusCard}>
                 <Text style={styles.statusLabel}>CAMPUS</Text>
-                <Text style={styles.statusValue}>
-                  {currentBuilding
-                    ? currentBuilding.campus
-                    : currentRegion.latitude === SGW_REGION.latitude
-                      ? "SGW"
-                      : "LOYOLA"}
-                </Text>
+                <Text style={styles.statusValue}>{campusLabel}</Text>
                 <View style={styles.divider} />
                 <Text style={styles.statusLabel}>BUILDING</Text>
                 <Text style={styles.statusValue}>{statusText}</Text>
@@ -297,7 +300,7 @@ const MapScreen = () => {
                 onPress={toggleCampus}
               >
                 <Text style={styles.toggleText}>
-                  {currentRegion.latitude === SGW_REGION.latitude
+                  {isCloserToSgw
                     ? "TO LOYOLA"
                     : "TO SGW"}
                 </Text>
@@ -310,6 +313,12 @@ const MapScreen = () => {
                 <Text style={styles.toggleText}>
                   {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}
                 </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.toggleButton}
+                onPress={() => navigation.navigate("Calendar")}
+              >
+                <Text style={styles.toggleText}>Calendar Selection</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -733,9 +742,8 @@ const MapScreen = () => {
               </ScrollView>
             </View>
           )}
-        </SafeAreaProvider>
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 
