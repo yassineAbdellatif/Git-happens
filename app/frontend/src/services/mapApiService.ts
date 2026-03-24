@@ -1,9 +1,38 @@
 import axios from "axios";
+import { Platform } from "react-native";
 
-// Read API base URL from environment variable
-// Set EXPO_PUBLIC_API_BASE_URL in your .env file (e.g., http://192.168.1.100:3000)
+// On Android emulator, the host machine is reachable at 10.0.2.2 (not localhost).
+const DEFAULT_HOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  process.env.EXPO_PUBLIC_API_BASE_URL || `http://${DEFAULT_HOST}:3000`;
+
+export interface POIResult {
+  placeId: string;
+  name: string;
+  vicinity: string;
+  rating: number | null;
+  userRatingsTotal: number;
+  location: { latitude: number; longitude: number };
+  icon: string | null;
+  openNow: boolean | null;
+}
+
+export const getNearbyPlaces = async (
+  latitude: number,
+  longitude: number,
+  type: string,
+  maxResults = 10,
+  radius = 1500,
+): Promise<POIResult[]> => {
+  const url = `${API_BASE_URL}/api/places/nearby`;
+  
+  const response = await axios.get(url, {
+    params: { location: `${latitude},${longitude}`, radius, type, maxResults },
+    timeout: 10000,
+  });
+  console.log("Received nearby places from backend:", response.data);
+  return response.data.results as POIResult[];
+};
 
 export const getRouteFromBackend = async (
   origin: string,

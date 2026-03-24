@@ -1,6 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Marker } from "react-native-maps";
+import { POIResult } from "../../../services/mapApiService";
 import MapView, {
   PROVIDER_GOOGLE,
   MapType,
@@ -25,6 +26,8 @@ interface OutdoorViewProps {
   transportMode?: string;
   mapType: MapType;
   onMapTypeChange: (mapType: MapType) => void;
+  poiResults?: POIResult[];
+  poiColor?: string;
 }
 
 const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
@@ -39,6 +42,8 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     transportMode,
     mapType,
     onMapTypeChange,
+    poiResults,
+    poiColor = "#912338",
   } = props;
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
@@ -126,6 +131,22 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
               />
             )}
 
+        {/* --- POI MARKERS --- */}
+        {poiResults?.map((poi, idx) => (
+          <Marker
+            key={`poi-${poi.placeId}`}
+            coordinate={poi.location}
+            tracksViewChanges={false}
+            title={poi.name}
+            description={poi.vicinity}
+          >
+            <View style={[poiMarkerStyles.bubble, { backgroundColor: poiColor }]}>
+              <Text style={poiMarkerStyles.bubbleText}>{idx + 1}</Text>
+            </View>
+            <View style={[poiMarkerStyles.pin, { borderTopColor: poiColor }]} />
+          </Marker>
+        ))}
+
         {CONCORDIA_BUILDINGS.map((building) => {
           const isSelected = building.id === selectedBuildingId;
           const isCurrent = building.id === currentBuildingId;
@@ -182,6 +203,32 @@ OutdoorView.displayName = "OutdoorView";
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
+});
+
+const poiMarkerStyles = StyleSheet.create({
+  bubble: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  bubbleText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  pin: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 8,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    alignSelf: "center",
+  },
 });
 
 export default OutdoorView;
