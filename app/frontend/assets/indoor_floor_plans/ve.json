@@ -94,13 +94,13 @@
       "accessible": true
     },
     {
-      "id": "VE_F2_room_menwashroom",
-      "type": "room",
+      "id": "VE_F2_room_washroom",
+      "type": "washroom",
       "buildingId": "VE",
       "floor": 2,
       "x": 517,
       "y": 205,
-      "label": "men.washroom",
+      "label": "washroom",
       "accessible": true
     },
     {
@@ -871,6 +871,16 @@
       "x": 599,
       "y": 450,
       "label": "",
+      "accessible": true
+    },
+    {
+      "id": "VE_F2_water_fountain",
+      "type": "water_fountain",
+      "buildingId": "VE",
+      "floor": 2,
+      "x": 584,
+      "y": 274,
+      "label": "Water Fountain",
       "accessible": true
     },
     {
@@ -2152,10 +2162,24 @@
       "accessible": true
     },
     {
-      "source": "VE_F2_water_fountain_9152",
-      "target": "VE_F2_doorway_2",
-      "type": "poi_to_hallway",
-      "weight": 50,
+      "source": "VE_F2_hallway_waypoint_1",
+      "target": "VE_F2_water_fountain",
+      "type": "door_to_hallway",
+      "weight": 75,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_water_fountain",
+      "target": "VE_F2_hallway_waypoint_3",
+      "type": "door_to_hallway",
+      "weight": 29,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_water_fountain",
+      "target": "VE_F2_hallway_waypoint_5",
+      "type": "door_to_hallway",
+      "weight": 152,
       "accessible": true
     }
   ]

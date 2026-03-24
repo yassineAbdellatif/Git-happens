@@ -14,6 +14,7 @@ export type LocalizedNodeType =
   | "stairs"
   | "washroom"
   | "classroom"
+  | "water_fountain"
   | "room"
   | "doorway"
   | "stair_landing"
