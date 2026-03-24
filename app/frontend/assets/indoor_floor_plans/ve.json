@@ -874,6 +874,16 @@
       "accessible": true
     },
     {
+      "id": "VE_F2_water_fountain",
+      "type": "water_fountain",
+      "buildingId": "VE",
+      "floor": 2,
+      "x": 584,
+      "y": 274,
+      "label": "Water Fountain",
+      "accessible": true
+    },
+    {
       "id": "VE_F2_hallway_waypoint_5",
       "type": "hallway_waypoint",
       "buildingId": "VE",
@@ -2139,6 +2149,27 @@
       "target": "VE_F2_hallway_waypoint_8",
       "type": "hallway",
       "weight": 576,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_hallway_waypoint_1",
+      "target": "VE_F2_water_fountain",
+      "type": "door_to_hallway",
+      "weight": 75,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_water_fountain",
+      "target": "VE_F2_hallway_waypoint_3",
+      "type": "door_to_hallway",
+      "weight": 29,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_water_fountain",
+      "target": "VE_F2_hallway_waypoint_5",
+      "type": "door_to_hallway",
+      "weight": 152,
       "accessible": true
     }
   ]
