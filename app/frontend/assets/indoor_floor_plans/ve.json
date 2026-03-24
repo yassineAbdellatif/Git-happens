@@ -972,6 +972,16 @@
       "y": 306,
       "label": "",
       "accessible": true
+    },
+    {
+      "id": "VE_F2_water_fountain_9152",
+      "type": "water_fountain",
+      "buildingId": "VE",
+      "floor": 2,
+      "x": 585,
+      "y": 270,
+      "label": "Water Fountain",
+      "accessible": true
     }
   ],
   "edges": [

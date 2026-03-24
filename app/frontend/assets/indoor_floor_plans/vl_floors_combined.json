@@ -1582,6 +1582,26 @@
       "y": 876,
       "label": "",
       "accessible": true
+    },
+    {
+      "id": "VL_F1_water_fountain_6644",
+      "type": "water_fountain",
+      "buildingId": "VL",
+      "floor": 1,
+      "x": 709,
+      "y": 338,
+      "label": "Water Fountain",
+      "accessible": true
+    },
+    {
+      "id": "VL_F2_water_fountain_6406",
+      "type": "water_fountain",
+      "buildingId": "VL",
+      "floor": 2,
+      "x": 641,
+      "y": 262,
+      "label": "Water Fountain",
+      "accessible": true
     }
   ],
   "edges": [
@@ -3284,6 +3304,20 @@
       "target": "VL_F2_doorway_16",
       "type": "door_to_hallway",
       "weight": 604,
+      "accessible": true
+    },
+    {
+      "source": "VL_F1_water_fountain_6644",
+      "target": "VL_F1_doorway_15",
+      "type": "poi_to_hallway",
+      "weight": 50,
+      "accessible": true
+    },
+    {
+      "source": "VL_F2_water_fountain_6406",
+      "target": "VL_F1_doorway_4",
+      "type": "poi_to_hallway",
+      "weight": 50,
       "accessible": true
     }
   ]
