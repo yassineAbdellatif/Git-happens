@@ -7,10 +7,19 @@ import {
   ImageSourcePropType,
   View,
   StyleSheet,
-  Dimensions
+  Dimensions,
 } from "react-native";
-import { FloorPlanRegistryEntry, LocalizedNode } from "../../../services/floorPlanService";
-import Svg, { Circle, Polyline } from "react-native-svg";
+import {
+  FloorPlanRegistryEntry,
+  LocalizedNode,
+  LocalizedNodeType,
+} from "../../../services/floorPlanService";
+import Svg, {
+  Circle,
+  Polyline,
+  Image as SvgImage,
+  Rect,
+} from "react-native-svg";
 import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
 
 const { width, height } = Dimensions.get("window");
@@ -19,7 +28,28 @@ interface FloorPlanDisplayProps {
   floorPlanEntry: FloorPlanRegistryEntry;
   onInteractionChange?: (isInteracting: boolean) => void;
   path?: LocalizedNode[];
+  /** Called when a POI icon is pressed. Wire this up to show a detail sheet. */
+  onPoiPress?: (node: LocalizedNode) => void;
 }
+
+const POI_ICON_SIZE = 32;
+
+const POI_ASSETS: Partial<
+  Record<LocalizedNodeType, ReturnType<typeof Image.resolveAssetSource>>
+> = {
+  elevator: Image.resolveAssetSource(
+    require("../../../../assets/indoor_poi_icons/elevators.png"),
+  ),
+  stair_landing: Image.resolveAssetSource(
+    require("../../../../assets/indoor_poi_icons/stairs.png"),
+  ),
+  water_fountain: Image.resolveAssetSource(
+    require("../../../../assets/indoor_poi_icons/fountain.png"),
+  ),
+  washroom: Image.resolveAssetSource(
+    require("../../../../assets/indoor_poi_icons/restroom.png"),
+  ),
+};
 
 const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
   H_1: require("../../../../assets/updated_floor_plans/h1.png"),
@@ -39,6 +69,7 @@ const FloorPlanDisplay = ({
   floorPlanEntry,
   onInteractionChange,
   path = [],
+  onPoiPress,
 }: FloorPlanDisplayProps) => {
   const { zoom, translate, panResponder, handleZoomChange, handleResetView } =
     useIndoorFloorPlanInteraction(onInteractionChange);
@@ -52,9 +83,9 @@ const FloorPlanDisplay = ({
     ? Image.resolveAssetSource(MapImageSource as number)
     : null;
 
-    const polylinePoints = useMemo(
-      () => path.map((n) => `${n.x},${n.y}`).join(" "),
-      [path]
+  const polylinePoints = useMemo(
+    () => path.map((n) => `${n.x},${n.y}`).join(" "),
+    [path],
   );
 
   return (
@@ -105,40 +136,81 @@ const FloorPlanDisplay = ({
             </Text>
           )}
 
-          {/* Path overlay */}
-          {path.length > 1 && naturalSize && (
+          {/* POI icons + path overlay */}
+          {naturalSize && (
             <Svg
               style={StyleSheet.absoluteFill}
               width={width}
               height={height * 0.6}
               viewBox={`0 0 ${naturalSize.width} ${naturalSize.height}`}
             >
-              <Polyline
-                points={polylinePoints}
-                fill="none"
-                stroke="#2d8bf0"
-                strokeWidth={14}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {/* Start point */}
-              <Circle
-                cx={path[0].x}
-                cy={path[0].y}
-                r={18}
-                fill="#2d8bf0"
-                stroke="white"
-                strokeWidth={4}
-              />
-              {/* Destination point */}
-              <Circle
-                cx={path.at(-1)!.x}
-                cy={path.at(-1)!.y}
-                r={18}
-                fill="#642222"
-                stroke="white"
-                strokeWidth={4}
-              />
+              {/* Figma POI icons — only on floors whose PNG has no embedded icons */}
+              {!floorPlanEntry.poiIconsEmbedded &&
+                floorPlanEntry.localizedNodes
+                  .filter((node) => node.nodeType in POI_ASSETS)
+                  .map((node) => {
+                    const asset = POI_ASSETS[node.nodeType]!;
+                    return (
+                      <SvgImage
+                        key={node.id}
+                        x={node.x - POI_ICON_SIZE / 2}
+                        y={node.y - POI_ICON_SIZE / 2}
+                        width={POI_ICON_SIZE}
+                        height={POI_ICON_SIZE}
+                        href={{ uri: asset.uri }}
+                        preserveAspectRatio="xMidYMid meet"
+                        onPress={() => onPoiPress?.(node)}
+                      />
+                    );
+                  })}
+
+              {/* Transparent hit-targets over embedded PNG icons (H_8, H_9, VE_2).
+                  The icons are put into the PNG directly so we can't interact with them directly —
+                  therefore, these invisible Rects sit at the same coordinates and forward taps to onPoiPress for 4.4.2 . */}
+              {floorPlanEntry.poiIconsEmbedded &&
+                floorPlanEntry.localizedNodes
+                  .filter((node) => node.nodeType in POI_ASSETS)
+                  .map((node) => (
+                    <Rect
+                      key={node.id}
+                      x={node.x - POI_ICON_SIZE / 2}
+                      y={node.y - POI_ICON_SIZE / 2}
+                      width={POI_ICON_SIZE}
+                      height={POI_ICON_SIZE}
+                      fill="transparent"
+                      onPress={() => onPoiPress?.(node)}
+                    />
+                  ))}
+
+              {/* Navigation path */}
+              {path.length > 1 && (
+                <>
+                  <Polyline
+                    points={polylinePoints}
+                    fill="none"
+                    stroke="#2d8bf0"
+                    strokeWidth={14}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <Circle
+                    cx={path[0].x}
+                    cy={path[0].y}
+                    r={18}
+                    fill="#2d8bf0"
+                    stroke="white"
+                    strokeWidth={4}
+                  />
+                  <Circle
+                    cx={path.at(-1)!.x}
+                    cy={path.at(-1)!.y}
+                    r={18}
+                    fill="#642222"
+                    stroke="white"
+                    strokeWidth={4}
+                  />
+                </>
+              )}
             </Svg>
           )}
         </Animated.View>
@@ -185,7 +257,7 @@ const styles = StyleSheet.create({
   },
   viewerFrame: {
     flex: 1,
-    width: "100%", 
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
