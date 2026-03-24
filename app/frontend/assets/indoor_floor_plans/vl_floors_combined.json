@@ -175,7 +175,7 @@
     },
     {
       "id": "VL_F1_washroom_112",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
       "x": 679,
@@ -185,7 +185,7 @@
     },
     {
       "id": "VL_F1_washroom_110",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
       "x": 676,
@@ -195,7 +195,7 @@
     },
     {
       "id": "VL_F1_washroom_116",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
       "x": 746,
@@ -1125,7 +1125,7 @@
     },
     {
       "id": "VL_F2_washroom_212",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "VL",
       "floor": 2,
       "x": 675,
@@ -1134,8 +1134,8 @@
       "accessible": true
     },
     {
-      "id": "VL_F2_room_210",
-      "type": "room",
+      "id": "VL_F2_washroom_210",
+      "type": "washroom",
       "buildingId": "VL",
       "floor": 2,
       "x": 672,

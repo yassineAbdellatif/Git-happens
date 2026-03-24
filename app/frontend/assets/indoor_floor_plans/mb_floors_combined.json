@@ -405,7 +405,7 @@
     },
     {
       "id": "MB_F1_washroom_410",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "MB",
       "floor": 1,
       "x": 719,
@@ -415,7 +415,7 @@
     },
     {
       "id": "MB_F1_washroom_430",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "MB",
       "floor": 1,
       "x": 816,
@@ -1045,7 +1045,7 @@
     },
     {
       "id": "MB_F0_washroom_410",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "MB",
       "floor": "S2",
       "x": 636,
@@ -1055,7 +1055,7 @@
     },
     {
       "id": "MB_F0_washroom_420",
-      "type": "room",
+      "type": "washroom",
       "buildingId": "MB",
       "floor": "S2",
       "x": 720,

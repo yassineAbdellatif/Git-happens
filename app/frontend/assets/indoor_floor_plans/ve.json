@@ -94,13 +94,13 @@
       "accessible": true
     },
     {
-      "id": "VE_F2_room_menwashroom",
-      "type": "room",
+      "id": "VE_F2_room_washroom",
+      "type": "washroom",
       "buildingId": "VE",
       "floor": 2,
       "x": 517,
       "y": 205,
-      "label": "men.washroom",
+      "label": "washroom",
       "accessible": true
     },
     {
