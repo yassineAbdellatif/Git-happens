@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
+import { DrawerActions } from "@react-navigation/native";
 
 import {
   View,
@@ -166,6 +167,12 @@ const MapScreen = () => {
               !isNavigating && (
                 <View style={styles.searchContainer}>
                   <View style={styles.searchBar}>
+                   <TouchableOpacity
+                      style={styles.menuButton}
+                      onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                    >
+                      <MaterialIcons name="menu" size={24} color="#ffffff" />
+                    </TouchableOpacity>
                     <TextInput
                       testID="search-input"
                       style={styles.searchInput}
@@ -286,12 +293,6 @@ const MapScreen = () => {
                 <Text style={styles.toggleText}>
                   {mapType === "hybrid" ? "Map: Satellite" : "Map: Standard"}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.toggleButton}
-                onPress={() => navigation.navigate("Calendar")}
-              >
-                <Text style={styles.toggleText}>Calendar Selection</Text>
               </TouchableOpacity>
             </View>
           )}
