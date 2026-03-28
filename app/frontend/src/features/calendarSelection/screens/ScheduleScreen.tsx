@@ -49,30 +49,30 @@ const ScheduleScreen: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
 
+  const loadEvents = async () => {
+    if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
+      setError("No calendars selected or access token missing");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedEvents = await fetchUpcomingEvents(
+        googleCalendarAccessToken,
+        selectedCalendarIds,
+      );
+      setEvents(fetchedEvents);
+    } catch (err) {
+      console.error("Failed to load events:", err);
+      setError("Failed to load schedule. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadEvents = async () => {
-      if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
-        setError("No calendars selected or access token missing");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedEvents = await fetchUpcomingEvents(
-          googleCalendarAccessToken,
-          selectedCalendarIds,
-        );
-        setEvents(fetchedEvents);
-      } catch (err) {
-        console.error("Failed to load events:", err);
-        setError("Failed to load schedule. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEvents();
   }, [googleCalendarAccessToken, selectedCalendarIds]);
 
@@ -146,29 +146,6 @@ const ScheduleScreen: React.FC<{
   };
 
   const handleRefresh = () => {
-    setLoading(true);
-    setError(null);
-    const loadEvents = async () => {
-      if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
-        setError("No calendars selected or access token missing");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const fetchedEvents = await fetchUpcomingEvents(
-          googleCalendarAccessToken,
-          selectedCalendarIds,
-        );
-        setEvents(fetchedEvents);
-      } catch (err) {
-        console.error("Failed to load events:", err);
-        setError("Failed to load schedule. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEvents();
   };
 
