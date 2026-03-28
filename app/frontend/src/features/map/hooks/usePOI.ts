@@ -49,7 +49,6 @@ export const usePOI = (): UsePOIReturn => {
       setIsLoading(true);
       setError(null);
       try {
-        console.log("DEBUG:", { latitude, longitude, type: selectedType.key, maxResults })
         const places = await getNearbyPlaces(latitude, longitude, selectedType.key, maxResults);
         setResults(places);
         if (places.length === 0) {

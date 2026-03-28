@@ -4,7 +4,6 @@ import * as mapService from '../services/mapService';
 export const getNearbyPlaces = async (req: Request, res: Response) => {
   try {
     const { location, type } = req.query;
-    console.log("getNearbyPlaces called with:", { location, type, radius: req.query.radius, maxResults: req.query.maxResults });
     if (!location || !type) {
       res.status(400).json({ error: "location and type are required" });
       return;
@@ -19,7 +18,6 @@ export const getNearbyPlaces = async (req: Request, res: Response) => {
     );
     res.json({ results });
   } catch (error) {
-    console.error("getNearbyPlaces error:", error);
     res.status(500).json({ error: "Failed to fetch nearby places" });
   }
 };

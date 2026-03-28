@@ -62,22 +62,16 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
   // Determine the color for the route based on the transport mode
   const currentColor = useMemo(() => {
     const mode = transportMode?.toUpperCase();
-    console.log("Current transport mode:", mode);
     switch (mode) {
       case "DRIVING":
-        console.log("Using DRIVING mode color:", "#4285F4");
         return "#4285F4";
       case "WALKING":
-        console.log("Using WALKING mode color:", "#4285F4");
         return "#4285F4";
       case "TRANSIT":
-        console.log("Using TRANSIT mode color:", "#020202");
         return "#020202";
       case "SHUTTLE":
-        console.log("Using SHUTTLE mode color:", "#912338");
         return "#912338";
       default:
-        console.log("Using default color for mode:", mode);
         return "#912338";
     }
   }, [transportMode]);
