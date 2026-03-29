@@ -1,7 +1,6 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
-import { DrawerActions } from "@react-navigation/native";
 
 import {
   View,

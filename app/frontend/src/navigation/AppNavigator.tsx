@@ -1,12 +1,16 @@
 import React from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 import MapScreen from "../features/map/screens/MapScreen";
 import { CalendarSelectionScreen } from "../features/calendarSelection/screens/CalendarSelectionScreen";
 import FloorSelectionScreen from "../features/map/screens/FloorSelectionScreen";
 import IndoorMapScreen from "../features/map/screens/IndoorMapScreen";
 import { MaterialIcons } from "@expo/vector-icons";
-import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import { 
+  createDrawerNavigator, 
+  DrawerContentScrollView, 
+  DrawerItemList,
+  DrawerContentComponentProps,
+} from "@react-navigation/drawer";
 import { View, Text } from "react-native";
 
 export type MapStackParamList = {
@@ -61,11 +65,29 @@ const CustomDrawerContent = (props: any) => {
   );
 };
 
+type DrawerIconProps = {
+  color: string;
+  size: number;
+  focused: boolean;
+};
+
+const renderDrawerContent = (props: DrawerContentComponentProps) => (
+  <CustomDrawerContent {...props} />
+);
+
+const MapIcon = ({ color }: DrawerIconProps) => (
+  <MaterialIcons name="map" size={24} color={color} />
+);
+
+const CalendarIcon = ({ color }: DrawerIconProps) => (
+  <MaterialIcons name="calendar-today" size={24} color={color} />
+);
+
 export const AppNavigator = () => {
   return (
-     <Drawer.Navigator
+    <Drawer.Navigator
       initialRouteName="CampusMap"
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerContent={renderDrawerContent}
       screenOptions={{
         headerShown: true,
         headerStyle: { backgroundColor: "#912338" },
@@ -84,9 +106,7 @@ export const AppNavigator = () => {
           title: "Campus Map",
           drawerLabel: "Map",
           headerShown: false,
-          drawerIcon: ({ color }) => (
-            <MaterialIcons name="map" size={24} color={color} />
-          ),
+          drawerIcon: MapIcon,
         }}
       />
       <Drawer.Screen
@@ -95,9 +115,7 @@ export const AppNavigator = () => {
         options={{
           title: "Calendar Selection",
           drawerLabel: "Calendars",
-          drawerIcon: ({ color }) => (
-            <MaterialIcons name="calendar-today" size={24} color={color} />
-          ),
+          drawerIcon: CalendarIcon,
         }}
       />
     </Drawer.Navigator>
