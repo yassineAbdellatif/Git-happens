@@ -1,31 +1,59 @@
-import { useState } from "react";
-import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
+import { useMemo, useState } from "react";
+import type {
+  IndoorBuildingId,
+  LocalizedNode,
+} from "../../../services/floorPlanService";
+import { getIndoorGraphForBuilding } from "../../../services/floorPlanService";
 import { findPath } from "../utils/pathfinding";
 
-export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {
+const normalizeLabel = (value: string) => value.trim().toLowerCase();
+
+export const useIndoorNavigation = (buildingId: IndoorBuildingId) => {
+  const graph = useMemo(() => getIndoorGraphForBuilding(buildingId), [buildingId]);
+
   const [startPoint, setStartPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
+  const [isAccessibilityEnabled, setIsAccessibilityEnabled] = useState(false);
 
   const [startResults, setStartResults] = useState<LocalizedNode[]>([]);
   const [destinationResults, setDestinationResults] = useState<LocalizedNode[]>([]);
 
-  const [selectedStartNode, setSelectedStartNode] = useState<LocalizedNode | null>(null);
-  const [selectedDestinationNode, setSelectedDestinationNode] = useState<LocalizedNode | null>(null);
+  const [selectedStartNode, setSelectedStartNode] = useState<LocalizedNode | null>(
+    null,
+  );
+  const [selectedDestinationNode, setSelectedDestinationNode] =
+    useState<LocalizedNode | null>(null);
 
   const [path, setPath] = useState<LocalizedNode[]>([]);
 
-  const filterNodes = (text: string) => {
-    if (!text) return [];
+  const allNodes = graph?.nodes || [];
+  const allEdges = graph?.edges || [];
 
-    return nodes.filter((node) =>
-      (node.label || "").toLowerCase().includes(text.toLowerCase())
+  const filterNodes = (text: string) => {
+    const normalizedText = normalizeLabel(text);
+    if (!normalizedText) return [];
+
+    return allNodes.filter((node) =>
+      normalizeLabel(node.label || "").includes(normalizedText),
     );
   };
 
-  const handleSearch = (text: string, setPoint: React.Dispatch<React.SetStateAction<string>>, setSelectedNode: React.Dispatch<React.SetStateAction<LocalizedNode | null>>, setResults: React.Dispatch<React.SetStateAction<LocalizedNode[]>>) => {
-    setPoint(text);
-    setSelectedNode(null);
-    setResults(filterNodes(text));
+  const recomputePath = (
+    startNode: LocalizedNode | null,
+    destinationNode: LocalizedNode | null,
+    accessibilityEnabled: boolean,
+  ) => {
+    if (!startNode || !destinationNode) {
+      setPath([]);
+      return [];
+    }
+
+    const result = findPath(startNode.id, destinationNode.id, allNodes, allEdges, {
+      accessibilityEnabled,
+    });
+
+    setPath(result);
+    return result;
   };
 
   const handleStartSearch = (text: string) => {
@@ -57,34 +85,11 @@ export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) =>
   };
 
   const handleStartNavigation = () => {
-    if (!selectedStartNode || !selectedDestinationNode) {
-      console.warn("Select both points first");
-      return;
-    }
-
-    console.log(
-      `[NAV] ${selectedStartNode.label} → ${selectedDestinationNode.label}`
+    recomputePath(
+      selectedStartNode,
+      selectedDestinationNode,
+      isAccessibilityEnabled,
     );
-
-    const result = findPath(
-      selectedStartNode.id,
-      selectedDestinationNode.id,
-      nodes,
-      edges
-    );
-
-    if (result.length === 0) {
-      console.warn(
-        `[NAV] No path found between ${selectedStartNode.id} and ${selectedDestinationNode.id}`
-      );
-    } else {
-      console.log(
-        `[NAV] Path found: ${result.length} nodes`,
-        result.map((n) => n.label)
-      );
-    }
-
-    setPath(result);
   };
 
   const swapPoints = () => {
@@ -97,17 +102,42 @@ export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) =>
     setPath([]);
   };
 
+  const toggleAccessibility = () => {
+    const nextValue = !isAccessibilityEnabled;
+    setIsAccessibilityEnabled(nextValue);
+
+    if (selectedStartNode && selectedDestinationNode) {
+      recomputePath(selectedStartNode, selectedDestinationNode, nextValue);
+    }
+  };
+
+  const clearPath = () => {
+    setPath([]);
+  };
+
+  const routeFloors = useMemo(
+    () =>
+      [...new Set(path.map((node) => node.floor).filter(Boolean))].map(String),
+    [path],
+  );
+
   return {
     startPoint,
     destinationPoint,
     startResults,
     destinationResults,
     path,
+    routeFloors,
+    isAccessibilityEnabled,
+    selectedStartNode,
+    selectedDestinationNode,
     handleStartSearch,
     handleDestinationSearch,
     selectStartNode,
     selectDestinationNode,
     handleStartNavigation,
+    toggleAccessibility,
     swapPoints,
+    clearPath,
   };
 };

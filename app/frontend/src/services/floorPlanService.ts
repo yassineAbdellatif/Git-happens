@@ -59,6 +59,11 @@ export interface RawEdge {
   accessible?: boolean;
 }
 
+export interface IndoorGraph {
+  nodes: LocalizedNode[];
+  edges: RawEdge[];
+}
+
 const SUPPORTED_INDOOR_BUILDINGS = new Set<string>([
   "H",
   "CC",
@@ -86,6 +91,32 @@ const ALL_RAW_EDGES: RawEdge[] = [
   ...((veData as any)?.edges || []),
   ...((vlData as any)?.edges || []),
 ];
+
+const normalizeBuildingId = (
+  rawBuildingId: string,
+): IndoorBuildingId | null => {
+  if (rawBuildingId === "Hall") {
+    return "H";
+  }
+
+  if (SUPPORTED_INDOOR_BUILDINGS.has(rawBuildingId)) {
+    return rawBuildingId as IndoorBuildingId;
+  }
+
+  return null;
+};
+
+const normalizeFloorNumber = (
+  buildingId: IndoorBuildingId,
+  rawBuildingId: string,
+  floor: number | string,
+): FloorNumber => {
+  if (buildingId === "MB" && rawBuildingId === "MB-S2") {
+    return "S2";
+  }
+
+  return String(floor) as FloorNumber;
+};
 
 export const getSupportedFloorsForBuilding = (
   buildingId: string,
@@ -302,6 +333,7 @@ export const getFloorPlanRegistryEntry = (
 
   const localizedNodes: LocalizedNode[] = rawNodesForFloor.map(toLocalizedNode);
 
+
   const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
   const edges = filterEdgesForNodes(ALL_RAW_EDGES, nodeIdSet);
 
@@ -351,3 +383,7 @@ export const getBuildingGraph = (
     edges: [...sameFloorEdges, ...crossFloorEdges],
   };
 };
+
+export const getIndoorGraphForBuilding = getBuildingGraph;
+
+

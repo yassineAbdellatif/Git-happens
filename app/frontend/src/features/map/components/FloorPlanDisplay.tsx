@@ -1,16 +1,17 @@
 import React, { useMemo } from "react";
 import {
   Animated,
+  Dimensions,
   Image,
+  ImageSourcePropType,
+  Modal,
+  Pressable,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ImageSourcePropType,
   View,
-  StyleSheet,
-  Dimensions,
-  Modal, 
-  Pressable,
 } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import {
   FloorPlanRegistryEntry,
   LocalizedNode,
@@ -25,12 +26,15 @@ import Svg, {
 import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
 
 const { width, height } = Dimensions.get("window");
+const FLOOR_CHANGE_MARKER_SIZE = 48;
 
 interface FloorPlanDisplayProps {
   floorPlanEntry: FloorPlanRegistryEntry;
   onInteractionChange?: (isInteracting: boolean) => void;
   path?: LocalizedNode[];
-  /** Called when a POI icon is pressed. Wire this up to show a detail sheet. */
+  startNode?: LocalizedNode | null;
+  destinationNode?: LocalizedNode | null;
+  floorChangeNode?: LocalizedNode | null;
   onPoiPress?: (node: LocalizedNode) => void;
 }
 
@@ -92,12 +96,14 @@ const FloorPlanDisplay = ({
   floorPlanEntry,
   onInteractionChange,
   path = [],
+  startNode = null,
+  destinationNode = null,
+  floorChangeNode = null,
   onPoiPress,
 }: FloorPlanDisplayProps) => {
   const { zoom, translate, panResponder, handleZoomChange, handleResetView } =
     useIndoorFloorPlanInteraction(onInteractionChange);
 
-  // Map the building ID and floor number to the correct PNG
   const mapImageKey = `${floorPlanEntry.buildingId}_${floorPlanEntry.floorNumber}`;
   const MapImageSource = PNG_ASSET_MAP[mapImageKey];
 
@@ -115,7 +121,6 @@ const FloorPlanDisplay = ({
 
   return (
     <View style={styles.container}>
-      {/* Zoom Controls floating on the right side */}
       <View style={styles.zoomControls}>
         <TouchableOpacity
           style={styles.zoomButton}
@@ -137,7 +142,6 @@ const FloorPlanDisplay = ({
         </TouchableOpacity>
       </View>
 
-      {/* The zoomable/pannable map frame */}
       <View style={styles.viewerFrame}>
         <Animated.View
           {...panResponder.panHandlers}
@@ -161,7 +165,6 @@ const FloorPlanDisplay = ({
             </Text>
           )}
 
-          {/* POI icons + path overlay */}
           {naturalSize && (
             <Svg
               style={StyleSheet.absoluteFill}
@@ -169,7 +172,6 @@ const FloorPlanDisplay = ({
               height={height * 0.6}
               viewBox={`0 0 ${naturalSize.width} ${naturalSize.height}`}
             >
-              {/* Figma POI icons — only on floors whose PNG has no embedded icons */}
               {!floorPlanEntry.poiIconsEmbedded &&
                 floorPlanEntry.localizedNodes
                   .filter((node) => node.nodeType in POI_ASSETS)
@@ -187,35 +189,29 @@ const FloorPlanDisplay = ({
                         onPress={() => {
                           setSelectedPoi(node);
                           onPoiPress?.(node);
-                          console.log(`POI pressed: ${node.label}`);
                         }}
                       />
                     );
                   })}
 
-              {/* Transparent hit-targets over embedded PNG icons (H_8, H_9, VE_2).
-                  The icons are put into the PNG directly so we can't interact with them directly —
-                  therefore, these invisible Rects sit at the same coordinates and forward taps to onPoiPress for 4.4.2 . */}
               {floorPlanEntry.poiIconsEmbedded &&
-              floorPlanEntry.localizedNodes
-                .filter((node) => node.nodeType in POI_ASSETS)
-                .map((node) => (
-                  <Rect
-                    key={node.id}
-                    x={node.x - POI_ICON_SIZE / 2}
-                    y={node.y - POI_ICON_SIZE / 2}
-                    width={POI_ICON_SIZE}
-                    height={POI_ICON_SIZE}
-                    fill="rgba(252, 116, 116, 0.58)"
-                    onPress={() => {
-                      console.log("POI pressed", node.id);
-                      setSelectedPoi(node);
-                      onPoiPress?.(node);
-                    }}
-                  />
-                ))}
+                floorPlanEntry.localizedNodes
+                  .filter((node) => node.nodeType in POI_ASSETS)
+                  .map((node) => (
+                    <Rect
+                      key={node.id}
+                      x={node.x - POI_ICON_SIZE / 2}
+                      y={node.y - POI_ICON_SIZE / 2}
+                      width={POI_ICON_SIZE}
+                      height={POI_ICON_SIZE}
+                      fill="transparent"
+                      onPress={() => {
+                        setSelectedPoi(node);
+                        onPoiPress?.(node);
+                      }}
+                    />
+                  ))}
 
-              {/* Navigation path */}
               {path.length > 1 && (
                 <>
                   <Polyline
@@ -226,28 +222,52 @@ const FloorPlanDisplay = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  <Circle
-                    cx={path[0].x}
-                    cy={path[0].y}
-                    r={18}
-                    fill="#2d8bf0"
-                    stroke="white"
-                    strokeWidth={4}
-                  />
-                  <Circle
-                    cx={path.at(-1)!.x}
-                    cy={path.at(-1)!.y}
-                    r={18}
-                    fill="#642222"
-                    stroke="white"
-                    strokeWidth={4}
-                  />
+                  {startNode && (
+                    <Circle
+                      cx={startNode.x}
+                      cy={startNode.y}
+                      r={18}
+                      fill="#2d8bf0"
+                      stroke="white"
+                      strokeWidth={4}
+                    />
+                  )}
+                  {destinationNode && (
+                    <Circle
+                      cx={destinationNode.x}
+                      cy={destinationNode.y}
+                      r={18}
+                      fill="#642222"
+                      stroke="white"
+                      strokeWidth={4}
+                    />
+                  )}
                 </>
               )}
             </Svg>
           )}
+
+          {naturalSize && floorChangeNode && (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.floorChangeMarker,
+                {
+                  left:
+                    (floorChangeNode.x / naturalSize.width) * width -
+                    FLOOR_CHANGE_MARKER_SIZE / 2,
+                  top:
+                    (floorChangeNode.y / naturalSize.height) * (height * 0.6) -
+                    FLOOR_CHANGE_MARKER_SIZE / 2,
+                },
+              ]}
+            >
+              <MaterialIcons name="elevator" size={26} color="#fff" />
+            </View>
+          )}
         </Animated.View>
       </View>
+
       <Modal
         visible={!!selectedPoi}
         transparent
@@ -261,22 +281,18 @@ const FloorPlanDisplay = ({
           <View style={styles.tooltip}>
             <Text style={styles.tooltipTitle}>
               {selectedPoi
-                ? POI_DETAILS[selectedPoi.nodeType]?.title ||
-                  selectedPoi.label
+                ? POI_DETAILS[selectedPoi.nodeType]?.title || selectedPoi.label
                 : ""}
             </Text>
 
-            {selectedPoi &&
-              POI_DETAILS[selectedPoi.nodeType]?.description && (
-                <Text style={styles.tooltipDescription}>
-                  {POI_DETAILS[selectedPoi.nodeType]?.description}
-                </Text>
-              )}
+            {selectedPoi && POI_DETAILS[selectedPoi.nodeType]?.description && (
+              <Text style={styles.tooltipDescription}>
+                {POI_DETAILS[selectedPoi.nodeType]?.description}
+              </Text>
+            )}
 
             {selectedPoi?.label && (
-              <Text style={styles.tooltipMeta}>
-                {selectedPoi.label}
-              </Text>
+              <Text style={styles.tooltipMeta}>{selectedPoi.label}</Text>
             )}
           </View>
         </Pressable>
@@ -328,8 +344,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rasterImage: {
-    width: width, //Use full screen width to allow for better zooming and panning
-    height: height * 0.6, // Use 60% of the screen height to ensure it fits well with zooming
+    width: width,
+    height: height * 0.6,
+  },
+  floorChangeMarker: {
+    position: "absolute",
+    width: FLOOR_CHANGE_MARKER_SIZE,
+    height: FLOOR_CHANGE_MARKER_SIZE,
+    borderRadius: FLOOR_CHANGE_MARKER_SIZE / 2,
+    backgroundColor: "#8d3143",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 4,
+    borderColor: "#fff",
   },
   errorText: {
     color: "#d9534f",
@@ -337,40 +364,36 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalOverlay: {
-  flex: 1,
-  backgroundColor: "rgba(0,0,0,0.2)",
-  justifyContent: "center",
-  alignItems: "center",
-},
-
-tooltip: {
-  backgroundColor: "white",
-  padding: 16,
-  borderRadius: 10,
-  minWidth: 180,
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.2,
-  shadowRadius: 6,
-  elevation: 5,
-},
-
-tooltipTitle: {
-  fontSize: 16,
-  fontWeight: "700",
-  marginBottom: 4,
-},
-
-tooltipDescription: {
-  fontSize: 13,
-  color: "#555",
-},
-
-tooltipMeta: {
-  fontSize: 12,
-  color: "#999",
-  marginTop: 6,
-},
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tooltip: {
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 10,
+    minWidth: 180,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  tooltipTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  tooltipDescription: {
+    fontSize: 13,
+    color: "#555",
+  },
+  tooltipMeta: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 6,
+  },
 });
 
 export default FloorPlanDisplay;

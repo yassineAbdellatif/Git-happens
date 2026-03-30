@@ -1,10 +1,11 @@
 import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
 
- // Euclidean distance heuristic between two nodes (in floor plan pixels).
- // (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)
- // Cross-floor pairs return 0: their x/y coordinates belong to different SVG
- // coordinate spaces so Euclidean distance would be meaningless and could
- // overestimate, violating A*'s admissibility requirement.
+// Euclidean distance heuristic between two nodes (in floor plan pixels).
+// (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)
+// Cross-floor pairs return 0: their x/y coordinates belong to different SVG
+// coordinate spaces so Euclidean distance would be meaningless and could
+// overestimate, violating A*''s admissibility requirement.
+const STAIR_NODE_TYPES = new Set(["stairs", "stair_landing"]);
 function heuristic(a: LocalizedNode, b: LocalizedNode): number {
   if (a.floor !== b.floor) return 0;
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -27,13 +28,26 @@ function reconstructPath(
 
 function buildAdjacency(
   nodes: LocalizedNode[],
-  edges: RawEdge[]
+  edges: RawEdge[],
+  accessibilityEnabled = false,
 ): Map<string, { id: string; weight: number }[]> {
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const adjacency = new Map<string, { id: string; weight: number }[]>(
-    nodes.map((n) => [n.id, []])
+    nodes.map((n) => [n.id, []]),
   );
 
   for (const edge of edges) {
+    const sourceNode = nodeMap.get(edge.source);
+    const targetNode = nodeMap.get(edge.target);
+
+    if (
+      accessibilityEnabled &&
+      ((sourceNode && STAIR_NODE_TYPES.has(sourceNode.nodeType)) ||
+        (targetNode && STAIR_NODE_TYPES.has(targetNode.nodeType)))
+    ) {
+      continue;
+    }
+
     adjacency.get(edge.source)?.push({ id: edge.target, weight: edge.weight });
     adjacency.get(edge.target)?.push({ id: edge.source, weight: edge.weight });
   }
@@ -92,7 +106,8 @@ export function findPath(
   startId: string,
   endId: string,
   nodes: LocalizedNode[],
-  edges: RawEdge[]
+  edges: RawEdge[],
+  options?: { accessibilityEnabled?: boolean },
 ): LocalizedNode[] {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
@@ -101,7 +116,11 @@ export function findPath(
   if (!startNode || !endNode) return [];
   if (startId === endId) return [startNode];
 
-  const adjacency = buildAdjacency(nodes, edges);
+  const adjacency = buildAdjacency(
+    nodes,
+    edges,
+    options?.accessibilityEnabled ?? false,
+  );
 
   const openSet = new Set<string>([startId]);
   const closedSet = new Set<string>();
@@ -139,3 +158,4 @@ export function findPath(
 
   return [];
 }
+
