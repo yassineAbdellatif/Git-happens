@@ -14,6 +14,7 @@ export type LocalizedNodeType =
   | "stairs"
   | "washroom"
   | "classroom"
+  | "water_fountain"
   | "room"
   | "doorway"
   | "stair_landing"
@@ -33,6 +34,8 @@ export interface FloorPlanRegistryEntry {
   floorNumber: FloorNumber;
   localizedNodes: LocalizedNode[];
   edges: RawEdge[];
+  // True when the floor plan PNG already has styled map-pin POI icons embedded on it, so we know not to render the SVG overlay icons for that floor
+  poiIconsEmbedded: boolean;
 }
 
 export interface RawMapNode {
@@ -135,17 +138,31 @@ export const getFloorPlanRegistryEntry = (
   }
 
   // Map the flat JSON shape into the LocalizedNode structure expected by the app
-  const localizedNodes: LocalizedNode[] = rawNodesForFloor.map((node) => ({
-    id: node.id,
-    label: node.label || node.id,
-    nodeType: (node.type || "room") as LocalizedNodeType,
-    x: node.x,
-    y: node.y,
-  }));
+  const localizedNodes: LocalizedNode[] = rawNodesForFloor.map((node) => {
+    let nodeType = (node.type || "room") as LocalizedNodeType;
+    // Normalise legacy JSON type names to the canonical LocalizedNodeType values
+    if ((nodeType as string) === "elevator_door") nodeType = "elevator";
+    // Hall washrooms are typed "room" but identified via their id
+    if (nodeType === "room" && node.id.toLowerCase().includes("washroom"))
+      nodeType = "washroom";
+    return {
+      id: node.id,
+      label: node.label || node.id,
+      nodeType,
+      x: node.x,
+      y: node.y,
+    };
+  });
 
   const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
   const edges = ALL_RAW_EDGES.filter(
     (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target),
+  );
+
+  // Floors whose PNG already contains styled map-pin icons — skip the SVG overlay for those
+  const EMBEDDED_ICON_FLOORS = new Set(["H_8", "H_9", "VE_2"]);
+  const poiIconsEmbedded = EMBEDDED_ICON_FLOORS.has(
+    `${buildingId}_${floorNumber}`,
   );
 
   return {
@@ -153,5 +170,6 @@ export const getFloorPlanRegistryEntry = (
     floorNumber,
     localizedNodes,
     edges,
+    poiIconsEmbedded,
   };
 };
