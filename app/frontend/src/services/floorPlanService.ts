@@ -25,6 +25,8 @@ export interface LocalizedNode {
   id: string;
   label: string;
   nodeType: LocalizedNodeType;
+  /** Floor this node lives on. Used by multi-floor pathfinding to split paths by floor. */
+  floor: FloorNumber;
   x: number;
   y: number;
 }
@@ -109,6 +111,115 @@ export const getSupportedFloorsForBuilding = (
   }
 };
 
+// ---------------------------------------------------------------------------
+// Cross-floor edge generation
+// ---------------------------------------------------------------------------
+
+/**
+ * Weight assigned to a single cross-floor hop (elevator or staircase).
+ * Large enough that the planner prefers same-floor routes, but small enough
+ * that it will cross floors when needed.
+ */
+export const CROSS_FLOOR_WEIGHT = 500;
+
+/**
+ * Returns a grouping key used to match the *same* physical elevator shaft or
+ * stairwell across different floors.
+ *
+ * - Elevators: full normalised label  (e.g. "helevator1", "elevator2")
+ * - Stairs:    trailing digit only    (e.g. "1" from "stairs1" AND "stirs1")
+ *   The digit-only match handles the VE building typo ("stirs1" vs "stairs1").
+ *
+ * Returns null for nodes with no usable label (e.g. Hall stair landings without
+ * labels) — those are silently skipped.
+ */
+function crossFloorKey(node: RawMapNode): string | null {
+  const normalised = (node.label || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  if (!normalised) return null;
+
+  if (node.type === "stair_landing") {
+    const digit = normalised.match(/\d+/)?.[0];
+    return digit ? `stair_${digit}` : null;
+  }
+
+  if (node.type === "elevator_door") {
+    return `elev_${normalised}`;
+  }
+
+  return null;
+}
+
+/**
+ * Generates virtual edges that connect the same elevator shaft / stairwell
+ * across floors, using label-based matching (see `crossFloorKey`).
+ *
+ * Only nodes whose type is `elevator_door` or `stair_landing` are considered.
+ * Nodes on the same floor are never connected to each other here.
+ */
+export function buildCrossFloorEdges(buildingNodes: RawMapNode[]): RawEdge[] {
+  const groups = new Map<string, RawMapNode[]>();
+
+  for (const node of buildingNodes) {
+    if (node.type !== "elevator_door" && node.type !== "stair_landing") {
+      continue;
+    }
+    const key = crossFloorKey(node);
+    if (!key) continue;
+
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(node);
+  }
+
+  const edges: RawEdge[] = [];
+
+  for (const [, nodes] of groups) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        // Only link nodes that are on *different* floors
+        if (String(nodes[i].floor) === String(nodes[j].floor)) continue;
+
+        edges.push({
+          source: nodes[i].id,
+          target: nodes[j].id,
+          type: "cross_floor",
+          weight: CROSS_FLOOR_WEIGHT,
+          accessible: !!(nodes[i].accessible && nodes[j].accessible),
+        });
+      }
+    }
+  }
+
+  return edges;
+}
+
+// ---------------------------------------------------------------------------
+// Shared node mapping helper
+// ---------------------------------------------------------------------------
+
+function toLocalizedNode(node: RawMapNode): LocalizedNode {
+  let nodeType = (node.type || "room") as LocalizedNodeType;
+  // Normalise legacy JSON type names to the canonical LocalizedNodeType values
+  if ((nodeType as string) === "elevator_door") nodeType = "elevator";
+  // Hall washrooms are typed "room" but identified via their id
+  if (nodeType === "room" && node.id.toLowerCase().includes("washroom"))
+    nodeType = "washroom";
+  return {
+    id: node.id,
+    label: node.label || node.id,
+    nodeType,
+    floor: String(node.floor) as FloorNumber,
+    x: node.x,
+    y: node.y,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
 export const getFloorPlanRegistryEntry = (
   buildingId: string,
   floorNumber: FloorNumber,
@@ -137,22 +248,7 @@ export const getFloorPlanRegistryEntry = (
     return null;
   }
 
-  // Map the flat JSON shape into the LocalizedNode structure expected by the app
-  const localizedNodes: LocalizedNode[] = rawNodesForFloor.map((node) => {
-    let nodeType = (node.type || "room") as LocalizedNodeType;
-    // Normalise legacy JSON type names to the canonical LocalizedNodeType values
-    if ((nodeType as string) === "elevator_door") nodeType = "elevator";
-    // Hall washrooms are typed "room" but identified via their id
-    if (nodeType === "room" && node.id.toLowerCase().includes("washroom"))
-      nodeType = "washroom";
-    return {
-      id: node.id,
-      label: node.label || node.id,
-      nodeType,
-      x: node.x,
-      y: node.y,
-    };
-  });
+  const localizedNodes: LocalizedNode[] = rawNodesForFloor.map(toLocalizedNode);
 
   const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));
   const edges = ALL_RAW_EDGES.filter(
@@ -171,5 +267,42 @@ export const getFloorPlanRegistryEntry = (
     localizedNodes,
     edges,
     poiIconsEmbedded,
+  };
+};
+
+/**
+ * Returns the complete graph for an entire building — all floors combined —
+ * with same-floor edges from the JSON **plus** generated cross-floor edges
+ * linking matching elevator shafts and stairwells.
+ *
+ * Use this as input to `findPath` for multi-floor indoor navigation.
+ * The returned `LocalizedNode` objects each carry a `floor` field so the
+ * path can be split by floor for display (see the next task).
+ */
+export const getBuildingGraph = (
+  buildingId: string,
+): { nodes: LocalizedNode[]; edges: RawEdge[] } | null => {
+  if (!isSupportedIndoorBuildingId(buildingId)) return null;
+
+  const rawBuilding = ALL_RAW_NODES.filter((node) => {
+    const nb = String(node.buildingId);
+    // Hall building mismatch
+    return buildingId === "H" ? nb === "Hall" : nb === buildingId;
+  });
+
+  if (rawBuilding.length === 0) return null;
+
+  const nodes = rawBuilding.map(toLocalizedNode);
+
+  const nodeIdSet = new Set(rawBuilding.map((n) => n.id));
+  const sameFloorEdges = ALL_RAW_EDGES.filter(
+    (e) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target),
+  );
+
+  const crossFloorEdges = buildCrossFloorEdges(rawBuilding);
+
+  return {
+    nodes,
+    edges: [...sameFloorEdges, ...crossFloorEdges],
   };
 };
