@@ -53,18 +53,17 @@ describe("floorPlanService source contract", () => {
   it("handles Hall-building naming mismatch when filtering raw nodes", () => {
     const source = readSource();
 
-    expect(source).toContain("if (buildingId === \"H\") {");
-    expect(source).toContain('return nodeBuilding === "Hall" && nodeFloor === String(floorNumber);');
-    expect(source).toContain("return nodeBuilding === buildingId && nodeFloor === String(floorNumber);");
+    expect(source).toContain("function matchesBuildingId(");
+    expect(source).toContain('buildingId === "H" ? nb === "Hall" : nb === buildingId');
   });
 
   it("normalizes node types and washroom detection during localization", () => {
     const source = readSource();
 
-    expect(source).toContain("let nodeType = (node.type || \"room\") as LocalizedNodeType;");
-    expect(source).toContain('if ((nodeType as string) === "elevator_door") nodeType = "elevator";');
-    expect(source).toContain("if (nodeType === \"room\" && node.id.toLowerCase().includes(\"washroom\"))");
-    expect(source).toContain('nodeType = "washroom";');
+    expect(source).toContain("function resolveNodeType(");
+    expect(source).toContain('if (type === "elevator_door") return "elevator";');
+    expect(source).toContain('if (type === "room" && nodeId.toLowerCase().includes("washroom"))');
+    expect(source).toContain('return "washroom";');
     expect(source).toContain("label: node.label || node.id,");
   });
 
@@ -80,8 +79,7 @@ describe("floorPlanService source contract", () => {
     const source = readSource();
 
     expect(source).toContain("const nodeIdSet = new Set(rawNodesForFloor.map((n) => n.id));");
-    expect(source).toContain("const edges = ALL_RAW_EDGES.filter(");
-    expect(source).toContain("nodeIdSet.has(e.source) && nodeIdSet.has(e.target)");
+    expect(source).toContain("const edges = filterEdgesForNodes(ALL_RAW_EDGES, nodeIdSet);");
     expect(source).toContain('const EMBEDDED_ICON_FLOORS = new Set(["H_8", "H_9", "VE_2"]);');
     expect(source).toContain("const poiIconsEmbedded = EMBEDDED_ICON_FLOORS.has(");
     expect(source).toContain("`${buildingId}_${floorNumber}`");
