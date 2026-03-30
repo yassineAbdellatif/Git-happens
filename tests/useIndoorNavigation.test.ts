@@ -26,7 +26,7 @@ jest.mock(
       return [hookState[slot], setState];
     },
   }),
-  { virtual: true },
+  { virtual: true }
 );
 
 import { useIndoorNavigation } from "../app/frontend/src/features/map/hooks/useIndoorNavigation";
@@ -44,7 +44,7 @@ const mockNodes: NodeLike[] = [
 
 const renderHook = (nodes: NodeLike[] = mockNodes) => {
   resetRenderCursor();
-  return useIndoorNavigation(nodes as any, [] as any);
+  return useIndoorNavigation(nodes as any);
 };
 
 describe("useIndoorNavigation", () => {
@@ -78,9 +78,7 @@ describe("useIndoorNavigation", () => {
   });
 
   it("warns when navigation starts without both selected points", () => {
-    const warnSpy = jest
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined);
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => undefined);
 
     const hook = renderHook();
     hook.handleStartNavigation();
@@ -90,9 +88,7 @@ describe("useIndoorNavigation", () => {
   });
 
   it("logs navigation when both start and destination are selected", () => {
-    const logSpy = jest
-      .spyOn(console, "log")
-      .mockImplementation(() => undefined);
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
 
     let hook = renderHook();
     hook.selectStartNode(mockNodes[0] as any);
