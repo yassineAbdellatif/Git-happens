@@ -5,6 +5,8 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  Modal,
+  Image,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
@@ -48,6 +50,9 @@ const ScheduleScreen: React.FC<{
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
 
   const loadEvents = async () => {
     if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
@@ -169,6 +174,24 @@ const ScheduleScreen: React.FC<{
     }
   };
 
+  const closeEventDetails = () => {
+    setSelectedEvent(null);
+  };
+
+  const getEventTimeRange = (event: CalendarEvent): string => {
+    if (!event.start.dateTime) {
+      return "All day";
+    }
+
+    const startTime = formatTime(event.start.dateTime);
+
+    if (!event.end.dateTime) {
+      return startTime;
+    }
+
+    return `${startTime} - ${formatTime(event.end.dateTime)}`;
+  };
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -280,6 +303,7 @@ const ScheduleScreen: React.FC<{
               {weekDays.map((dayObj, dayIndex) => (
                 <View
                   key={`${hour}-${dayObj.index}`}
+                  pointerEvents="box-none"
                   style={[
                     styles.dayCell,
                     dayIndex === weekDays.length - 1 && { borderRightWidth: 0 },
@@ -302,8 +326,10 @@ const ScheduleScreen: React.FC<{
                       const heightPixels = event.duration * HOUR_HEIGHT;
 
                       return (
-                        <View
+                        <TouchableOpacity
                           key={`${event.id}-${idx}`}
+                          activeOpacity={0.85}
+                          onPress={() => setSelectedEvent(event)}
                           style={[
                             styles.eventBlock,
                             {
@@ -326,7 +352,7 @@ const ScheduleScreen: React.FC<{
                               {formatTime(event.start.dateTime)}
                             </Text>
                           )}
-                        </View>
+                        </TouchableOpacity>
                       );
                     })}
                 </View>
@@ -335,6 +361,59 @@ const ScheduleScreen: React.FC<{
           ))}
         </View>
       </ScrollView>
+
+      <Modal
+        visible={selectedEvent !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeEventDetails}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              {selectedEvent?.summary || "Untitled Event"}
+            </Text>
+
+            <Text style={styles.modalTime}>
+              {selectedEvent ? getEventTimeRange(selectedEvent) : ""}
+            </Text>
+
+            {selectedEvent?.location ? (
+              <Text style={styles.modalDetailText}>
+                Location: {selectedEvent.location}
+              </Text>
+            ) : null}
+
+            {selectedEvent?.description ? (
+              <Text style={styles.modalDetailText}>
+                {selectedEvent.description}
+              </Text>
+            ) : null}
+
+            <TouchableOpacity
+              style={styles.modalDirectionsButton}
+              onPress={() => {}}
+            >
+              <View style={styles.modalDirectionsButtonContent}>
+                <Text style={styles.modalDirectionsButtonText}>
+                  Get Directions
+                </Text>
+                <Image
+                  source={require("../../../../assets/get_directions.png")}
+                  style={styles.modalDirectionsIcon}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={closeEventDetails}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
