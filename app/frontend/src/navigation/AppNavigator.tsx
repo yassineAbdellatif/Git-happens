@@ -11,7 +11,7 @@ import {
   DrawerItemList,
   DrawerContentComponentProps,
 } from "@react-navigation/drawer";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 export type MapStackParamList = {
   MapMain: undefined;
@@ -48,15 +48,20 @@ export type RootDrawerParamList = {
 };
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
+const styles = StyleSheet.create({
+  container: { backgroundColor: "#912338" },
+  header: { padding: 20, paddingBottom: 10 },
+  title: { color: "white", fontSize: 22, fontWeight: "bold" },
+});
 
-const CustomDrawerContent = (props: any) => {
+const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return (
     <DrawerContentScrollView
       {...props}
-      style={{ backgroundColor: "#912338" }}
+      style={styles.container}
     >
-      <View style={{ padding: 20, paddingBottom: 10 }}>
-        <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
+      <View style={styles.header}>
+        <Text style={styles.title}>
           Menu
         </Text>
       </View>
