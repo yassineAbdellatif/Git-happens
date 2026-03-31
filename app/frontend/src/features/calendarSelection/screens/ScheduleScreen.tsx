@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -192,6 +192,25 @@ const ScheduleScreen: React.FC<{
     return `${startTime} - ${formatTime(event.end.dateTime)}`;
   };
 
+  const weekDays = getWeekDays();
+  const positionedEvents = getPositionedEvents();
+  const eventsBySlot = useMemo(() => {
+    const groupedEvents: Record<string, PositionedEvent[]> = {};
+
+    positionedEvents.forEach((event) => {
+      const slotHour = Math.floor(event.startHour);
+      const slotKey = `${event.dayIndex}-${slotHour}`;
+
+      if (!groupedEvents[slotKey]) {
+        groupedEvents[slotKey] = [];
+      }
+
+      groupedEvents[slotKey].push(event);
+    });
+
+    return groupedEvents;
+  }, [positionedEvents]);
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -221,9 +240,6 @@ const ScheduleScreen: React.FC<{
       </View>
     );
   }
-
-  const weekDays = getWeekDays();
-  const positionedEvents = getPositionedEvents();
 
   return (
     <View style={styles.container}>
@@ -310,13 +326,8 @@ const ScheduleScreen: React.FC<{
                   ]}
                 >
                   {/* Events for this hour */}
-                  {positionedEvents
-                    .filter(
-                      (event) =>
-                        event.dayIndex === dayObj.index &&
-                        Math.floor(event.startHour) === hour,
-                    )
-                    .map((event, idx) => {
+                  {(eventsBySlot[`${dayObj.index}-${hour}`] || []).map(
+                    (event, idx) => {
                       // Calculate top offset in pixels (fractional hour * 60px)
                       const topOffsetPixels =
                         (event.startHour - Math.floor(event.startHour)) *
@@ -354,7 +365,8 @@ const ScheduleScreen: React.FC<{
                           )}
                         </TouchableOpacity>
                       );
-                    })}
+                    },
+                  )}
                 </View>
               ))}
             </View>
