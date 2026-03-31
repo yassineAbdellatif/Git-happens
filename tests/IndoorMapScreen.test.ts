@@ -3,7 +3,7 @@ import * as path from "path";
 
 const screenPath = path.join(
   process.cwd(),
-  "app/frontend/src/features/map/screens/IndoorMapScreen.tsx"
+  "app/frontend/src/features/map/screens/IndoorMapScreen.tsx",
 );
 
 const readScreenSource = () => fs.readFileSync(screenPath, "utf8");
@@ -13,16 +13,16 @@ describe("IndoorMapScreen source contract", () => {
     const source = readScreenSource();
 
     expect(source).toContain(
-      "getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any)"
+      "getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any)",
     );
   });
 
   it("initializes indoor navigation with localized nodes fallback", () => {
     const source = readScreenSource();
 
-    expect(source).toContain(
-      "useIndoorNavigation(floorPlanEntry?.localizedNodes || [])"
-    );
+    expect(source).toContain("useIndoorNavigation(");
+    expect(source).toContain("floorPlanEntry?.localizedNodes || []");
+    expect(source).toContain("floorPlanEntry?.edges || []");
   });
 
   it("registers keyboard show and hide listeners", () => {
