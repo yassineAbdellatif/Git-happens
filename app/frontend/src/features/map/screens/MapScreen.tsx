@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { styles } from "../styles/mapScreenStyle";
 import OutdoorView from "../components/OutDoorView";
+import { POIPanel } from "../components/POIPanel";
+import { usePOI } from "../hooks/usePOI";
 import {
   SGW_REGION,
   LOYOLA_REGION,
@@ -72,6 +74,8 @@ const MapScreen = () => {
   } = useMapLogic();
   const { mapType, setMapType, toggleMapType, isIndoorInteracting } =
     useMapScreenUiState(selectedBuilding?.id || null);
+
+  const poi = usePOI();
 
   // Derive the old properties from origin/destination
   const originType = origin.type;
@@ -265,6 +269,29 @@ const MapScreen = () => {
                 <MaterialIcons name="my-location" size={24} color="#912338" />
               </TouchableOpacity>
 
+              {/* Nearby POI button */}
+              <TouchableOpacity
+                testID="nearby-poi-button"
+                style={[
+                  styles.recenterButton,
+                  poi.isOpen && { backgroundColor: "#912338" },
+                ]}
+                onPress={() => {
+                  if (poi.isOpen) {
+                    poi.setIsOpen(false);
+                    poi.clearResults();
+                  } else {
+                    poi.setIsOpen(true);
+                  }
+                }}
+              >
+                <MaterialIcons
+                  name="place"
+                  size={24}
+                  color={poi.isOpen ? "#fff" : "#912338"}
+                />
+              </TouchableOpacity>
+
               <View style={styles.statusCard}>
                 <Text style={styles.statusLabel}>CAMPUS</Text>
                 <Text style={styles.statusValue}>{campusLabel}</Text>
@@ -294,6 +321,41 @@ const MapScreen = () => {
                 </Text>
               </TouchableOpacity>
             </View>
+          )}
+
+          {/* POI PANEL */}
+          {poi.isOpen && !isNavigating && (
+            <POIPanel
+              selectedType={poi.selectedType}
+              onSelectType={poi.setSelectedType}
+              maxResults={poi.maxResults}
+              onSelectMaxResults={poi.setMaxResults}
+              results={poi.results}
+              isLoading={poi.isLoading}
+              error={poi.error}
+              onSearch={() => {
+                const lat = userLocation?.latitude ?? currentRegion.latitude;
+                const lng = userLocation?.longitude ?? currentRegion.longitude;
+                poi.search(lat, lng);
+              }}
+              onClose={() => {
+                poi.setIsOpen(false);
+                poi.clearResults();
+              }}
+              userLocation={
+                userLocation
+                  ? { latitude: userLocation.latitude, longitude: userLocation.longitude }
+                  : null
+              }
+              onSelectPOI={(p) => {
+                if (mapRef.current) {
+                  mapRef.current.animateToRegion(
+                    { ...p.location, latitudeDelta: 0.003, longitudeDelta: 0.003 },
+                    600,
+                  );
+                }
+              }}
+            />
           )}
 
           {/* BOTTOM SHEET */}
