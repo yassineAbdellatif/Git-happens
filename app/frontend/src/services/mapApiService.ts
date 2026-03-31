@@ -1,8 +1,7 @@
 import axios from "axios";
-import { Platform } from "react-native";
 
 // On Android emulator, the host machine is reachable at 10.0.2.2 (not localhost).
-const DEFAULT_HOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
+const DEFAULT_HOST = process.env.EXPO_OS === "android" ? "10.0.2.2" : "localhost";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || `http://${DEFAULT_HOST}:3000`;
 
@@ -143,6 +142,8 @@ export const getNearbyPlacesFromGoogle = async (
       results: mappedResults,
     };
   } catch (error) {
-    throw error;
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`Failed to fetch nearby places from Google: ${message}`);
   }
 };

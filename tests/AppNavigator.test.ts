@@ -37,7 +37,8 @@ describe("AppNavigator source contract", () => {
 
     expect(source).toContain('<Drawer.Navigator');
     expect(source).toContain('initialRouteName="CampusMap"');
-    expect(source).toContain("drawerContent={(props) => <CustomDrawerContent {...props} />}");
+    expect(source).toContain("const renderDrawerContent = (props: DrawerContentComponentProps) => (");
+    expect(source).toContain("drawerContent={renderDrawerContent}");
     expect(source).toContain("headerStyle: { backgroundColor: \"#912338\" }");
     expect(source).toContain("headerTintColor: \"white\"");
     expect(source).toContain("drawerStyle: { backgroundColor: \"#912338\", width: 280 }");
