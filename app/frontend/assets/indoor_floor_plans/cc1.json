@@ -4,13 +4,13 @@
   },
   "nodes": [
     {
-      "id": "CC_F1_room_224",
-      "type": "room",
+      "id": "CC_F1_washroom_224",
+      "type": "washroom",
       "buildingId": "CC",
       "floor": 1,
       "x": 1188,
       "y": 645,
-      "label": "CC-124",
+      "label": "washroom",
       "accessible": true
     },
     {
@@ -74,13 +74,23 @@
       "accessible": true
     },
     {
-      "id": "CC_F1_room_231",
-      "type": "room",
+      "id": "CC_F1_washroom_231",
+      "type": "washroom",
       "buildingId": "CC",
       "floor": 1,
       "x": 6897,
       "y": 538,
-      "label": "CC-104",
+      "label": "washroom",
+      "accessible": true
+    },
+    {
+      "id": "CC_F1_water_fountain",
+      "type": "water_fountain",
+      "buildingId": "CC",
+      "floor": 1,
+      "x": 1226,
+      "y": 925,
+      "label": "Water Fountain",
       "accessible": true
     },
     {
@@ -612,6 +622,26 @@
       "y": 1068,
       "label": "",
       "accessible": true
+    },
+    {
+      "id": "CC_F1_water_fountain_1954",
+      "type": "water_fountain",
+      "buildingId": "CC",
+      "floor": 1,
+      "x": 1229,
+      "y": 938,
+      "label": "Water Fountain",
+      "accessible": true
+    },
+    {
+      "id": "CC_F1_water_fountain_3165",
+      "type": "water_fountain",
+      "buildingId": "CC",
+      "floor": 1,
+      "x": 6888,
+      "y": 962,
+      "label": "Water Fountain",
+      "accessible": true
     }
   ],
   "edges": [
@@ -844,6 +874,27 @@
       "target": "CC_F1_hallway_waypoint_103",
       "type": "door_to_hallway",
       "weight": 650,
+      "accessible": true
+    },
+    {
+      "source": "CC_F1_water_fountain",
+      "target": "CC_F1_doorway_276",
+      "type": "room_to_door",
+      "weight": 292,
+      "accessible": true
+    },
+    {
+      "source": "CC_F1_water_fountain",
+      "target": "CC_F1_doorway_247",
+      "type": "room_to_door",
+      "weight": 123,
+      "accessible": true
+    },
+    {
+      "source": "CC_F1_water_fountain",
+      "target": "CC_F1_hallway_waypoint_102",
+      "type": "door_to_hallway",
+      "weight": 155,
       "accessible": true
     },
     {
@@ -1208,6 +1259,20 @@
       "target": "CC_F1_doorway_251",
       "type": "door_to_hallway",
       "weight": 817,
+      "accessible": true
+    },
+    {
+      "source": "CC_F1_water_fountain_1954",
+      "target": "CC_F1_doorway_247",
+      "type": "poi_to_hallway",
+      "weight": 50,
+      "accessible": true
+    },
+    {
+      "source": "CC_F1_water_fountain_3165",
+      "target": "CC_F1_doorway_269",
+      "type": "poi_to_hallway",
+      "weight": 50,
       "accessible": true
     }
   ]

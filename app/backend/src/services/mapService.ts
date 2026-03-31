@@ -1,6 +1,41 @@
 import axios from "axios";
 import { config } from "../config/config"; // Import the config to access the API key
 
+/**
+ * Fetches nearby places of a given type from Google Places Nearby Search API.
+ */
+export const getNearbyPlaces = async (
+  location: string,
+  radius: number,
+  type: string,
+  maxResults: number,
+) => {
+  const apiKey = config.googleMapsApiKey;
+  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&type=${type}&key=${apiKey}`;
+
+  const response = await axios.get(url);
+
+  if (response.data.status !== "OK" && response.data.status !== "ZERO_RESULTS") {
+    throw new Error(`Places API error: ${response.data.status}`);
+  }
+
+  const results = (response.data.results as any[]).slice(0, maxResults);
+
+  return results.map((place) => ({
+    placeId: place.place_id,
+    name: place.name,
+    vicinity: place.vicinity,
+    rating: place.rating ?? null,
+    userRatingsTotal: place.user_ratings_total ?? 0,
+    location: {
+      latitude: place.geometry.location.lat,
+      longitude: place.geometry.location.lng,
+    },
+    icon: place.icon ?? null,
+    openNow: place.opening_hours?.open_now ?? null,
+  }));
+};
+
 export const getDirections = async (
   origin: string,
   destination: string,

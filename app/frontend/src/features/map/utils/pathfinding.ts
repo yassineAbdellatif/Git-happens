@@ -1,9 +1,12 @@
-import { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
+import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
 
  // Euclidean distance heuristic between two nodes (in floor plan pixels).
  // (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)
- 
+ // Cross-floor pairs return 0: their x/y coordinates belong to different SVG
+ // coordinate spaces so Euclidean distance would be meaningless and could
+ // overestimate, violating A*'s admissibility requirement.
 function heuristic(a: LocalizedNode, b: LocalizedNode): number {
+  if (a.floor !== b.floor) return 0;
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
