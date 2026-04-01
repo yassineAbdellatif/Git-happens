@@ -8,6 +8,8 @@ import {
   View,
   StyleSheet,
   Dimensions,
+  Modal, 
+  Pressable,
 } from "react-native";
 import {
   FloorPlanRegistryEntry,
@@ -51,6 +53,27 @@ const POI_ASSETS: Partial<
   ),
 };
 
+const POI_DETAILS: Partial<
+  Record<LocalizedNodeType, { title: string; description?: string }>
+> = {
+  washroom: {
+    title: "Washroom",
+    description: "Men's / Women's washroom",
+  },
+  elevator: {
+    title: "Elevator",
+    description: "Inter-floor access",
+  },
+  stair_landing: {
+    title: "Stairs",
+    description: "Stair access between floors",
+  },
+  water_fountain: {
+    title: "Water Fountain",
+    description: "Drinking water available",
+  },
+};
+
 const PNG_ASSET_MAP: Record<string, ImageSourcePropType> = {
   H_1: require("../../../../assets/updated_floor_plans/h1.png"),
   H_2: require("../../../../assets/updated_floor_plans/h2.png"),
@@ -77,6 +100,8 @@ const FloorPlanDisplay = ({
   // Map the building ID and floor number to the correct PNG
   const mapImageKey = `${floorPlanEntry.buildingId}_${floorPlanEntry.floorNumber}`;
   const MapImageSource = PNG_ASSET_MAP[mapImageKey];
+
+  const [selectedPoi, setSelectedPoi] = React.useState<LocalizedNode | null>(null);
 
   // To use image as SVG viewBox so node coordinates align correctly
   const naturalSize = MapImageSource
@@ -159,7 +184,11 @@ const FloorPlanDisplay = ({
                         height={POI_ICON_SIZE}
                         href={{ uri: asset.uri }}
                         preserveAspectRatio="xMidYMid meet"
-                        onPress={() => onPoiPress?.(node)}
+                        onPress={() => {
+                          setSelectedPoi(node);
+                          onPoiPress?.(node);
+                          console.log(`POI pressed: ${node.label}`);
+                        }}
                       />
                     );
                   })}
@@ -168,19 +197,23 @@ const FloorPlanDisplay = ({
                   The icons are put into the PNG directly so we can't interact with them directly —
                   therefore, these invisible Rects sit at the same coordinates and forward taps to onPoiPress for 4.4.2 . */}
               {floorPlanEntry.poiIconsEmbedded &&
-                floorPlanEntry.localizedNodes
-                  .filter((node) => node.nodeType in POI_ASSETS)
-                  .map((node) => (
-                    <Rect
-                      key={node.id}
-                      x={node.x - POI_ICON_SIZE / 2}
-                      y={node.y - POI_ICON_SIZE / 2}
-                      width={POI_ICON_SIZE}
-                      height={POI_ICON_SIZE}
-                      fill="transparent"
-                      onPress={() => onPoiPress?.(node)}
-                    />
-                  ))}
+              floorPlanEntry.localizedNodes
+                .filter((node) => node.nodeType in POI_ASSETS)
+                .map((node) => (
+                  <Rect
+                    key={node.id}
+                    x={node.x - POI_ICON_SIZE / 2}
+                    y={node.y - POI_ICON_SIZE / 2}
+                    width={POI_ICON_SIZE}
+                    height={POI_ICON_SIZE}
+                    fill="rgba(252, 116, 116, 0.58)"
+                    onPress={() => {
+                      console.log("POI pressed", node.id);
+                      setSelectedPoi(node);
+                      onPoiPress?.(node);
+                    }}
+                  />
+                ))}
 
               {/* Navigation path */}
               {path.length > 1 && (
@@ -215,6 +248,39 @@ const FloorPlanDisplay = ({
           )}
         </Animated.View>
       </View>
+      <Modal
+        visible={!!selectedPoi}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedPoi(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setSelectedPoi(null)}
+        >
+          <View style={styles.tooltip}>
+            <Text style={styles.tooltipTitle}>
+              {selectedPoi
+                ? POI_DETAILS[selectedPoi.nodeType]?.title ||
+                  selectedPoi.label
+                : ""}
+            </Text>
+
+            {selectedPoi &&
+              POI_DETAILS[selectedPoi.nodeType]?.description && (
+                <Text style={styles.tooltipDescription}>
+                  {POI_DETAILS[selectedPoi.nodeType]?.description}
+                </Text>
+              )}
+
+            {selectedPoi?.label && (
+              <Text style={styles.tooltipMeta}>
+                {selectedPoi.label}
+              </Text>
+            )}
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -270,6 +336,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.2)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+tooltip: {
+  backgroundColor: "white",
+  padding: 16,
+  borderRadius: 10,
+  minWidth: 180,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 6,
+  elevation: 5,
+},
+
+tooltipTitle: {
+  fontSize: 16,
+  fontWeight: "700",
+  marginBottom: 4,
+},
+
+tooltipDescription: {
+  fontSize: 13,
+  color: "#555",
+},
+
+tooltipMeta: {
+  fontSize: 12,
+  color: "#999",
+  marginTop: 6,
+},
 });
 
 export default FloorPlanDisplay;
