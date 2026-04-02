@@ -98,19 +98,9 @@
       "type": "washroom",
       "buildingId": "VE",
       "floor": 2,
-      "x": 517,
-      "y": 205,
-      "label": "washroom",
-      "accessible": true
-    },
-    {
-      "id": "VE_F2_room_5",
-      "type": "room",
-      "buildingId": "VE",
-      "floor": 2,
-      "x": 650,
-      "y": 202,
-      "label": "",
+      "x": 519,
+      "y": 263,
+      "label": "washroom 1",
       "accessible": true
     },
     {
@@ -458,8 +448,8 @@
       "type": "stair_landing",
       "buildingId": "VE",
       "floor": 2,
-      "x": 1622,
-      "y": 236,
+      "x": 1625,
+      "y": 263,
       "label": "stirs1",
       "accessible": false
     },
@@ -469,7 +459,7 @@
       "buildingId": "VE",
       "floor": 2,
       "x": 516,
-      "y": 266,
+      "y": 282,
       "label": "doorway1",
       "accessible": true
     },
@@ -498,8 +488,8 @@
       "type": "doorway",
       "buildingId": "VE",
       "floor": 2,
-      "x": 650,
-      "y": 268,
+      "x": 656,
+      "y": 278,
       "label": "doorway4",
       "accessible": true
     },
@@ -698,8 +688,8 @@
       "type": "doorway",
       "buildingId": "VE",
       "floor": 2,
-      "x": 1620,
-      "y": 276,
+      "x": 1623,
+      "y": 300,
       "label": "doorway24",
       "accessible": true
     },
@@ -878,8 +868,8 @@
       "type": "water_fountain",
       "buildingId": "VE",
       "floor": 2,
-      "x": 584,
-      "y": 274,
+      "x": 587,
+      "y": 293,
       "label": "Water Fountain",
       "accessible": true
     },
@@ -974,13 +964,13 @@
       "accessible": true
     },
     {
-      "id": "VE_F2_water_fountain_9152",
-      "type": "water_fountain",
+      "id": "VE_F2_washroom_5",
+      "type": "washroom",
       "buildingId": "VE",
       "floor": 2,
-      "x": 585,
-      "y": 270,
-      "label": "Water Fountain",
+      "x": 653,
+      "y": 263,
+      "label": "washroom 2",
       "accessible": true
     }
   ],
@@ -1106,7 +1096,7 @@
     },
     {
       "source": "VE_F2_doorway_4",
-      "target": "VE_F2_room_5",
+      "target": "VE_F2_washroom_5",
       "type": "room_to_door",
       "weight": 66,
       "accessible": true
@@ -2180,6 +2170,13 @@
       "target": "VE_F2_hallway_waypoint_5",
       "type": "door_to_hallway",
       "weight": 152,
+      "accessible": true
+    },
+    {
+      "source": "VE_F2_doorway_1",
+      "target": "VE_F2_room_washroom",
+      "type": "hallway",
+      "weight": 61,
       "accessible": true
     }
   ]
