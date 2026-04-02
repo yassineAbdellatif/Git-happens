@@ -3,13 +3,13 @@ import type {
   IndoorBuildingId,
   LocalizedNode,
 } from "../../../services/floorPlanService";
-import { getIndoorGraphForBuilding } from "../../../services/floorPlanService";
+import { getBuildingGraph } from "../../../services/floorPlanService";
 import { findPath } from "../utils/pathfinding";
 
 const normalizeLabel = (value: string) => value.trim().toLowerCase();
 
 export const useIndoorNavigation = (buildingId: IndoorBuildingId) => {
-  const graph = useMemo(() => getIndoorGraphForBuilding(buildingId), [buildingId]);
+  const graph = useMemo(() => getBuildingGraph(buildingId), [buildingId]);
 
   const [startPoint, setStartPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
