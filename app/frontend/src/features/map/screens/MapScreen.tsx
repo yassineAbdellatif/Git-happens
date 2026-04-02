@@ -355,11 +355,33 @@ const MapScreen = () => {
                   );
                 }
               }}
+              onGetDirections={(p) => {
+                // TSK-5.2.1: Pass selected POI coordinates to the directions service
+                setDestination({
+                  type: "BUILDING",
+                  coords: { latitude: p.location.latitude, longitude: p.location.longitude },
+                  label: p.name,
+                  campus: null,
+                });
+                if (userLocation) {
+                  setOrigin({
+                    type: "CURRENT",
+                    coords: { latitude: userLocation.latitude, longitude: userLocation.longitude },
+                    label: "My Location",
+                    campus: null,
+                  });
+                } else {
+                  setOrigin({ type: null, coords: null, label: "Choose starting point", campus: null });
+                }
+                poi.setIsOpen(false);
+                poi.clearResults();
+                setIsRouting(true);
+              }}
             />
           )}
 
           {/* BOTTOM SHEET */}
-          {selectedBuilding && !isNavigating && (
+          {(selectedBuilding || isRouting) && !isNavigating && (
             <View
               style={[
                 styles.bottomSheetMock,
@@ -373,7 +395,7 @@ const MapScreen = () => {
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={!isIndoorInteracting}
               >
-                {!isRouting ? (
+                {!isRouting && selectedBuilding ? (
                   <>
                     <Text style={styles.sheetTitle}>
                       {selectedBuilding.fullName}
