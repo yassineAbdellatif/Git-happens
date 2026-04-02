@@ -178,8 +178,8 @@
       "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
-      "x": 679,
-      "y": 230,
+      "x": 691,
+      "y": 242,
       "label": "washroom112",
       "accessible": true
     },
@@ -188,8 +188,8 @@
       "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
-      "x": 676,
-      "y": 300,
+      "x": 689,
+      "y": 313,
       "label": "washroom110",
       "accessible": true
     },
@@ -198,8 +198,8 @@
       "type": "washroom",
       "buildingId": "VL",
       "floor": 1,
-      "x": 746,
-      "y": 297,
+      "x": 725,
+      "y": 313,
       "label": "washroom116",
       "accessible": true
     },
@@ -208,8 +208,8 @@
       "type": "room",
       "buildingId": "VL",
       "floor": 1,
-      "x": 759,
-      "y": 231,
+      "x": 724,
+      "y": 244,
       "label": "",
       "accessible": true
     },
@@ -398,8 +398,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 1,
-      "x": 219,
-      "y": 417,
+      "x": 222,
+      "y": 420,
       "label": "stairs1",
       "accessible": false
     },
@@ -409,7 +409,7 @@
       "buildingId": "VL",
       "floor": 1,
       "x": 571,
-      "y": 249,
+      "y": 255,
       "label": "stairs2",
       "accessible": false
     },
@@ -418,8 +418,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 1,
-      "x": 825,
-      "y": 591,
+      "x": 826,
+      "y": 599,
       "label": "stairs3",
       "accessible": false
     },
@@ -1124,10 +1124,30 @@
       "accessible": true
     },
     {
+      "id": "VL_F1_water_fountain_6644",
+      "type": "water_fountain",
+      "buildingId": "VL",
+      "floor": 1,
+      "x": 709,
+      "y": 338,
+      "label": "Water Fountain",
+      "accessible": true
+    },
+    {
+      "id": "VL_F1_hallway_waypoint_134",
+      "type": "hallway_waypoint",
+      "buildingId": "VL",
+      "floor": 1,
+      "x": 224,
+      "y": 363,
+      "label": "waypoint 1",
+      "accessible": true
+    },
+    {
       "id": "VL_F2_room_202_30",
       "type": "room",
       "buildingId": "VL",
-      "floor": 1,
+      "floor": 2,
       "x": 270,
       "y": 416,
       "label": "2.202.30",
@@ -1138,8 +1158,8 @@
       "type": "washroom",
       "buildingId": "VL",
       "floor": 2,
-      "x": 675,
-      "y": 227,
+      "x": 695,
+      "y": 249,
       "label": "washroom212",
       "accessible": true
     },
@@ -1148,8 +1168,8 @@
       "type": "washroom",
       "buildingId": "VL",
       "floor": 2,
-      "x": 672,
-      "y": 304,
+      "x": 695,
+      "y": 315,
       "label": "washroom210",
       "accessible": true
     },
@@ -1258,8 +1278,8 @@
       "type": "elevator_door",
       "buildingId": "VL",
       "floor": 2,
-      "x": 218,
-      "y": 525,
+      "x": 225,
+      "y": 529,
       "label": "elevator",
       "accessible": true
     },
@@ -1268,8 +1288,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 2,
-      "x": 219,
-      "y": 420,
+      "x": 226,
+      "y": 425,
       "label": "stairs1",
       "accessible": false
     },
@@ -1278,8 +1298,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 2,
-      "x": 568,
-      "y": 248,
+      "x": 572,
+      "y": 250,
       "label": "stairs2",
       "accessible": false
     },
@@ -1288,8 +1308,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 2,
-      "x": 774,
-      "y": 789,
+      "x": 777,
+      "y": 794,
       "label": "stairs3",
       "accessible": false
     },
@@ -1298,8 +1318,8 @@
       "type": "stair_landing",
       "buildingId": "VL",
       "floor": 2,
-      "x": 75,
-      "y": 943,
+      "x": 64,
+      "y": 950,
       "label": "stairs4",
       "accessible": false
     },
@@ -1564,16 +1584,6 @@
       "accessible": true
     },
     {
-      "id": "VL_F2_water_fountain",
-      "type": "water_fountain",
-      "buildingId": "VL",
-      "floor": 2,
-      "x": 642,
-      "y": 263,
-      "label": "Water Fountain",
-      "accessible": true
-    },
-    {
       "id": "VL_F2_hallway_waypoint_10",
       "type": "hallway_waypoint",
       "buildingId": "VL",
@@ -1584,23 +1594,13 @@
       "accessible": true
     },
     {
-      "id": "VL_F1_water_fountain_6644",
-      "type": "water_fountain",
-      "buildingId": "VL",
-      "floor": 1,
-      "x": 709,
-      "y": 338,
-      "label": "Water Fountain",
-      "accessible": true
-    },
-    {
       "id": "VL_F2_water_fountain_6406",
-      "type": "water_fountain",
+      "type": "",
       "buildingId": "VL",
       "floor": 2,
-      "x": 641,
-      "y": 262,
-      "label": "Water Fountain",
+      "x": 642,
+      "y": 264,
+      "label": "Water Fountain 1",
       "accessible": true
     }
   ],
@@ -1904,20 +1904,6 @@
       "target": "VL_F1_doorway_22",
       "type": "door_to_hallway",
       "weight": 137,
-      "accessible": true
-    },
-    {
-      "source": "VL_F2_water_fountain",
-      "target": "VL_F2_hallway_waypoint_4",
-      "type": "door_to_hallway",
-      "weight": 22,
-      "accessible": true
-    },
-    {
-      "source": "VL_F2_water_fountain",
-      "target": "VL_F2_hallway_waypoint_3",
-      "type": "door_to_hallway",
-      "weight": 88,
       "accessible": true
     },
     {
@@ -2796,6 +2782,34 @@
       "accessible": true
     },
     {
+      "source": "VL_F1_water_fountain_6644",
+      "target": "VL_F1_doorway_15",
+      "type": "poi_to_hallway",
+      "weight": 50,
+      "accessible": true
+    },
+    {
+      "source": "VL_F2_water_fountain_6406",
+      "target": "VL_F1_doorway_4",
+      "type": "poi_to_hallway",
+      "weight": 50,
+      "accessible": true
+    },
+    {
+      "source": "VL_F1_hallway_waypoint_134",
+      "target": "VL_F1_stair_landing_1",
+      "type": "hallway",
+      "weight": 57,
+      "accessible": true
+    },
+    {
+      "source": "VL_F1_hallway_waypoint_134",
+      "target": "VL_F1_hallway_waypoint_15",
+      "type": "hallway",
+      "weight": 81,
+      "accessible": true
+    },
+    {
       "source": "VL_F2_room_202_1",
       "target": "VL_F2_doorway_16",
       "type": "room_to_door",
@@ -3307,18 +3321,55 @@
       "accessible": true
     },
     {
-      "source": "VL_F1_water_fountain_6644",
-      "target": "VL_F1_doorway_15",
-      "type": "poi_to_hallway",
-      "weight": 50,
-      "accessible": true
-    },
-    {
       "source": "VL_F2_water_fountain_6406",
       "target": "VL_F1_doorway_4",
       "type": "poi_to_hallway",
       "weight": 50,
       "accessible": true
-    }
+    },
+    {
+      "source": "VL_F2_doorway_5",
+      "target": "VL_F2_washroom_210",
+      "type": "hallway",
+      "weight": 54,
+      "accessible": true
+    },
+    {
+      "source": "VL_F2_hallway_waypoint_4",
+      "target": "VL_F2_water_fountain_6406",
+      "type": "hallway",
+      "weight": 22,
+      "accessible": true
+    },
+    [
+      {
+        "source": "VL_F1_elevator_door_1",
+        "target": "VL_F2_elevator_door_1",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "VL_F1_stair_landing_1",
+        "target": "VL_F2_stair_landing_1",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "VL_F1_stair_landing_2",
+        "target": "VL_F2_stair_landing_2",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "VL_F1_stair_landing_3",
+        "target": "VL_F2_stair_landing_3",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      }
+    ]
   ]
 }
