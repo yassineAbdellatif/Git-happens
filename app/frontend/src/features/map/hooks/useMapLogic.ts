@@ -15,6 +15,7 @@ import {
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
 import { getRouteFromBackend } from "../../../services/mapApiService";
+import { getPrimaryTransitionCoordinate } from "../../../services/buildingTransitionService";
 import { auth } from "@features/auth/config/firebaseConfig";
 import Constants from "expo-constants";
 
@@ -185,6 +186,10 @@ export const useMapLogic = () => {
   };
 
   const handleCancelNavigation = () => {
+    const resolveBuildingRouteCoordinate = async (building: Building) => {
+      const transitionCoordinate = await getPrimaryTransitionCoordinate(building.id);
+      return transitionCoordinate ?? building.coordinates[0];
+    };
     setRouteCoords([]);
     setIsNavigating(false);
     setIsRouting(false);
@@ -280,5 +285,6 @@ export const useMapLogic = () => {
     handleLogout,
     nextShuttleTitle,
     nextShuttleSubtitle,
+    resolveBuildingRouteCoordinate,
   };
 };

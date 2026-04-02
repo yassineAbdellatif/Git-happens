@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// Read API base URL from environment variable
-// Set EXPO_PUBLIC_API_BASE_URL in your .env file (e.g., http://192.168.1.100:3000)
-const API_BASE_URL =
+// Read API base URL from environment variable.
+// Resolve at call-time so tests can override process.env per suite.
+const getApiBaseUrl = (): string =>
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
 export const getRouteFromBackend = async (
@@ -10,8 +10,7 @@ export const getRouteFromBackend = async (
   destination: string,
   mode: string,
 ) => {
-
-  const url = `${API_BASE_URL}/api/directions`;
+  const url = `${getApiBaseUrl()}/api/directions`;
   console.log(`Requesting route from backend at: ${url}`);
 
   try {
