@@ -1690,7 +1690,7 @@
       "floor": 9,
       "x": 514,
       "y": 720,
-      "label": "Water Fountain 4",
+      "label": "Water Fountain 8",
       "accessible": true
     },
     {
@@ -1700,7 +1700,7 @@
       "floor": 9,
       "x": 1745,
       "y": 1343,
-      "label": "Water Fountain 5",
+      "label": "Water Fountain 10",
       "accessible": true
     },
     {
@@ -2118,8 +2118,8 @@
       "type": "washroom",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 1386,
-      "y": 1466,
+      "x": 1255,
+      "y": 1544,
       "label": "Washroom H-902",
       "accessible": true
     },
@@ -2158,8 +2158,8 @@
       "type": "washroom",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 758,
-      "y": 1386,
+      "x": 765,
+      "y": 1544,
       "label": "Washroom H-910",
       "accessible": true
     },
@@ -3108,8 +3108,8 @@
       "type": "doorway",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 1455,
-      "y": 689,
+      "x": 1457,
+      "y": 720,
       "label": "",
       "accessible": true
     },
@@ -3218,8 +3218,8 @@
       "type": "doorway",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 1381,
-      "y": 1558,
+      "x": 1261,
+      "y": 1569,
       "label": "",
       "accessible": true
     },
@@ -3278,8 +3278,8 @@
       "type": "doorway",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 767,
-      "y": 1539,
+      "x": 765,
+      "y": 1569,
       "label": "",
       "accessible": true
     },
@@ -3288,8 +3288,8 @@
       "type": "doorway",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 604,
-      "y": 1552,
+      "x": 606,
+      "y": 1600,
       "label": "",
       "accessible": true
     },
@@ -3458,8 +3458,8 @@
       "type": "stair_landing",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 616,
-      "y": 574,
+      "x": 615,
+      "y": 684,
       "label": "",
       "accessible": false
     },
@@ -3468,8 +3468,8 @@
       "type": "doorway",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 616,
-      "y": 687,
+      "x": 617,
+      "y": 714,
       "label": "",
       "accessible": true
     },
@@ -3498,8 +3498,8 @@
       "type": "stair_landing",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 1449,
-      "y": 579,
+      "x": 1451,
+      "y": 683,
       "label": "",
       "accessible": false
     },
@@ -3518,28 +3518,18 @@
       "type": "stair_landing",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 607,
-      "y": 1410,
+      "x": 611,
+      "y": 1543,
       "label": "",
       "accessible": false
-    },
-    {
-      "id": "Hall_F9_elevator_door_10",
-      "type": "elevator_door",
-      "buildingId": "Hall",
-      "floor": 9,
-      "x": 1366,
-      "y": 1309,
-      "label": "H-elevator2",
-      "accessible": true
     },
     {
       "id": "Hall_F9_elevator_door_11",
       "type": "elevator_door",
       "buildingId": "Hall",
       "floor": 9,
-      "x": 1296,
-      "y": 1308,
+      "x": 1334,
+      "y": 1353,
       "label": "H-elevator1",
       "accessible": true
     },
@@ -3871,6 +3861,16 @@
       "x": 1661,
       "y": 719,
       "label": "",
+      "accessible": true
+    },
+    {
+      "id": "Hall_F9_water_fountain_6884",
+      "type": "water_fountain",
+      "buildingId": "Hall",
+      "floor": 9,
+      "x": 695,
+      "y": 1584,
+      "label": "Water Fountain 9",
       "accessible": true
     },
     {
@@ -6052,36 +6052,6 @@
       "y": 534,
       "label": "Water Fountain 7",
       "accessible": true
-    },
-    {
-      "id": "Hall_F9_water_fountain_5409",
-      "type": "water_fountain",
-      "buildingId": "Hall",
-      "floor": 9,
-      "x": 514,
-      "y": 720,
-      "label": "Water Fountain 8",
-      "accessible": true
-    },
-    {
-      "id": "Hall_F9_water_fountain_6884",
-      "type": "water_fountain",
-      "buildingId": "Hall",
-      "floor": 9,
-      "x": 695,
-      "y": 1584,
-      "label": "Water Fountain 9",
-      "accessible": true
-    },
-    {
-      "id": "Hall_F9_water_fountain_2778",
-      "type": "water_fountain",
-      "buildingId": "Hall",
-      "floor": 9,
-      "x": 1745,
-      "y": 1343,
-      "label": "Water Fountain 10",
-      "accessible": true
     }
   ],
   "edges": [
@@ -7606,6 +7576,13 @@
     },
     {
       "source": "Hall_F9_water_fountain_2778",
+      "target": "Hall_F8_doorway_308",
+      "type": "hallway",
+      "weight": 156,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_water_fountain_2778",
       "target": "Hall_F8_hallway_waypoint_147",
       "type": "hallway",
       "weight": 297,
@@ -8964,13 +8941,6 @@
     },
     {
       "source": "Hall_F9_hallway_waypoint_132",
-      "target": "Hall_F9_elevator_door_10",
-      "type": "hallway",
-      "weight": 74,
-      "accessible": true
-    },
-    {
-      "source": "Hall_F9_hallway_waypoint_132",
       "target": "Hall_F9_doorway_216",
       "type": "door_to_hallway",
       "weight": 151,
@@ -9492,6 +9462,69 @@
       "target": "Hall_F9_doorway_182",
       "type": "hallway",
       "weight": 145,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_water_fountain_5409",
+      "target": "Hall_F9_hallway_waypoint_111",
+      "type": "hallway",
+      "weight": 111,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_water_fountain_5409",
+      "target": "Hall_F9_doorway_275",
+      "type": "hallway",
+      "weight": 107,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_water_fountain_5409",
+      "target": "Hall_F9_hallway_waypoint_107",
+      "type": "hallway",
+      "weight": 289,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_doorway_255",
+      "target": "Hall_F9_hallway_waypoint_130",
+      "type": "door_to_hallway",
+      "weight": 210,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_washroom_245",
+      "target": "Hall_F9_doorway_266",
+      "type": "hallway",
+      "weight": 128,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_doorway_266",
+      "target": "Hall_F9_doorway_208",
+      "type": "hallway",
+      "weight": 117,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_doorway_266",
+      "target": "Hall_F9_doorway_209",
+      "type": "hallway",
+      "weight": 288,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_doorway_207",
+      "target": "Hall_F9_doorway_266",
+      "type": "hallway",
+      "weight": 326,
+      "accessible": true
+    },
+    {
+      "source": "Hall_F9_washroom_249",
+      "target": "Hall_F9_doorway_272",
+      "type": "hallway",
+      "weight": 25,
       "accessible": true
     },
     {
@@ -11315,13 +11348,6 @@
       "accessible": true
     },
     {
-      "source": "Hall_F2_elevator_door_1",
-      "target": "Hall_F9_elevator_door_10",
-      "type": "elevator",
-      "weight": 0,
-      "accessible": true
-    },
-    {
       "source": "Hall_F2_elevator_door_2",
       "target": "Hall_F9_elevator_door_11",
       "type": "elevator",
@@ -11333,70 +11359,70 @@
       "target": "Hall_F8_stair_landing_29",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F2_stair_landing_9",
       "target": "Hall_F8_stair_landing_28",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F2_stair_landing_9",
       "target": "Hall_F9_stair_landing_20",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F8_stair_landing_29",
       "target": "Hall_F9_stair_landing_21",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F9_stair_landing_20",
       "target": "Hall_F8_stair_landing_28",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F2_stair_landing_10",
       "target": "Hall_F9_stair_landing_21",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F9_stair_landing_23",
       "target": "Hall_F8_stair_landing_30",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F8_stair_landing_26",
       "target": "Hall_F9_stair_landing_22",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F9_stair_landing_25",
       "target": "Hall_F8_stair_landing_31",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F9_stair_landing_19",
       "target": "Hall_F8_stair_landing_27",
       "type": "stair",
       "weight": 0,
-      "accessible": true
+      "accessible": false
     },
     {
       "source": "Hall_F2_water_fountain_5752",
