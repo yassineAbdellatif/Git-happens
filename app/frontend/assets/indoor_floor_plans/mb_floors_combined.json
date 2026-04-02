@@ -2753,6 +2753,92 @@
       "type": "hallway",
       "weight": 37,
       "accessible": true
-    }
+    },
+    [
+      {
+        "source": "MB_F1_elevator_door_1",
+        "target": "MB_F0_elevator_door_1",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_elevator_door_2",
+        "target": "MB_F0_elevator_door_2",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_elevator_door_3",
+        "target": "MB_F0_elevator_door_3",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_elevator_door_4",
+        "target": "MB_F0_elevator_door_4",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_elevator_door_5",
+        "target": "MB_F0_elevator_door_5",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_elevator_door_6",
+        "target": "MB_F0_elevator_door_6",
+        "type": "elevator",
+        "weight": 15,
+        "accessible": true
+      },
+      {
+        "source": "MB_F1_stair_landing_1",
+        "target": "MB_F0_stair_landing_1",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "MB_F1_stair_landing_2",
+        "target": "MB_F0_stair_landing_2",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "MB_F1_stair_landing_3",
+        "target": "MB_F0_stair_landing_3",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "MB_F1_stair_landing_4",
+        "target": "MB_F0_stair_landing_4",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "MB_F1_stair_landing_5",
+        "target": "MB_F0_stair_landing_5",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      },
+      {
+        "source": "MB_F1_stair_landing_6",
+        "target": "MB_F0_stair_landing_494",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      }
+    ]
   ]
 }

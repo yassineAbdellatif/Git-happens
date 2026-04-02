@@ -2178,6 +2178,15 @@
       "type": "hallway",
       "weight": 61,
       "accessible": true
-    }
+    },
+    [
+      {
+        "source": "VE_F1_stair_landing_1",
+        "target": "VE_F2_stair_landing_1",
+        "type": "stairs",
+        "weight": 15,
+        "accessible": false
+      }
+    ]
   ]
 }
