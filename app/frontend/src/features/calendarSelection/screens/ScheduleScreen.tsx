@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  Modal,
+  Image,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
@@ -48,31 +50,34 @@ const ScheduleScreen: React.FC<{
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
+
+  const loadEvents = async () => {
+    if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
+      setError("No calendars selected or access token missing");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedEvents = await fetchUpcomingEvents(
+        googleCalendarAccessToken,
+        selectedCalendarIds,
+      );
+      setEvents(fetchedEvents);
+    } catch (err) {
+      console.error("Failed to load events:", err);
+      setError("Failed to load schedule. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadEvents = async () => {
-      if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
-        setError("No calendars selected or access token missing");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedEvents = await fetchUpcomingEvents(
-          googleCalendarAccessToken,
-          selectedCalendarIds,
-        );
-        setEvents(fetchedEvents);
-      } catch (err) {
-        console.error("Failed to load events:", err);
-        setError("Failed to load schedule. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEvents();
   }, [googleCalendarAccessToken, selectedCalendarIds]);
 
@@ -146,29 +151,6 @@ const ScheduleScreen: React.FC<{
   };
 
   const handleRefresh = () => {
-    setLoading(true);
-    setError(null);
-    const loadEvents = async () => {
-      if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
-        setError("No calendars selected or access token missing");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const fetchedEvents = await fetchUpcomingEvents(
-          googleCalendarAccessToken,
-          selectedCalendarIds,
-        );
-        setEvents(fetchedEvents);
-      } catch (err) {
-        console.error("Failed to load events:", err);
-        setError("Failed to load schedule. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadEvents();
   };
 
@@ -191,6 +173,43 @@ const ScheduleScreen: React.FC<{
       navigation?.navigate("CalendarSelection");
     }
   };
+
+  const closeEventDetails = () => {
+    setSelectedEvent(null);
+  };
+
+  const getEventTimeRange = (event: CalendarEvent): string => {
+    if (!event.start.dateTime) {
+      return "All day";
+    }
+
+    const startTime = formatTime(event.start.dateTime);
+
+    if (!event.end.dateTime) {
+      return startTime;
+    }
+
+    return `${startTime} - ${formatTime(event.end.dateTime)}`;
+  };
+
+  const weekDays = getWeekDays();
+  const positionedEvents = getPositionedEvents();
+  const eventsBySlot = useMemo(() => {
+    const groupedEvents: Record<string, PositionedEvent[]> = {};
+
+    positionedEvents.forEach((event) => {
+      const slotHour = Math.floor(event.startHour);
+      const slotKey = `${event.dayIndex}-${slotHour}`;
+
+      if (!groupedEvents[slotKey]) {
+        groupedEvents[slotKey] = [];
+      }
+
+      groupedEvents[slotKey].push(event);
+    });
+
+    return groupedEvents;
+  }, [positionedEvents]);
 
   if (loading) {
     return (
@@ -221,9 +240,6 @@ const ScheduleScreen: React.FC<{
       </View>
     );
   }
-
-  const weekDays = getWeekDays();
-  const positionedEvents = getPositionedEvents();
 
   return (
     <View style={styles.container}>
@@ -303,19 +319,15 @@ const ScheduleScreen: React.FC<{
               {weekDays.map((dayObj, dayIndex) => (
                 <View
                   key={`${hour}-${dayObj.index}`}
+                  pointerEvents="box-none"
                   style={[
                     styles.dayCell,
                     dayIndex === weekDays.length - 1 && { borderRightWidth: 0 },
                   ]}
                 >
                   {/* Events for this hour */}
-                  {positionedEvents
-                    .filter(
-                      (event) =>
-                        event.dayIndex === dayObj.index &&
-                        Math.floor(event.startHour) === hour,
-                    )
-                    .map((event, idx) => {
+                  {(eventsBySlot[`${dayObj.index}-${hour}`] || []).map(
+                    (event, idx) => {
                       // Calculate top offset in pixels (fractional hour * 60px)
                       const topOffsetPixels =
                         (event.startHour - Math.floor(event.startHour)) *
@@ -325,8 +337,10 @@ const ScheduleScreen: React.FC<{
                       const heightPixels = event.duration * HOUR_HEIGHT;
 
                       return (
-                        <View
+                        <TouchableOpacity
                           key={`${event.id}-${idx}`}
+                          activeOpacity={0.85}
+                          onPress={() => setSelectedEvent(event)}
                           style={[
                             styles.eventBlock,
                             {
@@ -349,15 +363,69 @@ const ScheduleScreen: React.FC<{
                               {formatTime(event.start.dateTime)}
                             </Text>
                           )}
-                        </View>
+                        </TouchableOpacity>
                       );
-                    })}
+                    },
+                  )}
                 </View>
               ))}
             </View>
           ))}
         </View>
       </ScrollView>
+
+      <Modal
+        visible={selectedEvent !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeEventDetails}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              {selectedEvent?.summary || "Untitled Event"}
+            </Text>
+
+            <Text style={styles.modalTime}>
+              {selectedEvent ? getEventTimeRange(selectedEvent) : ""}
+            </Text>
+
+            {selectedEvent?.location ? (
+              <Text style={styles.modalDetailText}>
+                Location: {selectedEvent.location}
+              </Text>
+            ) : null}
+
+            {selectedEvent?.description ? (
+              <Text style={styles.modalDetailText}>
+                {selectedEvent.description}
+              </Text>
+            ) : null}
+
+            <TouchableOpacity
+              style={styles.modalDirectionsButton}
+              onPress={() => {}}
+            >
+              <View style={styles.modalDirectionsButtonContent}>
+                <Text style={styles.modalDirectionsButtonText}>
+                  Get Directions
+                </Text>
+                <Image
+                  source={require("../../../../assets/get_directions.png")}
+                  style={styles.modalDirectionsIcon}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={closeEventDetails}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

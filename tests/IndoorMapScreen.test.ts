@@ -3,7 +3,7 @@ import * as path from "path";
 
 const screenPath = path.join(
   process.cwd(),
-  "app/frontend/src/features/map/screens/IndoorMapScreen.tsx"
+  "app/frontend/src/features/map/screens/IndoorMapScreen.tsx",
 );
 
 const readScreenSource = () => fs.readFileSync(screenPath, "utf8");
@@ -13,7 +13,7 @@ describe("IndoorMapScreen source contract", () => {
     const source = readScreenSource();
 
     expect(source).toContain(
-      "getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any)"
+      "getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any)",
     );
   });
 
