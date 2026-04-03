@@ -24,6 +24,7 @@ interface POIPanelProps {
   onClose: () => void;
   userLocation: { latitude: number; longitude: number } | null;
   onSelectPOI: (poi: POIResult) => void;
+  onGetDirections: (poi: POIResult) => void;
 }
 
 const StarRating = ({ rating }: { rating: number | null }) => {
@@ -55,6 +56,7 @@ export const POIPanel: React.FC<POIPanelProps> = ({
   onClose,
   userLocation,
   onSelectPOI,
+  onGetDirections,
 }) => {
   const hasResults = results.length > 0;
 
@@ -167,6 +169,15 @@ export const POIPanel: React.FC<POIPanelProps> = ({
                     </View>
                   )}
                 </View>
+                {/* TSK-5.2.2: Get Directions quick action */}
+                <TouchableOpacity
+                  style={styles.directionsBtn}
+                  onPress={() => onGetDirections(poi)}
+                  activeOpacity={0.75}
+                >
+                  <MaterialIcons name="directions" size={14} color="#fff" />
+                  <Text style={styles.directionsBtnText}>Get Directions</Text>
+                </TouchableOpacity>
               </View>
               {poi.distanceM !== null && (
                 <Text style={styles.distanceText}>
@@ -240,6 +251,8 @@ const styles = StyleSheet.create({
   openBadge: { paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4 },
   openBadgeText: { fontSize: 10, color: "#fff", fontWeight: "600" },
   distanceText: { fontSize: 12, color: "#555", fontWeight: "600" },
+  directionsBtn: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 6, alignSelf: "flex-start", backgroundColor: "#912338", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  directionsBtnText: { fontSize: 11, color: "#fff", fontWeight: "700" },
   emptyState: { alignItems: "center", paddingVertical: 30, gap: 10 },
   emptyText: { fontSize: 13, color: "#aaa", textAlign: "center", paddingHorizontal: 30 },
 });
