@@ -84,6 +84,27 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
+  nearbyPoiButton: {
+    backgroundColor: "#912338",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 6,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  nearbyPoiButtonOpen: {
+    backgroundColor: "#6b1a28",
+  },
+  nearbyPoiButtonText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 13,
+  },
   statusCard: {
     backgroundColor: "white",
     padding: 10,

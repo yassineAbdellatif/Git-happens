@@ -273,8 +273,8 @@ const MapScreen = () => {
               <TouchableOpacity
                 testID="nearby-poi-button"
                 style={[
-                  styles.recenterButton,
-                  poi.isOpen && { backgroundColor: "#912338" },
+                  styles.nearbyPoiButton,
+                  poi.isOpen && styles.nearbyPoiButtonOpen,
                 ]}
                 onPress={() => {
                   if (poi.isOpen) {
@@ -286,10 +286,11 @@ const MapScreen = () => {
                 }}
               >
                 <MaterialIcons
-                  name="place"
-                  size={24}
-                  color={poi.isOpen ? "#fff" : "#912338"}
+                  name="explore"
+                  size={18}
+                  color="#fff"
                 />
+                <Text style={styles.nearbyPoiButtonText}>Nearby</Text>
               </TouchableOpacity>
 
               <View style={styles.statusCard}>
