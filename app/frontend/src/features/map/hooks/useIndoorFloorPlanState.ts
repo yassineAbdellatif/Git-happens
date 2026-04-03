@@ -48,8 +48,11 @@ export const useIndoorFloorPlanInteraction = (
   const panResponder = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onStartShouldSetPanResponderCapture: () => true,
+        onStartShouldSetPanResponder: () => false,
+        onStartShouldSetPanResponderCapture: () => false,
+        onMoveShouldSetPanResponder: (_, gestureState) => {
+          return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+        },
         onMoveShouldSetPanResponderCapture: () => true,
         onPanResponderGrant: () => {
           onInteractionChange?.(true);
