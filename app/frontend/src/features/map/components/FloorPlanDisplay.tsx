@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import {
   FloorPlanRegistryEntry,
   LocalizedNode,
@@ -26,15 +25,11 @@ import Svg, {
 import { useIndoorFloorPlanInteraction } from "../hooks/useIndoorFloorPlanState";
 
 const { width, height } = Dimensions.get("window");
-const FLOOR_CHANGE_MARKER_SIZE = 48;
 
 interface FloorPlanDisplayProps {
   floorPlanEntry: FloorPlanRegistryEntry;
   onInteractionChange?: (isInteracting: boolean) => void;
   path?: LocalizedNode[];
-  startNode?: LocalizedNode | null;
-  destinationNode?: LocalizedNode | null;
-  floorChangeNode?: LocalizedNode | null;
   onPoiPress?: (node: LocalizedNode) => void;
 }
 
@@ -96,9 +91,6 @@ const FloorPlanDisplay = ({
   floorPlanEntry,
   onInteractionChange,
   path = [],
-  startNode = null,
-  destinationNode = null,
-  floorChangeNode = null,
   onPoiPress,
 }: FloorPlanDisplayProps) => {
   const { zoom, translate, panResponder, handleZoomChange, handleResetView } =
@@ -222,48 +214,25 @@ const FloorPlanDisplay = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  {startNode && (
-                    <Circle
-                      cx={startNode.x}
-                      cy={startNode.y}
-                      r={18}
-                      fill="#2d8bf0"
-                      stroke="white"
-                      strokeWidth={4}
-                    />
-                  )}
-                  {destinationNode && (
-                    <Circle
-                      cx={destinationNode.x}
-                      cy={destinationNode.y}
-                      r={18}
-                      fill="#642222"
-                      stroke="white"
-                      strokeWidth={4}
-                    />
-                  )}
+                  <Circle
+                    cx={path[0].x}
+                    cy={path[0].y}
+                    r={18}
+                    fill="#2d8bf0"
+                    stroke="white"
+                    strokeWidth={4}
+                  />
+                  <Circle
+                    cx={path.at(-1)!.x}
+                    cy={path.at(-1)!.y}
+                    r={18}
+                    fill="#642222"
+                    stroke="white"
+                    strokeWidth={4}
+                  />
                 </>
               )}
             </Svg>
-          )}
-
-          {naturalSize && floorChangeNode && (
-            <View
-              pointerEvents="none"
-              style={[
-                styles.floorChangeMarker,
-                {
-                  left:
-                    (floorChangeNode.x / naturalSize.width) * width -
-                    FLOOR_CHANGE_MARKER_SIZE / 2,
-                  top:
-                    (floorChangeNode.y / naturalSize.height) * (height * 0.6) -
-                    FLOOR_CHANGE_MARKER_SIZE / 2,
-                },
-              ]}
-            >
-              <MaterialIcons name="elevator" size={26} color="#fff" />
-            </View>
           )}
         </Animated.View>
       </View>
@@ -346,17 +315,6 @@ const styles = StyleSheet.create({
   rasterImage: {
     width: width,
     height: height * 0.6,
-  },
-  floorChangeMarker: {
-    position: "absolute",
-    width: FLOOR_CHANGE_MARKER_SIZE,
-    height: FLOOR_CHANGE_MARKER_SIZE,
-    borderRadius: FLOOR_CHANGE_MARKER_SIZE / 2,
-    backgroundColor: "#8d3143",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 4,
-    borderColor: "#fff",
   },
   errorText: {
     color: "#d9534f",

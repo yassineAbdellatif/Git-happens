@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Keyboard,
   Switch,
   Text,
@@ -13,9 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import {
   FloorNumber,
   getFloorPlanRegistryEntry,
-  getSupportedFloorsForBuilding,
   IndoorBuildingId,
-  LocalizedNode,
 } from "../../../services/floorPlanService";
 import FloorPlanDisplay from "../components/FloorPlanDisplay";
 import { useIndoorNavigation } from "../hooks/useIndoorNavigation";
@@ -28,52 +27,17 @@ type IndoorMapRouteParams = {
   selectedFloorNumber: FloorNumber;
 };
 
-const FloorPill = ({
-  floors,
-  selectedFloorNumber,
-  onSelectFloor,
-}: {
-  floors: string[];
-  selectedFloorNumber: string;
-  onSelectFloor: (floor: string) => void;
-}) => (
-  <View style={styles.floorPill}>
-    <Text style={styles.floorPillTitle}>Floor</Text>
-    {floors.map((floor) => {
-      const isActive = floor === selectedFloorNumber;
-
-      return (
-        <TouchableOpacity
-          key={floor}
-          style={[styles.floorPillButton, isActive && styles.floorPillButtonActive]}
-          onPress={() => onSelectFloor(floor)}
-        >
-          <Text
-            style={[
-              styles.floorPillButtonText,
-              isActive && styles.floorPillButtonTextActive,
-            ]}
-          >
-            {floor}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-);
-
 const IndoorMapScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { buildingId, buildingName, selectedFloorNumber } =
     route.params as IndoorMapRouteParams;
 
-  const [currentFloor, setCurrentFloor] = useState<FloorNumber>(selectedFloorNumber);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const floorPlanEntry = useMemo(
-    () => getFloorPlanRegistryEntry(buildingId, currentFloor),
-    [buildingId, currentFloor],
+    () => getFloorPlanRegistryEntry(buildingId, selectedFloorNumber),
+    [buildingId, selectedFloorNumber],
   );
 
   const {
@@ -82,10 +46,7 @@ const IndoorMapScreen = () => {
     startResults,
     destinationResults,
     path,
-    routeFloors,
     isAccessibilityEnabled,
-    selectedStartNode,
-    selectedDestinationNode,
     handleStartSearch,
     handleDestinationSearch,
     selectStartNode,
@@ -93,55 +54,17 @@ const IndoorMapScreen = () => {
     handleStartNavigation,
     toggleAccessibility,
     swapPoints,
-    clearPath,
-  } = useIndoorNavigation(buildingId);
-
-  const isShowingRoute = path.length > 0;
+  } = useIndoorNavigation(buildingId, selectedFloorNumber);
 
   const currentFloorPath = useMemo(
-    () => path.filter((node) => String(node.floor) === String(currentFloor)),
-    [currentFloor, path],
+    () =>
+      path.filter(
+        (node) => String(node.floor) === String(selectedFloorNumber),
+      ),
+    [path, selectedFloorNumber],
   );
 
-  const currentFloorStartNode =
-    selectedStartNode && String(selectedStartNode.floor) === String(currentFloor)
-      ? selectedStartNode
-      : null;
-
-  const currentFloorDestinationNode =
-    selectedDestinationNode &&
-    String(selectedDestinationNode.floor) === String(currentFloor)
-      ? selectedDestinationNode
-      : null;
-
-  const floorChangeNode = useMemo(() => {
-    if (!isShowingRoute) {
-      return null;
-    }
-
-    const changeNode = path.find((node, index) => {
-      const previousNode = path[index - 1];
-      const nextNode = path[index + 1];
-
-      return (
-        String(node.floor) === String(currentFloor) &&
-        ((previousNode && String(previousNode.floor) !== String(currentFloor)) ||
-          (nextNode && String(nextNode.floor) !== String(currentFloor)))
-      );
-    });
-
-    return changeNode || null;
-  }, [currentFloor, isShowingRoute, path]);
-
-  const availableFloors = useMemo(() => {
-    if (routeFloors.length > 0) {
-      return [...routeFloors].sort((a, b) =>
-        a.localeCompare(b, undefined, { numeric: true }),
-      );
-    }
-
-    return getSupportedFloorsForBuilding(buildingId);
-  }, [buildingId, routeFloors]);
+  const isShowingRoute = path.length > 0;
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
@@ -158,57 +81,28 @@ const IndoorMapScreen = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isShowingRoute || routeFloors.length === 0) {
-      return;
-    }
-
-    if (!routeFloors.includes(String(currentFloor))) {
-      setCurrentFloor(routeFloors[0] as FloorNumber);
-    }
-  }, [currentFloor, isShowingRoute, routeFloors]);
-
-  const resetRouteView = () => {
-    clearPath();
-    setCurrentFloor(selectedFloorNumber);
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.mapContainer}>
         {floorPlanEntry ? (
-          <FloorPlanDisplay
-            floorPlanEntry={floorPlanEntry}
-            path={currentFloorPath}
-            startNode={currentFloorStartNode}
-            destinationNode={currentFloorDestinationNode}
-            floorChangeNode={floorChangeNode}
-          />
+          <FloorPlanDisplay floorPlanEntry={floorPlanEntry} path={currentFloorPath} />
         ) : (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              Map not available for Floor {currentFloor}.
+              Map not available for Floor {selectedFloorNumber}.
             </Text>
           </View>
         )}
       </View>
 
-      <TouchableOpacity onPress={navigation.goBack} style={styles.backButton}>
-        <MaterialIcons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
-
       {isShowingRoute ? (
         <>
           <View style={styles.routeInfoPill}>
             <Text style={styles.routeInfoTitle}>{buildingName}</Text>
-            <Text style={styles.routeInfoSubtitle}>Accessible Indoor Route</Text>
+            <Text style={styles.routeInfoSubtitle}>
+              {isAccessibilityEnabled ? "Accessible Indoor Route" : "Indoor Route"}
+            </Text>
           </View>
-
-          <FloorPill
-            floors={availableFloors}
-            selectedFloorNumber={String(currentFloor)}
-            onSelectFloor={(floor) => setCurrentFloor(floor as FloorNumber)}
-          />
 
           <View style={styles.accessibilityContainer}>
             <View style={styles.accessibilityIconBubble}>
@@ -219,26 +113,39 @@ const IndoorMapScreen = () => {
               thumbColor="#ffffff"
               ios_backgroundColor="#d9d9d9"
               value={isAccessibilityEnabled}
-              onValueChange={toggleAccessibility}
+              onValueChange={() => {
+                const result = toggleAccessibility();
+
+                if (!result?.ok && result?.reason === "no_accessible_route") {
+                  Alert.alert(
+                    "No accessible route found",
+                    "No accessible route was found between those two points. You can keep searching or turn accessibility off.",
+                  );
+                }
+              }}
             />
           </View>
 
-          <TouchableOpacity style={styles.exitRouteButton} onPress={resetRouteView}>
+          <TouchableOpacity
+            style={styles.exitRouteButton}
+            onPress={navigation.goBack}
+          >
             <MaterialIcons name="close" size={22} color="#fff" />
           </TouchableOpacity>
         </>
       ) : (
         <>
           <View style={styles.floatingHeader}>
+            <TouchableOpacity onPress={navigation.goBack} style={styles.backButton}>
+              <MaterialIcons name="arrow-back" size={24} color="#333" />
+            </TouchableOpacity>
             <View style={styles.headerTextContainer}>
               <Text style={styles.headerTitle}>{buildingName}</Text>
               <Text style={styles.headerSubtitle}>Floor {selectedFloorNumber}</Text>
             </View>
           </View>
 
-          <View
-            style={[styles.floatingBottomCard, { bottom: 30 + keyboardHeight }]}
-          >
+          <View style={[styles.floatingBottomCard, { bottom: 30 + keyboardHeight }]}>
             <Text style={styles.cardTitle}>Navigation Points</Text>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Start Point</Text>
@@ -281,7 +188,34 @@ const IndoorMapScreen = () => {
 
             <TouchableOpacity
               style={styles.startNavigationButton}
-              onPress={handleStartNavigation}
+              onPress={() => {
+                const result = handleStartNavigation();
+
+                if (result.ok) {
+                  return;
+                }
+
+                if (result.reason === "missing_points") {
+                  Alert.alert(
+                    "Missing points",
+                    "Please choose both a start point and a destination point.",
+                  );
+                  return;
+                }
+
+                if (result.reason === "no_accessible_route") {
+                  Alert.alert(
+                    "No accessible route found",
+                    "No accessible route was found between those two points. Try another route or turn accessibility off.",
+                  );
+                  return;
+                }
+
+                Alert.alert(
+                  "No route found",
+                  "No route was found between those two points.",
+                );
+              }}
             >
               <MaterialIcons
                 name="near-me"

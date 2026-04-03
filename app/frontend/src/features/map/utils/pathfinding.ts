@@ -4,7 +4,9 @@ import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService"
 // (edge weights represent pixel distances, so that straight-line distance never overestimates the true shortest path)
 // Cross-floor pairs return 0: their x/y coordinates belong to different SVG
 // coordinate spaces so Euclidean distance would be meaningless and could
-// overestimate, violating A*''s admissibility requirement.
+// overestimate, violating A*'s admissibility requirement.
+// overestimate, violating A*'s admissibility requirement.
+
 const STAIR_NODE_TYPES = new Set(["stairs", "stair_landing"]);
 function heuristic(a: LocalizedNode, b: LocalizedNode): number {
   if (a.floor !== b.floor) return 0;
@@ -101,7 +103,7 @@ function updateNeighbor(
   openSet.add(neighbor.id);
 }
 
-// A* pathfinding on the indoor flat floor graph (only same-floor navigation for now).
+// A* pathfinding on the indoor building graph, including cross-floor hops.
 export function findPath(
   startId: string,
   endId: string,
@@ -158,4 +160,5 @@ export function findPath(
 
   return [];
 }
+
 
