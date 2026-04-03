@@ -14,7 +14,12 @@ import {
 import { View, Text, StyleSheet } from "react-native";
 
 export type MapStackParamList = {
-  MapMain: undefined;
+    MapMain:
+      | {
+          destinationBuildingId?: string;
+          destinationRoom?: string;
+        }
+      | undefined;
   FloorSelectionScreen: {
     buildingId: string;
     buildingName: string;
@@ -43,7 +48,15 @@ const MapStackNavigator = () => {
 };
 
 export type RootDrawerParamList = {
-  CampusMap: undefined;
+  CampusMap:
+      | {
+          screen?: "MapMain";
+          params?: {
+            destinationBuildingId?: string;
+            destinationRoom?: string;
+          };
+        }
+      | undefined;
   Calendar: undefined;
 };
 

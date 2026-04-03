@@ -13,7 +13,9 @@ describe("AppNavigator source contract", () => {
     const source = readAppNavigatorSource();
 
     expect(source).toContain("export type MapStackParamList = {");
-    expect(source).toContain("MapMain: undefined;");
+    expect(source).toContain("MapMain:");
+    expect(source).toContain("destinationBuildingId?: string;");
+    expect(source).toContain("destinationRoom?: string;");
     expect(source).toContain("FloorSelectionScreen: {");
     expect(source).toContain("supportedFloors: string[];");
     expect(source).toContain("IndoorMapScreen: {");

@@ -1,6 +1,7 @@
-import React from "react";
-import { useNavigation, DrawerActions } from "@react-navigation/native";
+import React, { useEffect } from "react";
+import { useNavigation, useRoute, DrawerActions, RouteProp } from "@react-navigation/native";
 import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
+import { MapStackParamList } from "../../../navigation/AppNavigator";
 
 import {
   View,
@@ -33,6 +34,7 @@ const MODE_ICON_MAP = {
 } as const;
 
 const MapScreen = () => {
+    const route = useRoute<RouteProp<MapStackParamList, "MapMain">>();
   const {
     // State & Refs
     mapRef,
@@ -141,6 +143,64 @@ const MapScreen = () => {
   const hasSupportedFloors = selectedBuilding
     ? getSupportedFloorsForBuilding(selectedBuilding.id).length > 0
     : false;
+
+    // Handle navigation params from schedule "Get Directions" or "Go to Next Class"
+      useEffect(() => {
+        const destBuildingId = route.params?.destinationBuildingId;
+        if (!destBuildingId) return;
+
+        const building = CONCORDIA_BUILDINGS.find((b) => b.id === destBuildingId);
+        if (!building) return;
+
+        // Set destination to the target building
+        setDestination({
+          type: "BUILDING",
+          coords: { ...building.coordinates[0] },
+          label: building.fullName,
+          campus: building.campus,
+        });
+
+        // Set origin to current location if available, otherwise let user pick
+        if (userLocation) {
+          setOrigin({
+            type: "CURRENT",
+            coords: {
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+            },
+            label: "My Location",
+            campus: null,
+          });
+        } else {
+          setOrigin({
+            type: null,
+            coords: null,
+            label: "Choose starting point",
+            campus: null,
+          });
+        }
+
+        setIsRouting(true);
+
+        // Animate map to destination building
+        if (mapRef.current) {
+          mapRef.current.animateToRegion(
+            {
+              latitude: building.coordinates[0].latitude,
+              longitude: building.coordinates[0].longitude,
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005,
+            },
+            600,
+          );
+        }
+
+        // Clear route params so re-visiting doesn't re-trigger
+        navigation.setParams({
+          destinationBuildingId: undefined,
+          destinationRoom: undefined,
+        } as any);
+      }, [route.params?.destinationBuildingId]);
 
   return (
     <View style={styles.container}>
