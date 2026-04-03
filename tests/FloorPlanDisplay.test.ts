@@ -51,7 +51,7 @@ describe("FloorPlanDisplay source contract", () => {
     expect(source).toContain(".filter((node) => node.nodeType in POI_ASSETS)");
     expect(source).toContain("<SvgImage");
     expect(source).toContain("href={{ uri: asset.uri }}");
-    expect(source).toContain("onPress={() => onPoiPress?.(node)}");
+    expect(source).toContain("onPoiPress?.(node);");
   });
 
   it("renders transparent Rect hit targets when icons are embedded", () => {
@@ -59,8 +59,8 @@ describe("FloorPlanDisplay source contract", () => {
 
     expect(source).toContain("floorPlanEntry.poiIconsEmbedded");
     expect(source).toContain("<Rect");
-    expect(source).toContain('fill="transparent"');
-    expect(source).toContain("onPress={() => onPoiPress?.(node)}");
+    expect(source).toContain('fill="rgba(252, 116, 116, 0.58)"');
+    expect(source).toContain("onPoiPress?.(node);");
   });
 
   it("draws polyline and endpoint circles only when path has more than one node", () => {

@@ -7,6 +7,7 @@ import {
 } from '../app/frontend/src/features/map/utils/shuttleLogic';
 import * as mapApiService from '../app/frontend/src/services/mapApiService';
 
+
 // Mock the mapApiService and polylineDecoder
 jest.mock('../app/frontend/src/services/mapApiService');
 jest.mock('../app/frontend/src/utils/polylineDecoder', () => ({

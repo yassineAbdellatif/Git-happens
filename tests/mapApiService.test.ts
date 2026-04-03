@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { getNearbyPlacesFromGoogle } from "../app/frontend/src/services/mapApiService";
 
+
 const servicePath = path.join(
   process.cwd(),
   "app/frontend/src/services/mapApiService.ts"
@@ -42,7 +43,7 @@ describe("mapApiService lightweight coverage", () => {
 
     expect(source).toContain('status === "REQUEST_DENIED"');
     expect(source).toContain('status !== "OK" && status !== "ZERO_RESULTS"');
-    expect(source).toContain("Failed to fetch nearby places from Google");
+    expect(source).toContain("Google Places failed with status: ${status}");
   });
 
   it("throws when frontend Google key is missing", async () => {

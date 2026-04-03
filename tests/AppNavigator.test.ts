@@ -35,15 +35,21 @@ describe("AppNavigator source contract", () => {
   it("applies drawer-level styling and behavior options", () => {
     const source = readAppNavigatorSource();
 
-    expect(source).toContain('<Drawer.Navigator');
+    expect(source).toContain("<Drawer.Navigator");
     expect(source).toContain('initialRouteName="CampusMap"');
-    expect(source).toContain("drawerContent={(props) => <CustomDrawerContent {...props} />}");
-    expect(source).toContain("headerStyle: { backgroundColor: \"#912338\" }");
-    expect(source).toContain("headerTintColor: \"white\"");
-    expect(source).toContain("drawerStyle: { backgroundColor: \"#912338\", width: 280 }");
-    expect(source).toContain("drawerActiveTintColor: \"#ffffff\"");
-    expect(source).toContain("drawerInactiveTintColor: \"rgba(255,255,255,0.6)\"");
-    expect(source).toContain("drawerActiveBackgroundColor: \"rgba(255,255,255,0.15)\"");
+    expect(source).toContain("drawerContent={renderDrawerContent}");
+    expect(source).toContain('headerStyle: { backgroundColor: "#912338" }');
+    expect(source).toContain('headerTintColor: "white"');
+    expect(source).toContain(
+      'drawerStyle: { backgroundColor: "#912338", width: 280 }',
+    );
+    expect(source).toContain('drawerActiveTintColor: "#ffffff"');
+    expect(source).toContain(
+      'drawerInactiveTintColor: "rgba(255,255,255,0.6)"',
+    );
+    expect(source).toContain(
+      'drawerActiveBackgroundColor: "rgba(255,255,255,0.15)"',
+    );
     expect(source).toContain("drawerLabelStyle: { fontSize: 16 }");
   });
 
