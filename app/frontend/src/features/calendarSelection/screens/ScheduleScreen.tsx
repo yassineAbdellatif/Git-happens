@@ -7,11 +7,16 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
 import { fetchUpcomingEvents } from "../../../services/calendarService";
 import { CalendarEvent } from "../../../types/calendarTypes";
+import { parseLocation } from "../../../utils/locationParser";
+import { CONCORDIA_BUILDINGS } from "../../../constants/buildings";
+import { useNextClass } from "../../nextClass/hooks/useNextClass";
+import NextClassCard from "../../nextClass/components/NextClassCard";
 import { styles } from "../styles/ScheduleStyle";
 
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 6); // 6am to 8pm
@@ -44,7 +49,7 @@ const ScheduleScreen: React.FC<{
   navigation?: any;
   onBackToSelection?: () => void;
 }> = ({ navigation, onBackToSelection }) => {
-  const { googleCalendarAccessToken, selectedCalendarIds } =
+  const { googleCalendarAccessToken, getValidAccessToken, selectedCalendarIds } =
     useCalendarSelection();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +59,16 @@ const ScheduleScreen: React.FC<{
     null,
   );
 
+const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
+    googleCalendarAccessToken,
+    selectedCalendarIds,
+  );
+
   const loadEvents = async () => {
-    if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
+      // refresh the token first before fetching events
+      const token = await getValidAccessToken();
+
+      if (!token || selectedCalendarIds.length === 0) {
       setError("No calendars selected or access token missing");
       setLoading(false);
       return;
@@ -65,7 +78,7 @@ const ScheduleScreen: React.FC<{
       setLoading(true);
       setError(null);
       const fetchedEvents = await fetchUpcomingEvents(
-        googleCalendarAccessToken,
+        token,
         selectedCalendarIds,
       );
       setEvents(fetchedEvents);
@@ -178,6 +191,52 @@ const ScheduleScreen: React.FC<{
     setSelectedEvent(null);
   };
 
+  const handleGetDirections = () => {
+    if (!selectedEvent?.location) {
+      Alert.alert(
+        "No Location",
+        "This event does not have a location set.",
+      );
+      return;
+    }
+
+    const parsed = parseLocation(selectedEvent.location);
+    if (!parsed) {
+      Alert.alert(
+        "Unknown Location",
+        "Could not recognize a Concordia building from this event's location.",
+      );
+      return;
+    }
+
+    const building = CONCORDIA_BUILDINGS.find((b) => b.id === parsed.building);
+    if (!building) {
+      Alert.alert(
+        "Building Not Found",
+        `Building "${parsed.building}" was not found in the campus directory.`,
+      );
+      return;
+    }
+
+    closeEventDetails();
+    navigateToBuilding(parsed.building, parsed.room ?? undefined);
+  };
+
+  const navigateToBuilding = (buildingId: string, room?: string) => {
+    navigation?.navigate("CampusMap", {
+      screen: "MapMain",
+      params: {
+        destinationBuildingId: buildingId,
+        destinationRoom: room,
+      },
+    });
+  };
+
+  const handleNextClassDirections = (buildingId: string) => {
+    navigateToBuilding(buildingId);
+  };
+
+
   const getEventTimeRange = (event: CalendarEvent): string => {
     if (!event.start.dateTime) {
       return "All day";
@@ -282,6 +341,17 @@ const ScheduleScreen: React.FC<{
           <MaterialIcons name="chevron-right" size={24} color="#912338" />
         </TouchableOpacity>
       </View>
+
+
+      {/*
+          // Small card that shows the next class and their location on the calendar screen
+          // used while testing but not necessary in the issue so I commented it out for the time being
+      <NextClassCard
+          status={nextClassStatus}
+          loading={nextClassLoading}
+          onDirections={handleNextClassDirections}
+      />
+      */}
 
       <ScrollView
         style={styles.scrollView}
@@ -404,7 +474,7 @@ const ScheduleScreen: React.FC<{
 
             <TouchableOpacity
               style={styles.modalDirectionsButton}
-              onPress={() => {}}
+              onPress={handleGetDirections}
             >
               <View style={styles.modalDirectionsButtonContent}>
                 <Text style={styles.modalDirectionsButtonText}>

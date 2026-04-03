@@ -20,6 +20,7 @@ export interface CalendarError {
 export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const {
     googleCalendarAccessToken,
+    getValidAccessToken,
     selectedCalendarIds,
     setSelectedCalendarIds,
     confirmSelection,
@@ -30,18 +31,29 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const [error, setError] = useState<CalendarError | null>(null);
 
   const loadCalendars = useCallback(async () => {
-    if (!googleCalendarAccessToken) {
-      setError({
-        type: "empty",
-        message: "Connect Google Calendar to select calendars.",
-      });
-      setCalendars([]);
-      return;
+      // Try to get a valid (refreshed) token first
+      const token = await getValidAccessToken();
+
+     if (!token) {
+          setError({
+            type: "empty",
+            message: "Connect Google Calendar to select calendars.",
+          });
+          setCalendars([]);
+          return;
     }
 
     setLoading(true);
     setError(null);
-    const result = await fetchCalendarList(googleCalendarAccessToken);
+    let result = await fetchCalendarList(token);
+
+    // If token expired, try again with a freshly refreshed token
+    if (result.error === "token_expired") {
+        const refreshedToken = await getValidAccessToken();
+        if (refreshedToken && refreshedToken !== token) {
+            result = await fetchCalendarList(refreshedToken);
+          }
+      }
     setLoading(false);
 
     if (result.error) {
@@ -69,7 +81,7 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
     setSelectedCalendarIds((prev) =>
       prev.filter((id) => result.calendars.some((c) => c.id === id)),
     );
-  }, [googleCalendarAccessToken, setSelectedCalendarIds]);
+  }, [getValidAccessToken, setSelectedCalendarIds]);
 
   useEffect(() => {
     loadCalendars();

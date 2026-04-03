@@ -2,12 +2,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../features/auth/config/firebaseConfig";
+import { refreshGoogleAccessToken } from "../services/googleTokenService";
 
 const SELECTED_CALENDARS_KEY = "@campus_guide_selected_calendars";
 
 interface CalendarSelectionContextValue {
   googleCalendarAccessToken: string | null;
   setGoogleCalendarAccessToken: (token: string | null) => void;
+  getValidAccessToken: () => Promise<string | null>;
   selectedCalendarIds: string[];
   setSelectedCalendarIds: (ids: string[] | ((prev: string[]) => string[])) => void;
   confirmSelection: () => Promise<void>;
@@ -66,6 +68,15 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
     await persistSelection(idsRef.current);
   }, [persistSelection]);
 
+const getValidAccessToken = useCallback(async (): Promise<string | null> => {
+    const freshToken = await refreshGoogleAccessToken();
+    if (freshToken) {
+      setGoogleCalendarAccessToken(freshToken);
+      return freshToken;
+    }
+    return googleCalendarAccessToken;
+  }, [googleCalendarAccessToken]);
+
   const clearCalendarState = useCallback(async () => {
     setGoogleCalendarAccessToken(null);
     setSelectedCalendarIdsState([]);
@@ -92,6 +103,7 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
   const value: CalendarSelectionContextValue = {
     googleCalendarAccessToken,
     setGoogleCalendarAccessToken,
+    getValidAccessToken,
     selectedCalendarIds,
     setSelectedCalendarIds,
     confirmSelection,
