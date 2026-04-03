@@ -49,7 +49,7 @@ const ScheduleScreen: React.FC<{
   navigation?: any;
   onBackToSelection?: () => void;
 }> = ({ navigation, onBackToSelection }) => {
-  const { googleCalendarAccessToken, selectedCalendarIds } =
+  const { googleCalendarAccessToken, getValidAccessToken, selectedCalendarIds } =
     useCalendarSelection();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,10 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
   );
 
   const loadEvents = async () => {
-    if (!googleCalendarAccessToken || selectedCalendarIds.length === 0) {
+      // refresh the token first before fetching events
+      const token = await getValidAccessToken();
+
+      if (!token || selectedCalendarIds.length === 0) {
       setError("No calendars selected or access token missing");
       setLoading(false);
       return;
@@ -75,7 +78,7 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
       setLoading(true);
       setError(null);
       const fetchedEvents = await fetchUpcomingEvents(
-        googleCalendarAccessToken,
+        token,
         selectedCalendarIds,
       );
       setEvents(fetchedEvents);
