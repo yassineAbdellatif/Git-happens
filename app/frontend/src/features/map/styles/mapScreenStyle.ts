@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-   menuButton: {
+  menuButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -157,7 +157,12 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
     alignSelf: "center", //ensures the drag handle is centered on the sheet
   },
-  sheetTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 10 }, //added margin to separate from image
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  }, //added margin to separate from image
   sheetSubtitle: { color: "#666", marginTop: 10, textAlign: "center" },
 
   buildingImage: {
@@ -260,19 +265,42 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  // Add these inside your styles object, near your existing originOptionButton
+  primaryOptionButton: {
+    backgroundColor: "#f4f8ff",
+    borderColor: "#cce0ff",
+    borderWidth: 1.5,
+  },
+  optionIconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  optionTextWrapper: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  optionSubtext: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
+  },
   originOptionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   originOptionText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginLeft: 10,
   },
   //step by step instruction elements
