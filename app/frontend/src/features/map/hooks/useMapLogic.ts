@@ -15,13 +15,43 @@ import {
 } from "../utils/shuttleLogic";
 import { decodePolyline } from "../../../utils/polylineDecoder";
 import { isPointInPolygon } from "geolib";
-import { getRouteFromBackend } from "../../../services/mapApiService";
+import {
+  getNearbyPlacesFromGoogle,
+  getRouteFromBackend,
+  NearbyPoiResult,
+  NearbyPoiType,
+} from "../../../services/mapApiService";
 import { auth } from "@features/auth/config/firebaseConfig";
-import Constants from "expo-constants";
+
+type NearbyPoiMapItem = NearbyPoiResult["results"][number] & {
+  poiType: NearbyPoiType;
+};
+
+const POI_TYPES: NearbyPoiType[] = ["cafe", "restaurant", "library"];
+
+type ErrorWithResponseStatus = {
+  response?: {
+    status?: number;
+  };
+};
+
+const hasErrorResponseStatus = (
+  reason: unknown,
+  expectedStatus: number,
+): boolean => {
+  if (typeof reason !== "object" || reason === null) {
+    return false;
+  }
+
+  return (reason as ErrorWithResponseStatus).response?.status === expectedStatus;
+};
 
 
 export const useMapLogic = () => {
   const mapRef = useRef<any>(null);
+  const poiFetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastPoiFetchCenterRef = useRef<{ latitude: number; longitude: number } | null>(null);
+  const hasShownPoiDeniedRef = useRef(false);
   type LocationPoint = {
     type: "CURRENT" | "BUILDING" | "SEARCH" | null;
     coords: { latitude: number; longitude: number } | null;
@@ -53,6 +83,8 @@ export const useMapLogic = () => {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBuildings, setFilteredBuildings] = useState<Building[]>([]);
+  const [nearbyPois, setNearbyPois] = useState<NearbyPoiMapItem[]>([]);
+  const [isPoiLoading, setIsPoiLoading] = useState(false);
 
   const [isRouting, setIsRouting] = useState(false);
   const [transportMode, setTransportMode] = useState("WALKING");
@@ -153,10 +185,17 @@ export const useMapLogic = () => {
   };
 
   const toggleCampus = () => {
+    const distanceToSgw =
+      Math.abs(currentRegion.latitude - SGW_REGION.latitude) +
+      Math.abs(currentRegion.longitude - SGW_REGION.longitude);
+    const distanceToLoyola =
+      Math.abs(currentRegion.latitude - LOYOLA_REGION.latitude) +
+      Math.abs(currentRegion.longitude - LOYOLA_REGION.longitude);
+
+    const isCloserToSgw = distanceToSgw <= distanceToLoyola;
     const newRegion =
-      currentRegion.latitude === SGW_REGION.latitude
-        ? LOYOLA_REGION
-        : SGW_REGION;
+      isCloserToSgw ? LOYOLA_REGION : SGW_REGION;
+
     setCurrentRegion(newRegion);
     mapRef.current?.animateToRegion(newRegion, 1000);
   };
@@ -165,6 +204,95 @@ export const useMapLogic = () => {
     if (isNavigating) return; // Prevent changing selection while navigating
     setSelectedBuilding(building);
     resetRoutingState();
+  };
+
+  const shouldFetchPoisForRegion = (region: { latitude: number; longitude: number }) => {
+    const lastCenter = lastPoiFetchCenterRef.current;
+    if (!lastCenter) return true;
+
+    const latDelta = Math.abs(region.latitude - lastCenter.latitude);
+    const lngDelta = Math.abs(region.longitude - lastCenter.longitude);
+    return latDelta > 0.001 || lngDelta > 0.001;
+  };
+
+  const fetchNearbyPoisForRegion = async (region: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    if (!shouldFetchPoisForRegion(region)) return;
+
+    try {
+      setIsPoiLoading(true);
+
+      const requests = POI_TYPES.map((type) =>
+        getNearbyPlacesFromGoogle({
+          lat: region.latitude,
+          lng: region.longitude,
+          type,
+          radius: 1200,
+          limit: 8,
+        })
+      );
+
+      const settled = await Promise.allSettled(requests);
+      const mergedById = new Map<string, NearbyPoiMapItem>();
+
+      settled.forEach((result, index) => {
+        if (result.status !== "fulfilled") return;
+
+        result.value.results.forEach((poi) => {
+          if (!mergedById.has(poi.id)) {
+            mergedById.set(poi.id, {
+              ...poi,
+              poiType: POI_TYPES[index],
+            });
+          }
+        });
+      });
+
+      setNearbyPois(Array.from(mergedById.values()));
+      lastPoiFetchCenterRef.current = {
+        latitude: region.latitude,
+        longitude: region.longitude,
+      };
+
+      const hasDeniedError = settled.some(
+        (entry) =>
+          entry.status === "rejected" &&
+          hasErrorResponseStatus(entry.reason, 403)
+      );
+
+      if (hasDeniedError && !hasShownPoiDeniedRef.current) {
+        hasShownPoiDeniedRef.current = true;
+        Alert.alert(
+          "Nearby Search Unavailable",
+          "Places request was denied by Google. Verify the backend API key has Places API enabled and allowed restrictions."
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load nearby POIs:", error);
+    } finally {
+      setIsPoiLoading(false);
+    }
+  };
+
+  const handleRegionChangeComplete = (region: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    setCurrentRegion((prev) => ({
+      ...prev,
+      latitude: region.latitude,
+      longitude: region.longitude,
+    }));
+
+    if (poiFetchTimeoutRef.current) {
+      clearTimeout(poiFetchTimeoutRef.current);
+    }
+
+    poiFetchTimeoutRef.current = setTimeout(() => {
+      fetchNearbyPoisForRegion(region);
+    }, 700);
   };
 
   const handleSearch = (text: string) => {
@@ -229,6 +357,19 @@ export const useMapLogic = () => {
       campus: null,
     });
   };
+
+  useEffect(() => {
+    fetchNearbyPoisForRegion({
+      latitude: currentRegion.latitude,
+      longitude: currentRegion.longitude,
+    });
+
+    return () => {
+      if (poiFetchTimeoutRef.current) {
+        clearTimeout(poiFetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (origin.type === "CURRENT") {
@@ -349,6 +490,8 @@ export const useMapLogic = () => {
     selectedBuilding,
     searchQuery,
     filteredBuildings,
+    nearbyPois,
+    isPoiLoading,
     isRouting,
     transportMode,
     routeCoords,
@@ -368,6 +511,7 @@ export const useMapLogic = () => {
     handleFetchRoute,
     toggleCampus,
     handleBuildingPress,
+    handleRegionChangeComplete,
     handleSearch,
     handleSelectFromSearch,
     handleCancelNavigation,
