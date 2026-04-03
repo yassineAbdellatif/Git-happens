@@ -339,11 +339,16 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
         </TouchableOpacity>
       </View>
 
+
+      {/*
+          // Small card that shows the next class and their location on the calendar screen
+          // used while testing but not necessary in the issue so I commented it out for the time being
       <NextClassCard
           status={nextClassStatus}
           loading={nextClassLoading}
           onDirections={handleNextClassDirections}
       />
+      */}
 
       <ScrollView
         style={styles.scrollView}
