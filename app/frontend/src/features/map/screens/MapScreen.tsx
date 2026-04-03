@@ -612,7 +612,10 @@ const MapScreen = () => {
                         </Text>
 
                         <TouchableOpacity
-                          style={styles.originOptionButton}
+                          style={[
+                            styles.originOptionButton,
+                            styles.primaryOptionButton,
+                          ]}
                           onPress={() => {
                             if (userLocation) {
                               setOrigin({
@@ -627,9 +630,31 @@ const MapScreen = () => {
                             }
                           }}
                         >
-                          <Text style={styles.originOptionText}>
-                            Choose current location
-                          </Text>
+                          <View
+                            style={[
+                              styles.optionIconBadge,
+                              { backgroundColor: "rgba(66, 133, 244, 0.15)" },
+                            ]}
+                          >
+                            <MaterialIcons
+                              name="my-location"
+                              size={22}
+                              color="#4285F4"
+                            />
+                          </View>
+                          <View style={styles.optionTextWrapper}>
+                            <Text
+                              style={[
+                                styles.originOptionText,
+                                { color: "#1f4b99", fontWeight: "700" },
+                              ]}
+                            >
+                              Use current location
+                            </Text>
+                            <Text style={styles.optionSubtext}>
+                              Start from where you are right now
+                            </Text>
+                          </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -641,9 +666,26 @@ const MapScreen = () => {
                             }))
                           }
                         >
-                          <Text style={styles.originOptionText}>
-                            Choose building
-                          </Text>
+                          <View
+                            style={[
+                              styles.optionIconBadge,
+                              { backgroundColor: "rgba(145, 35, 56, 0.1)" },
+                            ]}
+                          >
+                            <MaterialIcons
+                              name="domain"
+                              size={22}
+                              color="#912338"
+                            />
+                          </View>
+                          <View style={styles.optionTextWrapper}>
+                            <Text style={styles.originOptionText}>
+                              Choose a building
+                            </Text>
+                            <Text style={styles.optionSubtext}>
+                              Select from a list of campus buildings
+                            </Text>
+                          </View>
                         </TouchableOpacity>
                       </>
                     )
@@ -686,7 +728,10 @@ const MapScreen = () => {
                         </Text>
 
                         <TouchableOpacity
-                          style={styles.originOptionButton}
+                          style={[
+                            styles.originOptionButton,
+                            styles.primaryOptionButton,
+                          ]}
                           onPress={() => {
                             if (userLocation) {
                               setDestination({
@@ -701,9 +746,31 @@ const MapScreen = () => {
                             }
                           }}
                         >
-                          <Text style={styles.originOptionText}>
-                            Choose current location
-                          </Text>
+                          <View
+                            style={[
+                              styles.optionIconBadge,
+                              { backgroundColor: "rgba(66, 133, 244, 0.15)" },
+                            ]}
+                          >
+                            <MaterialIcons
+                              name="my-location"
+                              size={22}
+                              color="#4285F4"
+                            />
+                          </View>
+                          <View style={styles.optionTextWrapper}>
+                            <Text
+                              style={[
+                                styles.originOptionText,
+                                { color: "#1f4b99", fontWeight: "700" },
+                              ]}
+                            >
+                              Use current location
+                            </Text>
+                            <Text style={styles.optionSubtext}>
+                              Start from where you are right now
+                            </Text>
+                          </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -715,9 +782,26 @@ const MapScreen = () => {
                             }))
                           }
                         >
-                          <Text style={styles.originOptionText}>
-                            Choose building
-                          </Text>
+                          <View
+                            style={[
+                              styles.optionIconBadge,
+                              { backgroundColor: "rgba(145, 35, 56, 0.1)" },
+                            ]}
+                          >
+                            <MaterialIcons
+                              name="domain"
+                              size={22}
+                              color="#912338"
+                            />
+                          </View>
+                          <View style={styles.optionTextWrapper}>
+                            <Text style={styles.originOptionText}>
+                              Choose a building
+                            </Text>
+                            <Text style={styles.optionSubtext}>
+                              Select from a list of campus buildings
+                            </Text>
+                          </View>
                         </TouchableOpacity>
                       </>
                     )
