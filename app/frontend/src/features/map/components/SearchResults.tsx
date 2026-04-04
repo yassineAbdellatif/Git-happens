@@ -10,10 +10,11 @@ type SearchResultsProps = {
 const SearchResults: React.FC<SearchResultsProps> = ({ results, onSelectNode }) => {
   return (
     results.length > 0 && (
-      <ScrollView style={styles.resultsContainer}>
+      <ScrollView style={styles.resultsContainer} testID="indoor-search-results">
         {results.map((node) => (
           <TouchableOpacity
             key={node.id}
+            testID={`indoor-search-result-${node.id}`}
             onPress={() => onSelectNode(node)}
             style={styles.resultItem}
           >

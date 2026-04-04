@@ -72,6 +72,7 @@ const FloorSelectionScreen = () => {
               .map((floor) => (
                 <TouchableOpacity
                   key={floor}
+                  testID={`floor-option-${floor}`}
                   style={styles.floorItem}
                   onPress={() => handleSelectFloor(floor)}
                 >

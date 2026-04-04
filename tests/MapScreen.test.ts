@@ -74,9 +74,10 @@ describe("MapScreen source contract", () => {
   it("wires drawer opening from the map header menu button", () => {
     const source = readMapScreenSource();
 
-    expect(source).toContain("DrawerActions");
-    expect(source).toContain("useRoute");
-    expect(source).toContain("onPress={() => navigation.dispatch(DrawerActions.openDrawer())}");
+    expect(source).toContain(
+      'import { useNavigation, useRoute, DrawerActions, RouteProp } from "@react-navigation/native";',
+    );
+    expect(source).toContain("navigation.dispatch(DrawerActions.openDrawer())");
     expect(source).toContain('name="menu"');
   });
 

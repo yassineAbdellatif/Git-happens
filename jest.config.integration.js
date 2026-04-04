@@ -16,6 +16,9 @@ module.exports = {
   coverageDirectory: 'coverage/integration',
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  moduleNameMapper: {
+    '^react-native$': '<rootDir>/tests/__mocks__/react-native.js',
+  },
   setupFilesAfterEnv: ['<rootDir>/tests/integration/setup.ts'],
   testTimeout: 10000,
 };

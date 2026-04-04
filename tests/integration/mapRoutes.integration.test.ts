@@ -207,4 +207,101 @@ describe('Map Routes Integration Tests', () => {
       expect(postResponse.status).not.toBe(200);
     });
   });
+
+  describe('GET /api/places/nearby', () => {
+    it('should return 200 and nearby places with explicit radius/maxResults', async () => {
+      const mockPlaces = [
+        {
+          placeId: 'id-1',
+          name: 'Concordia Library',
+          vicinity: '1455 De Maisonneuve Blvd W',
+          rating: 4.5,
+          userRatingsTotal: 120,
+          location: { latitude: 45.4971, longitude: -73.5788 },
+          icon: null,
+          openNow: true,
+        },
+      ];
+
+      (mapService.getNearbyPlaces as jest.Mock).mockResolvedValue(mockPlaces);
+
+      const response = await request(app)
+        .get('/api/places/nearby')
+        .query({
+          location: '45.4971,-73.5788',
+          type: 'library',
+          radius: '500',
+          maxResults: '5',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ results: mockPlaces });
+      expect(mapService.getNearbyPlaces).toHaveBeenCalledWith(
+        '45.4971,-73.5788',
+        500,
+        'library',
+        5,
+      );
+    });
+
+    it('should use default radius and maxResults when omitted', async () => {
+      (mapService.getNearbyPlaces as jest.Mock).mockResolvedValue([]);
+
+      const response = await request(app)
+        .get('/api/places/nearby')
+        .query({
+          location: '45.4582,-73.6405',
+          type: 'cafe',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ results: [] });
+      expect(mapService.getNearbyPlaces).toHaveBeenCalledWith(
+        '45.4582,-73.6405',
+        1500,
+        'cafe',
+        10,
+      );
+    });
+
+    it('should return 400 when location is missing', async () => {
+      const response = await request(app)
+        .get('/api/places/nearby')
+        .query({
+          type: 'restaurant',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'location and type are required' });
+      expect(mapService.getNearbyPlaces).not.toHaveBeenCalled();
+    });
+
+    it('should return 400 when type is missing', async () => {
+      const response = await request(app)
+        .get('/api/places/nearby')
+        .query({
+          location: '45.4971,-73.5788',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'location and type are required' });
+      expect(mapService.getNearbyPlaces).not.toHaveBeenCalled();
+    });
+
+    it('should return 500 when nearby places service throws', async () => {
+      (mapService.getNearbyPlaces as jest.Mock).mockRejectedValue(
+        new Error('Places API failed'),
+      );
+
+      const response = await request(app)
+        .get('/api/places/nearby')
+        .query({
+          location: '45.4971,-73.5788',
+          type: 'restaurant',
+        });
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Failed to fetch nearby places' });
+    });
+  });
 });
