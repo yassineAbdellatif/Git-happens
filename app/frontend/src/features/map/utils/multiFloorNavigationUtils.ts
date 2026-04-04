@@ -6,10 +6,7 @@ export function splitPathByFloor(
 ): Record<FloorNumber, LocalizedNode[]> {
   return path.reduce(
     (acc, node) => {
-      if (!acc[node.floor]) {
-        acc[node.floor] = [];
-      }
-      acc[node.floor].push(node);
+      (acc[node.floor] ??= []).push(node);
       return acc;
     },
     {} as Record<FloorNumber, LocalizedNode[]>
@@ -46,15 +43,7 @@ export function getNextFloorInPath(
   path: LocalizedNode[],
   currentFloor: FloorNumber
 ): FloorNumber | null {
-  let foundCurrentFloor = false;
-
-  for (const node of path) {
-    if (node.floor === currentFloor) {
-      foundCurrentFloor = true;
-    } else if (foundCurrentFloor && node.floor !== currentFloor) {
-      return node.floor;
-    }
-  }
-
-  return null;
+  const floors = getFloorsInPath(path);
+  const idx = floors.indexOf(currentFloor);
+  return idx !== -1 && idx + 1 < floors.length ? floors[idx + 1] : null;
 }
