@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigation, useRoute, DrawerActions, RouteProp } from "@react-navigation/native";
 import { getSupportedFloorsForBuilding } from "@services/floorPlanService";
 import { MapStackParamList } from "../../../navigation/AppNavigator";
@@ -34,6 +34,7 @@ const MODE_ICON_MAP = {
 } as const;
 
 const MapScreen = () => {
+  const suppressMapPressUntilRef = useRef(0);
     const route = useRoute<RouteProp<MapStackParamList, "MapMain">>();
   const {
     // State & Refs
@@ -111,6 +112,10 @@ const MapScreen = () => {
       : "LOYOLA";
 
   const handleMapLayerPress = () => {
+    if (Date.now() < suppressMapPressUntilRef.current) {
+      return;
+    }
+
     Keyboard.dismiss();
     if (!isNavigating) {
       setSelectedBuilding(null);
@@ -231,6 +236,7 @@ const MapScreen = () => {
               <View style={styles.searchContainer}>
                 <View style={styles.searchBar}>
                   <TouchableOpacity
+                    testID="drawer-menu-button"
                     style={styles.menuButton}
                     onPress={() =>
                       navigation.dispatch(DrawerActions.openDrawer())
@@ -256,7 +262,11 @@ const MapScreen = () => {
                           key={b.id}
                           testID={`search-result-${b.id}`}
                           style={styles.dropdownItem}
-                          onPress={() => handleSelectFromSearch(b)}
+                          onPress={() => {
+                            // Search result taps can also trigger a map press; suppress it briefly.
+                            suppressMapPressUntilRef.current = Date.now() + 1200;
+                            handleSelectFromSearch(b);
+                          }}
                         >
                           <Text style={styles.dropdownText}>{b.fullName}</Text>
                           <Text style={styles.dropdownSubtext}>
@@ -364,6 +374,7 @@ const MapScreen = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
+              testID="map-type-toggle-button"
               style={styles.toggleButton}
               onPress={toggleMapType}
             >
@@ -552,6 +563,7 @@ const MapScreen = () => {
 
                   {hasSupportedFloors && (
                     <TouchableOpacity
+                      testID="open-indoor-floor-plan-button"
                       style={styles.indoorEntryButton}
                       onPress={handleOpenIndoorMap}
                     >
@@ -822,6 +834,7 @@ const MapScreen = () => {
                         ].map((mode) => (
                           <TouchableOpacity
                             key={mode.id}
+                            testID={`travel-mode-${mode.id.toLowerCase()}`}
                             style={[
                               styles.modeButton,
                               transportMode === mode.id &&

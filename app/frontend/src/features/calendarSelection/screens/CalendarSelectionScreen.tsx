@@ -117,11 +117,12 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       >
-        {calendars.map((cal) => {
+        {calendars.map((cal, index) => {
           const isSelected = selectedCalendarIds.includes(cal.id);
           return (
             <TouchableOpacity
               key={cal.id}
+              testID={`calendar-option-${index}`}
               style={[
                 styles.calendarItem,
                 isSelected && styles.calendarItemSelected,
@@ -160,6 +161,7 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({
           {selectedCalendarIds.length} calendar(s) selected
         </Text>
         <TouchableOpacity
+          testID="confirm-selection-button"
           style={[
             styles.confirmButton,
             selectedCalendarIds.length === 0 && styles.confirmButtonDisabled,

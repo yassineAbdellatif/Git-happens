@@ -32,6 +32,8 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
   const idsRef = useRef<string[]>([]);
   idsRef.current = selectedCalendarIds;
 
+  const GOOGLE_CALENDAR_TOKEN_KEY = "@campus_guide_google_calendar_access_token";
+
   const setSelectedCalendarIds = useCallback(
     (idsOrUpdater: string[] | ((prev: string[]) => string[])) => {
       setSelectedCalendarIdsState((prev) => {
@@ -64,6 +66,29 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
     }
   }, []);
 
+  const persistAccessToken = useCallback(async (token: string | null) => {
+    try {
+      if (token) {
+        await AsyncStorage.setItem(GOOGLE_CALENDAR_TOKEN_KEY, token);
+      } else {
+        await AsyncStorage.removeItem(GOOGLE_CALENDAR_TOKEN_KEY);
+      }
+    } catch (e) {
+      console.warn("Failed to persist Google Calendar token:", e);
+    }
+  }, []);
+
+  const loadPersistedAccessToken = useCallback(async () => {
+    try {
+      const stored = await AsyncStorage.getItem(GOOGLE_CALENDAR_TOKEN_KEY);
+      if (stored) {
+        setGoogleCalendarAccessToken(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load persisted Google Calendar token:", e);
+    }
+  }, []);
+
   const confirmSelection = useCallback(async () => {
     await persistSelection(idsRef.current);
   }, [persistSelection]);
@@ -82,6 +107,7 @@ const getValidAccessToken = useCallback(async (): Promise<string | null> => {
     setSelectedCalendarIdsState([]);
     try {
       await AsyncStorage.removeItem(SELECTED_CALENDARS_KEY);
+      await AsyncStorage.removeItem(GOOGLE_CALENDAR_TOKEN_KEY);
     } catch (e) {
       console.warn("Failed to clear persisted calendar selection:", e);
     }
@@ -89,7 +115,12 @@ const getValidAccessToken = useCallback(async (): Promise<string | null> => {
 
   useEffect(() => {
     loadPersistedSelection();
+    loadPersistedAccessToken();
   }, [loadPersistedSelection]);
+
+  useEffect(() => {
+    persistAccessToken(googleCalendarAccessToken);
+  }, [googleCalendarAccessToken, persistAccessToken]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

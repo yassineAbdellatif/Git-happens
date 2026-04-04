@@ -1,0 +1,40 @@
+appId: com.githappens
+---
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- tapOn:
+    point: "500,350"
+
+- inputText: Vanier
+
+- tapOn:
+    point: "500,550"
+
+- assertVisible: Go here
+
+- tapOn: Go here
+
+- assertVisible: Choose a building
+
+- tapOn: Choose a building
+
+- tapOn: John Molson Building
+
+- assertVisible:
+    id: travel-mode-driving
+
+- tapOn:
+    id: travel-mode-driving
+
+- tapOn: Start Navigation
+
+- waitForAnimationToEnd:
+    timeout: 4000
+
+- tapOn: End
+
+- tapOn:
+    point: "540,700"
+
+- takeScreenshot: map-home
