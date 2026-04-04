@@ -21,6 +21,8 @@ import {
   NearbyPoiResult,
   NearbyPoiType,
 } from "../../../services/mapApiService";
+import { getPrimaryTransitionCoordinate } from "../../../services/buildingTransitionService";
+
 import { auth } from "@features/auth/config/firebaseConfig";
 
 type NearbyPoiMapItem = NearbyPoiResult["results"][number] & {
