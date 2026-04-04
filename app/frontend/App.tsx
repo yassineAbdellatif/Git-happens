@@ -12,9 +12,13 @@ import { AppNavigator } from "./src/navigation/AppNavigator";
 import { AuthNavigator } from "./src/navigation/AuthNavigator";
 import { CalendarSelectionProvider } from "./src/context/CalendarSelectionContext";
 
+const isE2EBypassEnabled = process.env.EXPO_PUBLIC_E2E_BYPASS_AUTH === "true";
+
 export default function App() {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(
+    isE2EBypassEnabled ? ({} as User) : null,
+  );
 
   // Renamed this function to avoid shadowing the Firebase import
   function handleAuthStateChange(user: User | null) {
@@ -24,6 +28,10 @@ export default function App() {
 
   // Listen for authentication state changes
   useEffect(() => {
+    if (isE2EBypassEnabled) {
+      setInitializing(false);
+      return undefined;
+    }
     
     // Subscribe to auth state changes and get the unsubscribe function
     const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);

@@ -1,0 +1,21 @@
+appId: com.githappens
+---
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    id: nearby-poi-button
+
+- assertVisible: Nearby Places
+
+- tapOn: Coffee
+
+- tapOn: "5"
+
+- tapOn: Search
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- takeScreenshot: nearby-poi-panel

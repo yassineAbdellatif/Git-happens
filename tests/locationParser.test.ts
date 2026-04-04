@@ -40,6 +40,13 @@ describe("locationParser", () => {
       });
     });
 
+    it('should parse "H Room 920" via room-word pattern', () => {
+      expect(parseLocation("H Room 920")).toEqual({
+        building: "H",
+        room: "920",
+      });
+    });
+
     // --- Full name patterns ---
 
     it('should parse "Henry F. Hall Building Room 920"', () => {
@@ -51,6 +58,13 @@ describe("locationParser", () => {
       const result = parseLocation("Hall Building");
       expect(result).not.toBeNull();
       expect(result!.building).toBe("H");
+    });
+
+    it('should parse full name followed by bare room number', () => {
+      expect(parseLocation("Hall Building 920")).toEqual({
+        building: "H",
+        room: "920",
+      });
     });
 
     it('should parse "John Molson Building Room 210"', () => {

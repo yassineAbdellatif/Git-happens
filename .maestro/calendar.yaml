@@ -1,0 +1,30 @@
+appId: com.githappens
+---
+# Calendar flow: open drawer -> Calendars -> select first option -> confirm -> OK -> back to Map
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    point: "150,350"
+
+- tapOn: Calendars
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    id: calendar-option-0
+
+- tapOn:
+    id: confirm-selection-button
+
+- tapOn: OK
+
+- tapOn:
+    point: "60,150"
+
+- tapOn: Map
+
+- waitForAnimationToEnd:
+    timeout: 1000

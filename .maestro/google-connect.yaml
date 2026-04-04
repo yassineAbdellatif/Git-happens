@@ -1,0 +1,30 @@
+appId: com.githappens
+---
+- launchApp:
+    clearState: true
+    permissions:
+      location: allow
+
+- tapOn: "http://10.0.2.2:8081"
+
+- waitForAnimationToEnd:
+    timeout: 2500
+
+- tapOn: Continue
+
+- swipe:
+    direction: DOWN
+
+- assertVisible:
+    id: google-sign-in-button
+
+- tapOn:
+    id: google-sign-in-button
+
+- waitForAnimationToEnd:
+    timeout: 5000
+
+- tapOn: Samy
+
+- waitForAnimationToEnd:
+    timeout: 1000

@@ -15,7 +15,7 @@ describe("mapApiService lightweight coverage", () => {
     const source = readSource();
 
     expect(source).toContain("getRouteFromBackend");
-    expect(source).toContain("`${API_BASE_URL}/api/directions`");
+    expect(source).toContain("`${getApiBaseUrl()}/api/directions`");
     expect(source).toContain("timeout: 10000");
   });
 

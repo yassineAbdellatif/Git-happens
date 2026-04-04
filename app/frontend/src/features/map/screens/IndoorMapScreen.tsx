@@ -87,6 +87,7 @@ const IndoorMapScreen = () => {
       {/* FLOATING TOP HEADER */}
       <View style={styles.floatingHeader}>
         <TouchableOpacity
+          testID="indoor-back-button"
           onPress={navigation.goBack}
           style={styles.backButton}
         >
@@ -106,6 +107,7 @@ const IndoorMapScreen = () => {
           <View style={styles.searchBar}>
             <MaterialIcons name="search" size={20} color="#999" />
             <TextInput
+              testID="indoor-start-input"
               style={styles.searchInput}
               placeholder="Search rooms by name or number"
               placeholderTextColor="#999"
@@ -128,6 +130,7 @@ const IndoorMapScreen = () => {
           <View style={styles.searchBar}>
             <MaterialIcons name="search" size={20} color="#999" />
             <TextInput
+              testID="indoor-destination-input"
               style={styles.searchInput}
               placeholder="Search rooms by name or number"
               placeholderTextColor="#999"
@@ -140,6 +143,7 @@ const IndoorMapScreen = () => {
         </View>
 
         <TouchableOpacity
+          testID="indoor-start-navigation-button"
           style={styles.startNavigationButton}
           onPress={handleStartNavigation}
         >

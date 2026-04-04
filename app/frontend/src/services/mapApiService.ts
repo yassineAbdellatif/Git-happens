@@ -2,9 +2,22 @@ import axios from "axios";
 import { Platform } from "react-native";
 
 // On Android emulator, the host machine is reachable at 10.0.2.2 (not localhost).
-const DEFAULT_HOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || `http://${DEFAULT_HOST}:3000`;
+const getDefaultHost = () => (Platform.OS === "android" ? "10.0.2.2" : "localhost");
+
+const getApiBaseUrl = () =>
+  process.env.EXPO_PUBLIC_API_BASE_URL || `http://${getDefaultHost()}:3000`;
+
+let httpClient: Pick<typeof axios, "get" | "post"> = axios;
+
+export const __setMapApiHttpClientForTests = (
+  client: Pick<typeof axios, "get" | "post">
+) => {
+  httpClient = client;
+};
+
+export const __resetMapApiHttpClientForTests = () => {
+  httpClient = axios;
+};
 
 export interface POIResult {
   placeId: string;
@@ -24,9 +37,9 @@ export const getNearbyPlaces = async (
   maxResults = 10,
   radius = 1500,
 ): Promise<POIResult[]> => {
-  const url = `${API_BASE_URL}/api/places/nearby`;
+  const url = `${getApiBaseUrl()}/api/places/nearby`;
   
-  const response = await axios.get(url, {
+  const response = await httpClient.get(url, {
     params: { location: `${latitude},${longitude}`, radius, type, maxResults },
     timeout: 10000,
   });
@@ -64,10 +77,10 @@ export const getRouteFromBackend = async (
   mode: string,
 ) => {
 
-  const url = `${API_BASE_URL}/api/directions`;
+  const url = `${getApiBaseUrl()}/api/directions`;
 
   try {
-    const response = await axios.get(url, {
+    const response = await httpClient.get(url, {
       params: {
         origin, // "latitude,longitude"
         destination, // "latitude,longitude"
@@ -94,7 +107,7 @@ export const getNearbyPlacesFromGoogle = async (
   }
 
   try {
-    const response = await axios.post(
+    const response = await httpClient.post(
       "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
       {},
       {

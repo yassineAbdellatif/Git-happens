@@ -1,0 +1,30 @@
+appId: com.githappens
+---
+# Test: Toggle campus and map style
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- assertVisible:
+    id: campus-toggle-button
+
+- tapOn:
+    id: campus-toggle-button
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- tapOn:
+    id: campus-toggle-button
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- assertVisible:
+    id: map-type-toggle-button
+
+- tapOn:
+    id: map-type-toggle-button
+
+- tapOn:
+    id: map-type-toggle-button
