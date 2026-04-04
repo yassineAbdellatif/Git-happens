@@ -481,7 +481,10 @@ export const useMapLogic = () => {
       alert("Backend connection failed.");
     }
   };
-
+  const resolveBuildingRouteCoordinate = async (building: Building) => {
+  const transitionCoordinate = await getPrimaryTransitionCoordinate(building.id);
+  return transitionCoordinate ?? building.coordinates[0];
+  };
   return {
     mapRef,
     currentRegion,
@@ -519,5 +522,6 @@ export const useMapLogic = () => {
     handleLogout,
     nextShuttleTitle,
     nextShuttleSubtitle,
+    resolveBuildingRouteCoordinate,
   };
 };
