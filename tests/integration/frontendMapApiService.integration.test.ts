@@ -16,8 +16,10 @@ describe('Frontend mapApiService integration coverage', () => {
     return import('../../app/frontend/src/services/mapApiService');
   };
 
-  it('uses localhost on iOS when no base URL is configured', async () => {
+  it('uses localhost when no base URL or host override is configured', async () => {
     delete process.env.EXPO_PUBLIC_API_BASE_URL;
+    delete process.env.EXPO_PUBLIC_API_HOST;
+    delete process.env.EXPO_PUBLIC_API_PORT;
 
     const service = await loadService('ios');
     const getMock = jest.fn().mockResolvedValueOnce({ data: { results: [{ placeId: 'p1' }] } });
@@ -35,8 +37,10 @@ describe('Frontend mapApiService integration coverage', () => {
     expect(result).toEqual([{ placeId: 'p1' }]);
   });
 
-  it('uses Android emulator host when no base URL is configured', async () => {
+  it('uses configured API host when base URL is not configured', async () => {
     delete process.env.EXPO_PUBLIC_API_BASE_URL;
+    process.env.EXPO_PUBLIC_API_HOST = 'api.internal';
+    delete process.env.EXPO_PUBLIC_API_PORT;
 
     const service = await loadService('android');
     const getMock = jest.fn().mockResolvedValueOnce({ data: { routes: [] } });
@@ -45,7 +49,7 @@ describe('Frontend mapApiService integration coverage', () => {
     await service.getRouteFromBackend('origin', 'destination', 'WALKING');
 
     expect(getMock).toHaveBeenCalledWith(
-      'http://10.0.2.2:3000/api/directions',
+      'http://api.internal:3000/api/directions',
       {
         params: {
           origin: 'origin',
