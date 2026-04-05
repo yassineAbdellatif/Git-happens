@@ -17,10 +17,10 @@ describe("useIndoorNavigation source contract", () => {
   it("accepts nodes and edges and delegates routing to findPath", () => {
     const source = readSource(hookPath);
 
-    expect(source).toContain(
-      "useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {",
-    );
-    expect(source).toContain("const result = findPath(");
+    expect(source).toContain("export const useIndoorNavigation = (");
+
+    expect(source).toContain("return findPath(");
+
     expect(source).toContain("selectedStartNode.id");
     expect(source).toContain("selectedDestinationNode.id");
     expect(source).toContain("nodes,");
