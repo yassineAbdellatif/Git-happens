@@ -2,89 +2,120 @@ import { useState } from "react";
 import type { LocalizedNode, RawEdge } from "../../../services/floorPlanService";
 import { findPath } from "../utils/pathfinding";
 
-export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) => {
+type NavigationResult =
+  | { ok: true }
+  | { ok: false; reason: "missing_points" | "no_route" | "no_accessible_route" };
+
+export const useIndoorNavigation = (
+  nodes: LocalizedNode[],
+  edges: RawEdge[],
+) => {
   const [startPoint, setStartPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
-
   const [startResults, setStartResults] = useState<LocalizedNode[]>([]);
   const [destinationResults, setDestinationResults] = useState<LocalizedNode[]>([]);
-
-  const [selectedStartNode, setSelectedStartNode] = useState<LocalizedNode | null>(null);
-  const [selectedDestinationNode, setSelectedDestinationNode] = useState<LocalizedNode | null>(null);
-
+  const [selectedStartNode, setSelectedStartNode] =
+    useState<LocalizedNode | null>(null);
+  const [selectedDestinationNode, setSelectedDestinationNode] =
+    useState<LocalizedNode | null>(null);
   const [path, setPath] = useState<LocalizedNode[]>([]);
+  const [isAccessibilityEnabled, setIsAccessibilityEnabled] = useState(false);
 
   const filterNodes = (text: string) => {
     if (!text) return [];
 
     return nodes.filter((node) =>
-      (node.label || "").toLowerCase().includes(text.toLowerCase())
+      (node.label || "").toLowerCase().includes(text.toLowerCase()),
     );
   };
 
-  const handleSearch = (text: string, setPoint: React.Dispatch<React.SetStateAction<string>>, setSelectedNode: React.Dispatch<React.SetStateAction<LocalizedNode | null>>, setResults: React.Dispatch<React.SetStateAction<LocalizedNode[]>>) => {
-    setPoint(text);
-    setSelectedNode(null);
-    setResults(filterNodes(text));
+  const resetRouteState = () => {
+    setPath([]);
+    setIsAccessibilityEnabled(false);
   };
 
   const handleStartSearch = (text: string) => {
     setStartPoint(text);
     setSelectedStartNode(null);
     setStartResults(filterNodes(text));
-    setPath([]);
+    resetRouteState();
   };
 
   const handleDestinationSearch = (text: string) => {
     setDestinationPoint(text);
     setSelectedDestinationNode(null);
     setDestinationResults(filterNodes(text));
-    setPath([]);
+    resetRouteState();
   };
 
   const selectStartNode = (node: LocalizedNode) => {
     setSelectedStartNode(node);
     setStartPoint(node.label);
     setStartResults([]);
-    setPath([]);
+    resetRouteState();
   };
 
   const selectDestinationNode = (node: LocalizedNode) => {
     setSelectedDestinationNode(node);
     setDestinationPoint(node.label);
     setDestinationResults([]);
-    setPath([]);
+    resetRouteState();
   };
 
-  const handleStartNavigation = () => {
+  const buildRoute = (accessibilityEnabled: boolean) => {
+    if (!selectedStartNode || !selectedDestinationNode) {
+      return [];
+    }
+
+    return findPath(selectedStartNode.id, selectedDestinationNode.id, nodes, edges, {
+      accessibilityEnabled,
+    });
+  };
+
+  const handleStartNavigation = (): NavigationResult => {
     if (!selectedStartNode || !selectedDestinationNode) {
       console.warn("Select both points first");
-      return;
+      return { ok: false, reason: "missing_points" };
+    }
+
+    const result = buildRoute(isAccessibilityEnabled);
+
+    if (result.length === 0) {
+      const reason = isAccessibilityEnabled ? "no_accessible_route" : "no_route";
+      console.warn(
+        `[NAV] No path found between ${selectedStartNode.id} and ${selectedDestinationNode.id}`,
+      );
+      setPath([]);
+      return { ok: false, reason };
     }
 
     console.log(
-      `[NAV] ${selectedStartNode.label} → ${selectedDestinationNode.label}`
+      `[NAV] Path found: ${result.length} nodes`,
+      result.map((n) => n.label),
     );
+    setPath(result);
+    return { ok: true };
+  };
 
-    const result = findPath(
-      selectedStartNode.id,
-      selectedDestinationNode.id,
-      nodes,
-      edges
-    );
+  const toggleAccessibility = (): NavigationResult => {
+    const nextValue = !isAccessibilityEnabled;
 
-    if (result.length === 0) {
-      console.warn(
-        `[NAV] No path found between ${selectedStartNode.id} and ${selectedDestinationNode.id}`
-      );
-    } else {
-      console.log(
-        `[NAV] Path found: ${result.length} nodes`,
-        result.map((n) => n.label)
-      );
+    if (!selectedStartNode || !selectedDestinationNode) {
+      setIsAccessibilityEnabled(nextValue);
+      return { ok: true };
     }
 
+    const result = buildRoute(nextValue);
+    if (result.length === 0) {
+      return {
+        ok: false,
+        reason: nextValue ? "no_accessible_route" : "no_route",
+      };
+    }
+
+    setIsAccessibilityEnabled(nextValue);
     setPath(result);
+    return { ok: true };
   };
 
   const swapPoints = () => {
@@ -94,7 +125,7 @@ export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) =>
     setSelectedDestinationNode(selectedStartNode);
     setStartResults([]);
     setDestinationResults([]);
-    setPath([]);
+    resetRouteState();
   };
 
   return {
@@ -103,11 +134,13 @@ export const useIndoorNavigation = (nodes: LocalizedNode[], edges: RawEdge[]) =>
     startResults,
     destinationResults,
     path,
+    isAccessibilityEnabled,
     handleStartSearch,
     handleDestinationSearch,
     selectStartNode,
     selectDestinationNode,
     handleStartNavigation,
+    toggleAccessibility,
     swapPoints,
   };
 };

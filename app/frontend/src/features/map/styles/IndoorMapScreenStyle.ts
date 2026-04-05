@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   },
   mapContainer: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 1, // Map is on the bottom
+    zIndex: 1,
   },
   errorContainer: {
     flex: 1,
@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
     bottom: 30,
     left: 20,
     right: 20,
-    backgroundColor: "#912338", // Maroon background
+    backgroundColor: "#912338",
     borderRadius: 24,
     padding: 20,
     zIndex: 10,
@@ -148,6 +148,32 @@ export const styles = StyleSheet.create({
   },
   floorButtonTextActive: {
     color: "white",
+  },
+  accessibilityFloatingContainer: {
+    position: "absolute",
+    bottom: 34,
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 28,
+    paddingLeft: 12,
+    paddingRight: 10,
+    paddingVertical: 6,
+    zIndex: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  accessibilityIconBubble: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
   },
   modalOverlay: {
     flex: 1,
