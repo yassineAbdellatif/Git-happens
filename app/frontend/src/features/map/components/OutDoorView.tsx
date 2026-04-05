@@ -34,7 +34,6 @@ interface OutdoorViewProps {
   }>;
   transportMode?: string;
   mapType: MapType;
-  onMapTypeChange: (mapType: MapType) => void;
   poiResults?: POIResult[];
   poiColor?: string;
 }
@@ -52,7 +51,6 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     nearbyPois,
     transportMode,
     mapType,
-    onMapTypeChange,
     poiResults,
     poiColor = "#912338",
   } = props;
@@ -111,7 +109,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         {routeSegments && routeSegments.length > 0
           ? routeSegments.map((segment, index) => (
               <Polyline
-                key={`route-segment-${index}`}
+                key={`route-segment-${segment.mode}-${index}`}
                 coordinates={segment.coords}
                 strokeColor={getSegmentColor(segment.mode)}
                 strokeWidth={8}

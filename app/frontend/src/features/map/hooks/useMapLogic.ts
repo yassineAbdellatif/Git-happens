@@ -111,21 +111,19 @@ export const useMapLogic = () => {
 
   // Helper: Reset Routing
   const resetRoutingState = () => {
-    const resetRoutingState = () => {
-      setOrigin({
-        type: null,
-        coords: null,
-        label: "Choose starting point",
-        campus: null,
-      });
+    setOrigin({
+      type: null,
+      coords: null,
+      label: "Choose starting point",
+      campus: null,
+    });
 
-      setDestination({
-        type: null,
-        coords: null,
-        label: "Select Destination",
-        campus: null,
-      });
-    };
+    setDestination({
+      type: null,
+      coords: null,
+      label: "Select Destination",
+      campus: null,
+    });
 
     setNextShuttleTitle("");
     setNextShuttleSubtitle("");
@@ -138,7 +136,7 @@ export const useMapLogic = () => {
   // Location Tracking
   useEffect(() => {
     let isMounted = true;
-    let intervalId: NodeJS.Timeout;
+    let intervalId: ReturnType<typeof setInterval>;
 
     const performUpdate = async () => {
       try {
