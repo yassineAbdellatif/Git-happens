@@ -75,7 +75,7 @@ const MapScreen = () => {
     setDestination,
     handleLogout,
   } = useMapLogic();
-  const { mapType, toggleMapType, isIndoorInteracting } =
+  const { mapType, setMapType, toggleMapType, isIndoorInteracting } =
     useMapScreenUiState(selectedBuilding?.id || null);
 
   const poi = usePOI();
@@ -84,10 +84,12 @@ const MapScreen = () => {
   const originType = origin.type;
   const originCoords = origin.coords;
   const originLabel = origin.label;
+  const originCampus = origin.campus;
 
   const destinationType = destination.type;
   const destinationCoords = destination.coords;
   const destinationLabel = destination.label;
+  const destinationCampus = destination.campus;
 
   const statusText = getDisplayStatus(
     userLocation,
@@ -225,6 +227,7 @@ const MapScreen = () => {
           nearbyPois={nearbyPois}
           transportMode={transportMode}
           mapType={mapType}
+          onMapTypeChange={setMapType}
         />
       </View>
 

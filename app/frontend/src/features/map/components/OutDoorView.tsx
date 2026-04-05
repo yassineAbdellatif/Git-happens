@@ -34,6 +34,7 @@ interface OutdoorViewProps {
   }>;
   transportMode?: string;
   mapType: MapType;
+  onMapTypeChange?: (mapType: MapType) => void;
   poiResults?: POIResult[];
   poiColor?: string;
 }
