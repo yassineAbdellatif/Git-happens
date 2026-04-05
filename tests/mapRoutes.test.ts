@@ -5,7 +5,6 @@ import * as mapController from '../app/backend/src/controllers/mapController';
 jest.mock('../app/backend/src/controllers/mapController');
 
 describe('mapRoutes', () => {
-  let router: Router;
   let mapRoutes: Router;
 
   beforeEach(() => {
@@ -42,5 +41,28 @@ describe('mapRoutes', () => {
     expect(directionsRoute).toBeDefined();
     expect(directionsRoute.route.stack).toBeDefined();
     expect(directionsRoute.route.stack.length).toBeGreaterThan(0);
+    expect(directionsRoute.route.stack[0].handle).toBe(mapController.getRoute);
+  });
+
+  it('should have GET /places/nearby route configured', () => {
+    const stack = (mapRoutes as any).stack;
+    const nearbyRoute = stack.find((layer: any) =>
+      layer.route && layer.route.path === '/places/nearby'
+    );
+
+    expect(nearbyRoute).toBeDefined();
+    expect(nearbyRoute.route.methods.get).toBe(true);
+  });
+
+  it('should use getNearbyPlaces controller for /places/nearby', () => {
+    const stack = (mapRoutes as any).stack;
+    const nearbyRoute = stack.find((layer: any) =>
+      layer.route && layer.route.path === '/places/nearby'
+    );
+
+    expect(nearbyRoute).toBeDefined();
+    expect(nearbyRoute.route.stack).toBeDefined();
+    expect(nearbyRoute.route.stack.length).toBeGreaterThan(0);
+    expect(nearbyRoute.route.stack[0].handle).toBe(mapController.getNearbyPlaces);
   });
 });

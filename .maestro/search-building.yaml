@@ -1,0 +1,72 @@
+appId: com.githappens
+---
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    point: "500,350"
+
+- inputText: Hall
+
+- tapOn:
+    point: "500,550"
+
+- assertVisible: Henry F. Hall Building
+
+- assertVisible:
+    id: directions-button
+
+- assertVisible:
+    id: open-indoor-floor-plan-button
+
+- tapOn:
+    id: open-indoor-floor-plan-button
+
+- assertVisible:
+    id: floor-option-1
+
+- tapOn:
+    id: floor-option-8
+
+- assertVisible:
+    id: indoor-start-input
+
+- assertVisible:
+    id: indoor-destination-input
+
+- tapOn:
+    id: indoor-start-input
+
+- inputText: H-867
+
+- assertVisible:
+    id: indoor-search-results
+
+- tapOn:
+    id: indoor-search-result-Hall_F8_room_291
+
+- tapOn:
+    id: indoor-destination-input
+
+- inputText: H-865
+
+- assertVisible:
+    id: indoor-search-results
+
+- tapOn:
+    id: indoor-search-result-Hall_F8_room_292
+
+- tapOn:
+    id: indoor-start-navigation-button
+
+- tapOn:
+    id: indoor-back-button
+
+- tapOn:
+    point: "100,150"
+
+- tapOn:
+    point: "500,700"
+
+- takeScreenshot: hall-indoor-map

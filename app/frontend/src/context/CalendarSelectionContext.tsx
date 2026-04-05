@@ -2,12 +2,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../features/auth/config/firebaseConfig";
+import { refreshGoogleAccessToken } from "../services/googleTokenService";
 
 const SELECTED_CALENDARS_KEY = "@campus_guide_selected_calendars";
 
 interface CalendarSelectionContextValue {
   googleCalendarAccessToken: string | null;
   setGoogleCalendarAccessToken: (token: string | null) => void;
+  getValidAccessToken: () => Promise<string | null>;
   selectedCalendarIds: string[];
   setSelectedCalendarIds: (ids: string[] | ((prev: string[]) => string[])) => void;
   confirmSelection: () => Promise<void>;
@@ -29,6 +31,8 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
   const [selectedCalendarIds, setSelectedCalendarIdsState] = useState<string[]>([]);
   const idsRef = useRef<string[]>([]);
   idsRef.current = selectedCalendarIds;
+
+  const GOOGLE_CALENDAR_TOKEN_KEY = "@campus_guide_google_calendar_access_token";
 
   const setSelectedCalendarIds = useCallback(
     (idsOrUpdater: string[] | ((prev: string[]) => string[])) => {
@@ -62,15 +66,48 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
     }
   }, []);
 
+  const persistAccessToken = useCallback(async (token: string | null) => {
+    try {
+      if (token) {
+        await AsyncStorage.setItem(GOOGLE_CALENDAR_TOKEN_KEY, token);
+      } else {
+        await AsyncStorage.removeItem(GOOGLE_CALENDAR_TOKEN_KEY);
+      }
+    } catch (e) {
+      console.warn("Failed to persist Google Calendar token:", e);
+    }
+  }, []);
+
+  const loadPersistedAccessToken = useCallback(async () => {
+    try {
+      const stored = await AsyncStorage.getItem(GOOGLE_CALENDAR_TOKEN_KEY);
+      if (stored) {
+        setGoogleCalendarAccessToken(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load persisted Google Calendar token:", e);
+    }
+  }, []);
+
   const confirmSelection = useCallback(async () => {
     await persistSelection(idsRef.current);
   }, [persistSelection]);
+
+const getValidAccessToken = useCallback(async (): Promise<string | null> => {
+    const freshToken = await refreshGoogleAccessToken();
+    if (freshToken) {
+      setGoogleCalendarAccessToken(freshToken);
+      return freshToken;
+    }
+    return googleCalendarAccessToken;
+  }, [googleCalendarAccessToken]);
 
   const clearCalendarState = useCallback(async () => {
     setGoogleCalendarAccessToken(null);
     setSelectedCalendarIdsState([]);
     try {
       await AsyncStorage.removeItem(SELECTED_CALENDARS_KEY);
+      await AsyncStorage.removeItem(GOOGLE_CALENDAR_TOKEN_KEY);
     } catch (e) {
       console.warn("Failed to clear persisted calendar selection:", e);
     }
@@ -78,7 +115,12 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
 
   useEffect(() => {
     loadPersistedSelection();
+    loadPersistedAccessToken();
   }, [loadPersistedSelection]);
+
+  useEffect(() => {
+    persistAccessToken(googleCalendarAccessToken);
+  }, [googleCalendarAccessToken, persistAccessToken]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -92,6 +134,7 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
   const value: CalendarSelectionContextValue = {
     googleCalendarAccessToken,
     setGoogleCalendarAccessToken,
+    getValidAccessToken,
     selectedCalendarIds,
     setSelectedCalendarIds,
     confirmSelection,

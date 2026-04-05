@@ -95,6 +95,7 @@ export const LoginScreen = ({ navigation }: any) => {
       </Text>
 
       <TouchableOpacity
+        testID="google-sign-in-button"
         style={[styles.googleButton, isExpoGo && { backgroundColor: "#ccc" }]}
         onPress={handleGoogleSignIn}
         activeOpacity={0.7}

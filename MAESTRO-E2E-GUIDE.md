@@ -5,7 +5,7 @@
 - ✅ Maestro flow files created in `.maestro/` folder
 - ✅ Test scripts added to `package.json`
 - ✅ testID attributes added to React Native components
-- ✅ 4 complete test flows ready to run
+- ✅ Map, search, directions, campus toggle, nearby POI, and indoor flows are available
 
 ## 🚀 Quick Start
 
@@ -69,6 +69,14 @@ maestro --version
 
 Maestro works with your running app - no need to build special test versions!
 
+For E2E runs, start Expo with the auth bypass flag enabled so Maestro lands directly on the map screen:
+
+```powershell
+cd app/frontend
+$env:EXPO_PUBLIC_E2E_BYPASS_AUTH = "true"
+npx expo start
+```
+
 **Option A: Using Expo (Recommended for React Native)**
 ```powershell
 # In your project directory
@@ -96,12 +104,15 @@ Then press:
 npm run maestro:test
 ```
 
+This runs Google sign-in first, then the remaining flows in a fixed order so the session is already connected.
+
 **Run specific tests:**
 ```powershell
 npm run maestro:test:search       # Search functionality
-npm run maestro:test:directions   # Directions & navigation
-npm run maestro:test:campus       # Campus toggle & recenter
+npm run maestro:test:toggle        # Campus + map style toggle
 npm run maestro:test:navigation   # Basic navigation flow
+npm run maestro:test:indoor       # Indoor floor-plan navigation
+npm run maestro:test:nearby        # Nearby POI panel flow
 ```
 
 **Or run directly with maestro CLI:**
@@ -115,8 +126,9 @@ All test flows are in the `.maestro/` folder:
 
 - **`navigation.yaml`** - Basic app navigation test
 - **`search-building.yaml`** - Building search functionality
-- **`campus-toggle.yaml`** - Campus switching and map controls
-- **`directions.yaml`** - Directions and route navigation
+- **`toggle.yaml`** - Campus switching and map controls
+- **`nearby-poi.yaml`** - Nearby places panel smoke test
+- **`indoor-navigation.yaml`** - Indoor floor-plan navigation
 
 ## 🎨 Maestro Studio - Visual Test Builder
 
@@ -158,6 +170,10 @@ appId: com.concordia.githappens  # Android
 # or
 appId: com.concordia.GitHappens  # iOS
 ```
+
+### Auth State
+
+The current flows assume the app is already authenticated or has a persisted session in Expo Go/dev build. If you launch on a fresh device with no session, the app will stay on the login screen until a sign-in flow is added for automation.
 
 ### Using testID vs text
 

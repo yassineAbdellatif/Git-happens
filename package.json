@@ -23,12 +23,18 @@
     "test:integration:watch": "jest --config jest.config.integration.js --watch",
     "test:integration:coverage": "jest --config jest.config.integration.js --coverage",
     "test:all": "npm run test && npm run test:integration",
-    "maestro:test": "maestro test .maestro",
+    "maestro:test": "maestro test .maestro/google-connect.yaml && maestro test .maestro/calendar.yaml && maestro test .maestro/navigation.yaml && maestro test .maestro/search-building.yaml && maestro test .maestro/toggle.yaml && maestro test .maestro/nearby-poi.yaml",
     "maestro:test:navigation": "maestro test .maestro/navigation.yaml",
+    "maestro:test:calendar": "maestro test .maestro/calendar.yaml",
     "maestro:test:search": "maestro test .maestro/search-building.yaml",
-    "maestro:test:directions": "maestro test .maestro/directions.yaml",
-    "maestro:test:campus": "maestro test .maestro/campus-toggle.yaml",
+    "maestro:test:toggle": "maestro test .maestro/toggle.yaml",
+    "maestro:test:nearby": "maestro test .maestro/nearby-poi.yaml",
+    "maestro:test:google": "maestro test .maestro/google-connect.yaml",
     "maestro:studio": "maestro studio",
     "maestro:record": "maestro record .maestro/recorded-flow.yaml"
+  },
+  "dependencies": {
+    "@react-navigation/stack": "^7.8.5",
+    "react-native-svg": "^15.15.3"
   }
 }

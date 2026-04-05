@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,14 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useCalendarLogic } from "../hooks/useCalendarLogic";
+import ScheduleScreen from "./ScheduleScreen";
 import { styles } from "../styles/CalendarStyle";
 
-export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ navigation }) => {
+export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({
+  navigation,
+}) => {
+  const [showSchedule, setShowSchedule] = useState(false);
+
   const {
     hasToken,
     loading,
@@ -18,9 +23,24 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
     calendars,
     selectedCalendarIds,
     toggleCalendar,
-    handleConfirm,
+    handleConfirm: originalHandleConfirm,
     loadCalendars,
   } = useCalendarLogic(navigation);
+
+  const handleConfirm = async () => {
+    await originalHandleConfirm();
+    setShowSchedule(true);
+  };
+
+  // If we've confirmed selection, show the schedule
+  if (showSchedule) {
+    return (
+      <ScheduleScreen
+        navigation={navigation}
+        onBackToSelection={() => setShowSchedule(false)}
+      />
+    );
+  }
 
   if (!hasToken) {
     return (
@@ -28,11 +48,12 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
         <MaterialIcons name="event-busy" size={64} color="#ccc" />
         <Text style={styles.title}>Connect Google Calendar</Text>
         <Text style={styles.subtitle}>
-          Sign in with Google Calendar to view and select your calendars for class schedules.
+          Sign in with Google Calendar to view and select your calendars for
+          class schedules.
         </Text>
         <Text style={styles.hint}>
-          This screen will show your calendars once the Google Calendar connection (US-3.1) is
-          complete.
+          This screen will show your calendars once the Google Calendar
+          connection (US-3.1) is complete.
         </Text>
       </View>
     );
@@ -56,7 +77,9 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
           size={64}
           color={isEmpty ? "#999" : "#c62828"}
         />
-        <Text style={styles.title}>{isEmpty ? "No Calendars" : "Could not load calendars"}</Text>
+        <Text style={styles.title}>
+          {isEmpty ? "No Calendars" : "Could not load calendars"}
+        </Text>
         <Text style={styles.subtitle}>{error.message}</Text>
         {!isEmpty && (
           <TouchableOpacity style={styles.retryButton} onPress={loadCalendars}>
@@ -94,12 +117,16 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       >
-        {calendars.map((cal) => {
+        {calendars.map((cal, index) => {
           const isSelected = selectedCalendarIds.includes(cal.id);
           return (
             <TouchableOpacity
               key={cal.id}
-              style={[styles.calendarItem, isSelected && styles.calendarItemSelected]}
+              testID={`calendar-option-${index}`}
+              style={[
+                styles.calendarItem,
+                isSelected && styles.calendarItemSelected,
+              ]}
               onPress={() => toggleCalendar(cal.id)}
               activeOpacity={0.7}
             >
@@ -134,6 +161,7 @@ export const CalendarSelectionScreen: React.FC<{ navigation?: any }> = ({ naviga
           {selectedCalendarIds.length} calendar(s) selected
         </Text>
         <TouchableOpacity
+          testID="confirm-selection-button"
           style={[
             styles.confirmButton,
             selectedCalendarIds.length === 0 && styles.confirmButtonDisabled,

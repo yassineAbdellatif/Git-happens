@@ -1,9 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { Alert } from "react-native";
 import { useCalendarSelection } from "../../../context/CalendarSelectionContext";
-import { fetchCalendarList, GoogleCalendarListItem } from "../../../services/calendarListService";
+import {
+  fetchCalendarList,
+  GoogleCalendarListItem,
+} from "../../../services/calendarListService";
 
-export type CalendarErrorType = "token_expired" | "api_error" | "network_error" | "empty";
+export type CalendarErrorType =
+  | "token_expired"
+  | "api_error"
+  | "network_error"
+  | "empty";
 
 export interface CalendarError {
   type: CalendarErrorType;
@@ -13,6 +20,7 @@ export interface CalendarError {
 export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const {
     googleCalendarAccessToken,
+    getValidAccessToken,
     selectedCalendarIds,
     setSelectedCalendarIds,
     confirmSelection,
@@ -23,15 +31,29 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const [error, setError] = useState<CalendarError | null>(null);
 
   const loadCalendars = useCallback(async () => {
-    if (!googleCalendarAccessToken) {
-      setError({ type: "empty", message: "Connect Google Calendar to select calendars." });
-      setCalendars([]);
-      return;
+      // Try to get a valid (refreshed) token first
+      const token = await getValidAccessToken();
+
+     if (!token) {
+          setError({
+            type: "empty",
+            message: "Connect Google Calendar to select calendars.",
+          });
+          setCalendars([]);
+          return;
     }
 
     setLoading(true);
     setError(null);
-    const result = await fetchCalendarList(googleCalendarAccessToken);
+    let result = await fetchCalendarList(token);
+
+    // If token expired, try again with a freshly refreshed token
+    if (result.error === "token_expired") {
+        const refreshedToken = await getValidAccessToken();
+        if (refreshedToken && refreshedToken !== token) {
+            result = await fetchCalendarList(refreshedToken);
+          }
+      }
     setLoading(false);
 
     if (result.error) {
@@ -46,7 +68,8 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
     if (result.calendars.length === 0) {
       setError({
         type: "empty",
-        message: "No calendars found. Create a calendar in Google Calendar first.",
+        message:
+          "No calendars found. Create a calendar in Google Calendar first.",
       });
       setCalendars([]);
       return;
@@ -56,9 +79,9 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
     setError(null);
 
     setSelectedCalendarIds((prev) =>
-      prev.filter((id) => result.calendars.some((c) => c.id === id))
+      prev.filter((id) => result.calendars.some((c) => c.id === id)),
     );
-  }, [googleCalendarAccessToken, setSelectedCalendarIds]);
+  }, [getValidAccessToken, setSelectedCalendarIds]);
 
   useEffect(() => {
     loadCalendars();
@@ -67,10 +90,10 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const toggleCalendar = useCallback(
     (id: string) => {
       setSelectedCalendarIds((prev) =>
-        prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+        prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
       );
     },
-    [setSelectedCalendarIds]
+    [setSelectedCalendarIds],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -78,15 +101,17 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
       Alert.alert(
         "No calendars selected",
         "Please select at least one calendar to continue.",
-        [{ text: "OK" }]
+        [{ text: "OK" }],
       );
       return;
     }
 
     await confirmSelection();
-    Alert.alert("Saved", `${selectedCalendarIds.length} calendar(s) selected.`, [
-      { text: "OK", onPress: () => navigation?.goBack?.() },
-    ]);
+    Alert.alert(
+      "Saved",
+      `${selectedCalendarIds.length} calendar(s) selected.`,
+      [{ text: "OK" }],
+    );
   }, [selectedCalendarIds.length, confirmSelection, navigation]);
 
   return {

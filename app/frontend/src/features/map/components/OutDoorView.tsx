@@ -1,6 +1,8 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Marker } from "react-native-maps";
+import { POIResult } from "../../../services/mapApiService";
 import MapView, {
   PROVIDER_GOOGLE,
   MapType,
@@ -9,6 +11,7 @@ import MapView, {
   Polyline,
 } from "react-native-maps";
 import { CONCORDIA_BUILDINGS, Building } from "../../../constants/buildings";
+import type { NearbyPoiType } from "../../../services/mapApiService";
 import { getSegmentColor } from "../utils/shuttleLogic";
 
 interface OutdoorViewProps {
@@ -17,14 +20,23 @@ interface OutdoorViewProps {
   selectedBuildingId?: string | null;
   onBuildingPress: (building: Building) => void;
   onMapPress: () => void;
+  onRegionChangeComplete?: (region: Region) => void;
   routeCoords?: { latitude: number; longitude: number }[];
   routeSegments?: {
     mode: string;
     coords: { latitude: number; longitude: number }[];
   }[];
+  nearbyPois?: Array<{
+    id: string;
+    name: string;
+    location: { lat: number; lng: number };
+    poiType?: NearbyPoiType;
+  }>;
   transportMode?: string;
   mapType: MapType;
   onMapTypeChange: (mapType: MapType) => void;
+  poiResults?: POIResult[];
+  poiColor?: string;
 }
 
 const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
@@ -34,11 +46,15 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
     selectedBuildingId,
     onBuildingPress,
     onMapPress,
+    onRegionChangeComplete,
     routeCoords,
     routeSegments,
+    nearbyPois,
     transportMode,
     mapType,
     onMapTypeChange,
+    poiResults,
+    poiColor = "#912338",
   } = props;
 
   const stateTracker = `${selectedBuildingId}-${currentBuildingId}`;
@@ -46,22 +62,16 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
   // Determine the color for the route based on the transport mode
   const currentColor = useMemo(() => {
     const mode = transportMode?.toUpperCase();
-    console.log("Current transport mode:", mode);
     switch (mode) {
       case "DRIVING":
-        console.log("Using DRIVING mode color:", "#4285F4");
         return "#4285F4";
       case "WALKING":
-        console.log("Using WALKING mode color:", "#4285F4");
         return "#4285F4";
       case "TRANSIT":
-        console.log("Using TRANSIT mode color:", "#020202");
         return "#020202";
       case "SHUTTLE":
-        console.log("Using SHUTTLE mode color:", "#912338");
         return "#912338";
       default:
-        console.log("Using default color for mode:", mode);
         return "#912338";
     }
   }, [transportMode]);
@@ -93,6 +103,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
         showsUserLocation={true}
         moveOnMarkerPress={false}
         onPress={onMapPress}
+        onRegionChangeComplete={onRegionChangeComplete}
         mapType={mapType}
       >
         {/* --- DRAW THE ROUTE LINE --- */}
@@ -126,21 +137,41 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
               />
             )}
 
+        {/* --- POI MARKERS --- */}
+        {poiResults?.map((poi, idx) => (
+          <Marker
+            key={`poi-${poi.placeId}`}
+            coordinate={poi.location}
+            tracksViewChanges={false}
+            title={poi.name}
+            description={poi.vicinity}
+          >
+            <View style={[poiMarkerStyles.bubble, { backgroundColor: poiColor }]}>
+              <Text style={poiMarkerStyles.bubbleText}>{idx + 1}</Text>
+            </View>
+            <View style={[poiMarkerStyles.pin, { borderTopColor: poiColor }]} />
+          </Marker>
+        ))}
+
         {CONCORDIA_BUILDINGS.map((building) => {
           const isSelected = building.id === selectedBuildingId;
           const isCurrent = building.id === currentBuildingId;
           const buildingCenter = getPolygonCenter(building.coordinates);
 
-          let fillColor = "rgba(145, 35, 56, 0.15)";
-          let strokeColor = "#912338";
+          let fillColor = "rgba(145, 35, 56, 0.12)";
+          let strokeColor = "#6e1528";
+          let strokeWidth = 3;
           let zIndex = 1;
 
           if (isSelected) {
             fillColor = "rgba(145, 35, 56, 0.8)";
-            strokeColor = "#000000";
+            strokeColor = "#111111";
+            strokeWidth = 4;
             zIndex = 10;
           } else if (isCurrent) {
             fillColor = "rgba(255, 215, 0, 0.6)";
+            strokeColor = "#7a5d00";
+            strokeWidth = 3.5;
             zIndex = 5;
           }
 
@@ -151,7 +182,7 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
                 coordinates={building.coordinates}
                 fillColor={fillColor}
                 strokeColor={strokeColor}
-                strokeWidth={isSelected ? 3 : 2}
+                strokeWidth={strokeWidth}
                 zIndex={zIndex}
                 tappable={true}
                 onPress={(e) => {
@@ -172,6 +203,36 @@ const OutdoorView = forwardRef<MapView, OutdoorViewProps>((props, ref) => {
             </React.Fragment>
           );
         })}
+
+        {nearbyPois?.map((poi) => {
+          let poiIconName: "local-library" | "restaurant" | "local-cafe" =
+            "local-cafe";
+
+          if (poi.poiType === "library") {
+            poiIconName = "local-library";
+          } else if (poi.poiType === "restaurant") {
+            poiIconName = "restaurant";
+          }
+
+          return (
+            <Marker
+              key={`poi-${poi.id}`}
+              coordinate={{
+                latitude: poi.location.lat,
+                longitude: poi.location.lng,
+              }}
+              title={poi.name}
+            >
+              <View style={styles.poiMarkerDot}>
+                <MaterialIcons
+                  name={poiIconName}
+                  size={12}
+                  color="#ffffff"
+                />
+              </View>
+            </Marker>
+          );
+        })}
       </MapView>
     </View>
   );
@@ -182,6 +243,42 @@ OutdoorView.displayName = "OutdoorView";
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
+  poiMarkerDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#1f6feb",
+    borderWidth: 2,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+const poiMarkerStyles = StyleSheet.create({
+  bubble: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  bubbleText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  pin: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 8,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    alignSelf: "center",
+  },
 });
 
 export default OutdoorView;

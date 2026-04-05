@@ -1,73 +1,75 @@
-import * as request from 'supertest';
-import * as express from 'express';
-
-// Mock the mapRoutes module
-jest.mock('../app/backend/src/routes/mapRoutes', () => {
-  const express = require('express');
-  const router = express.Router();
-  router.get('/directions', (req: any, res: any) => {
-    res.json({ mocked: true });
-  });
-  return { default: router };
-});
-
-describe('Backend Server (index.ts)', () => {
-  let app: express.Application;
-
+describe('Backend bootstrap (index.ts)', () => {
   beforeEach(() => {
-    // Clear module cache to get a fresh instance
     jest.resetModules();
-    
-    // Recreate the app for each test
-    app = express();
-    app.use(express.json());
-    const mapRoutes = require('../app/backend/src/routes/mapRoutes').default;
-    app.use('/api', mapRoutes);
-    
-    app.get('/health', (req, res) => {
-      res.send('Campus Guide Backend is running ');
-    });
+    jest.clearAllMocks();
   });
 
-  describe('Health Endpoint', () => {
-    it('should respond to health check', async () => {
-      const response = await request(app).get('/health');
-      
-      expect(response.status).toBe(200);
-      expect(response.text).toBe('Campus Guide Backend is running ');
+  it('configures middleware, mounts routes, registers health, and starts server', () => {
+    const dotenvConfigMock = jest.fn();
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    const corsMiddleware = (_req: unknown, _res: unknown, next: () => void) => next();
+    const mapRoutesMock = (_req: unknown, _res: unknown, next: () => void) => next();
+
+    let healthHandler: ((req: unknown, res: { send: (value: string) => void }) => void) | undefined;
+    let useSpy: jest.SpyInstance;
+    let getSpy: jest.SpyInstance;
+    let listenSpy: jest.SpyInstance;
+    let jsonSpy: jest.SpyInstance;
+
+    jest.isolateModules(() => {
+      const express = require('../app/backend/node_modules/express');
+
+      useSpy = jest.spyOn(express.application, 'use');
+      getSpy = jest
+        .spyOn(express.application, 'get')
+        .mockImplementation(function (this: unknown, path: string, handler: typeof healthHandler) {
+          if (path === '/health') {
+            healthHandler = handler;
+          }
+          return this;
+        });
+      listenSpy = jest
+        .spyOn(express.application, 'listen')
+        .mockImplementation(function (this: unknown, _port: number, callback?: () => void) {
+          if (callback) {
+            callback();
+          }
+          return this;
+        });
+      jsonSpy = jest.spyOn(express, 'json');
+
+      jest.doMock('express', () => express);
+      jest.doMock('dotenv', () => ({ config: dotenvConfigMock }), { virtual: true });
+      jest.doMock('cors', () => jest.fn(() => corsMiddleware), { virtual: true });
+      jest.doMock('../app/backend/src/routes/mapRoutes', () => ({
+        __esModule: true,
+        default: mapRoutesMock,
+      }));
+
+      require('../app/backend/src/index');
     });
-  });
 
-  describe('API Routes', () => {
-    it('should have /api routes mounted', async () => {
-      const response = await request(app).get('/api/directions');
-      
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('mocked');
-    });
-  });
+    expect(dotenvConfigMock).toHaveBeenCalledTimes(1);
+    expect(jsonSpy!).toHaveBeenCalledTimes(1);
+    expect(useSpy!).toHaveBeenNthCalledWith(1, corsMiddleware);
+    expect(useSpy!).toHaveBeenNthCalledWith(2, expect.any(Function));
+    expect(useSpy!).toHaveBeenNthCalledWith(3, '/api', mapRoutesMock);
 
-  describe('Middleware', () => {
-    it('should parse JSON request bodies', async () => {
-      app.post('/test', (req, res) => {
-        res.json({ received: req.body });
-      });
+    expect(getSpy!).toHaveBeenCalledWith('/health', expect.any(Function));
+    expect(listenSpy!).toHaveBeenCalledWith(3000, expect.any(Function));
 
-      const response = await request(app)
-        .post('/test')
-        .send({ test: 'data' })
-        .set('Content-Type', 'application/json');
+    const sendMock = jest.fn();
+    expect(healthHandler).toBeDefined();
+    healthHandler?.({}, { send: sendMock });
+    expect(sendMock).toHaveBeenCalledWith('Campus Guide Backend is running ');
 
-      expect(response.status).toBe(200);
-      expect(response.body.received).toEqual({ test: 'data' });
-    });
-  });
+    expect(consoleLogSpy).toHaveBeenCalledWith('Server running on http://localhost:3000');
 
-  describe('Error Handling', () => {
-    it('should return 404 for unknown routes', async () => {
-      const response = await request(app).get('/unknown-route');
-      
-      expect(response.status).toBe(404);
-    });
+    useSpy!.mockRestore();
+    getSpy!.mockRestore();
+    listenSpy!.mockRestore();
+    jsonSpy!.mockRestore();
+    consoleLogSpy.mockRestore();
   });
 });

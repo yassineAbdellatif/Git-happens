@@ -6,6 +6,8 @@ import {
   SHUTTLE_TRAVEL_MINUTES,
 } from '../app/frontend/src/features/map/utils/shuttleLogic';
 import * as mapApiService from '../app/frontend/src/services/mapApiService';
+import { SHUTTLE_SCHEDULE } from '../app/frontend/src/constants/shuttleSchedule';
+
 
 // Mock the mapApiService and polylineDecoder
 jest.mock('../app/frontend/src/services/mapApiService');
@@ -64,6 +66,25 @@ describe('shuttleLogic', () => {
   });
 
   describe('getNextShuttleInfo', () => {
+    it('should return no schedule available when active semester schedule is missing', () => {
+      const semesters = (SHUTTLE_SCHEDULE as any).semesters;
+      const activeSemester = (SHUTTLE_SCHEDULE as any).activeSemester;
+      const previousSchedule = semesters?.[activeSemester]?.Schedule;
+
+      if (semesters?.[activeSemester]) {
+        semesters[activeSemester].Schedule = undefined;
+      }
+
+      const result = getNextShuttleInfo('LOYOLA', 'SGW', new Date('2026-03-02T09:00:00'));
+
+      expect(result.title).toBe('No schedule available');
+      expect(result.subtitle).toContain('Check back later');
+
+      if (semesters?.[activeSemester]) {
+        semesters[activeSemester].Schedule = previousSchedule;
+      }
+    });
+
     it('should return message when no origin or destination', () => {
       const result = getNextShuttleInfo(null, null);
       
@@ -411,6 +432,50 @@ describe('shuttleLogic', () => {
 
       // Total: 20 min (walk) + 40 min (shuttle) + 20 min (walk) = 80 min = 1 hr 20 min
       expect(result?.duration).toBe('1 hr 20 min');
+    });
+
+    it('should apply fallback values for missing optional route fields', async () => {
+      (mapApiService.getRouteFromBackend as jest.Mock)
+        .mockReset()
+        .mockResolvedValueOnce({
+          routes: [
+            {
+              legs: [{ duration: { value: 600 } }],
+            },
+          ],
+        })
+        .mockResolvedValueOnce({
+          routes: [
+            {
+              legs: [{}],
+            },
+          ],
+        })
+        .mockResolvedValueOnce({
+          routes: [
+            {
+              legs: [{ duration: { value: 600 } }],
+            },
+          ],
+        });
+
+      const input = {
+        originCoords: { latitude: 45.497, longitude: -73.578 },
+        destinationCoords: { latitude: 45.458, longitude: -73.639 },
+        originCampus: 'SGW' as const,
+        destinationCampus: 'LOYOLA' as const,
+      };
+
+      const result = await buildShuttleRoute(input);
+
+      expect(result).not.toBeNull();
+      expect(result?.coords).toEqual([]);
+      expect(result?.segments).toEqual([]);
+      expect(result?.distance).toBe('0 m');
+      expect(result?.duration).toBe('1 hr');
+      expect(result?.steps).toHaveLength(1);
+      expect(result?.steps[0].distance).toBe('');
+      expect(result?.steps[0].duration).toBe('40 min');
     });
   });
 });
