@@ -13,7 +13,7 @@ describe("IndoorMapScreen source contract", () => {
     const source = readScreenSource();
 
     expect(source).toContain(
-      "getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any)",
+      "getFloorPlanRegistryEntry(buildingId, activeFloor)"
     );
   });
 
@@ -21,8 +21,8 @@ describe("IndoorMapScreen source contract", () => {
     const source = readScreenSource();
 
     expect(source).toContain("useIndoorNavigation(");
-    expect(source).toContain("floorPlanEntry?.localizedNodes || []");
-    expect(source).toContain("floorPlanEntry?.edges || []");
+    expect(source).toContain("buildingGraph?.nodes || []");
+    expect(source).toContain("buildingGraph?.edges || []");
   });
 
   it("registers keyboard show and hide listeners", () => {

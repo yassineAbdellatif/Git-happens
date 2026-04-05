@@ -114,4 +114,45 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  floorButtonsContainer: {
+    position: "absolute",
+    top: 130,
+    left: 20,
+    right: 20,
+    zIndex: 9,
+  },
+  floorButtonsScroll: {
+    flexDirection: "row",
+  },
+  floorButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: "#912338",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  floorButtonActive: {
+    backgroundColor: "#912338",
+  },
+  floorButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#912338",
+  },
+  floorButtonTextActive: {
+    color: "white",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

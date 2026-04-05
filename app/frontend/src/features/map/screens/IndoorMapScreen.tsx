@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   TextInput,
   Keyboard,
+  ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   FloorNumber,
+  getBuildingGraph,
   getFloorPlanRegistryEntry,
   IndoorBuildingId,
 } from "../../../services/floorPlanService";
@@ -19,6 +21,10 @@ import FloorPlanDisplay from "../components/FloorPlanDisplay";
 import { useIndoorNavigation } from "../hooks/useIndoorNavigation";
 import SearchResults from "../components/SearchResults";
 import { styles } from "../../map/styles/IndoorMapScreenStyle";
+import {
+  getFloorsInPath,
+  getPathSegmentForFloor,
+} from "../utils/multiFloorNavigationUtils";
 
 type IndoorMapRouteParams = {
   buildingId: IndoorBuildingId;
@@ -31,10 +37,14 @@ const IndoorMapScreen = () => {
   const route = useRoute();
   const { buildingId, buildingName, selectedFloorNumber } =
     route.params as IndoorMapRouteParams;
-  // Fetch JSON map data based on the route params
-  const floorPlanEntry = useMemo(() => {
-    return getFloorPlanRegistryEntry(buildingId, selectedFloorNumber as any);
-  }, [buildingId, selectedFloorNumber]);
+
+  const buildingGraph = useMemo(() => {
+    return getBuildingGraph(buildingId);
+  }, [buildingId]);
+
+  const [activeFloor, setActiveFloor] = useState<FloorNumber>(selectedFloorNumber);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
   const {
     startPoint,
     destinationPoint,
@@ -48,11 +58,21 @@ const IndoorMapScreen = () => {
     handleStartNavigation,
     swapPoints,
   } = useIndoorNavigation(
-    floorPlanEntry?.localizedNodes || [],
-    floorPlanEntry?.edges || []
+    buildingGraph?.nodes || [],
+    buildingGraph?.edges || []
   );
 
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const floorsInPath = useMemo(() => {
+    return getFloorsInPath(path);
+  }, [path]);
+
+  const activeFloorSegment = useMemo(() => {
+    return getPathSegmentForFloor(path, activeFloor);
+  }, [path, activeFloor]);
+
+  const floorPlanEntry = useMemo(() => {
+    return getFloorPlanRegistryEntry(buildingId, activeFloor);
+  }, [buildingId, activeFloor]);
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
@@ -74,11 +94,14 @@ const IndoorMapScreen = () => {
       {/* MAP LAYER */}
       <View style={styles.mapContainer}>
         {floorPlanEntry ? (
-          <FloorPlanDisplay floorPlanEntry={floorPlanEntry} path={path} />
+          <FloorPlanDisplay
+            floorPlanEntry={floorPlanEntry}
+            path={activeFloorSegment}
+          />
         ) : (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              Map not available for Floor {selectedFloorNumber}.
+              Map not available for Floor {activeFloor}.
             </Text>
           </View>
         )}
@@ -95,9 +118,40 @@ const IndoorMapScreen = () => {
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
           <Text style={styles.headerTitle}>{buildingName}</Text>
-          <Text style={styles.headerSubtitle}>Floor {selectedFloorNumber}</Text>
+          <Text style={styles.headerSubtitle}>Floor {activeFloor}</Text>
         </View>
       </View>
+
+      {/* FLOOR BUTTONS - Show only when path spans multiple floors */}
+      {floorsInPath.length > 1 && (
+        <View style={styles.floorButtonsContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.floorButtonsScroll}
+          >
+            {floorsInPath.map((floor) => (
+              <TouchableOpacity
+                key={floor}
+                style={[
+                  styles.floorButton,
+                  activeFloor === floor && styles.floorButtonActive,
+                ]}
+                onPress={() => setActiveFloor(floor)}
+              >
+                <Text
+                  style={[
+                    styles.floorButtonText,
+                    activeFloor === floor && styles.floorButtonTextActive,
+                  ]}
+                >
+                  Floor {floor}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
 
       {/* FLOATING BOTTOM NAVIGATION CARD */}
       <View style={[styles.floatingBottomCard, { bottom: 30 + keyboardHeight }]}>

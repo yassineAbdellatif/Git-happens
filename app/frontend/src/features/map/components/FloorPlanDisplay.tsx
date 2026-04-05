@@ -244,6 +244,47 @@ const FloorPlanDisplay = ({
                   />
                 </>
               )}
+              
+              {/* Stair / Elevator markers on path */}
+              {path
+                .filter(
+                  (node) =>
+                    node.nodeType === "stair_landing" ||
+                    node.nodeType === "elevator"
+                )
+                .map((node) => {
+                  const asset = POI_ASSETS[node.nodeType];
+
+                  if (!asset) return null;
+
+                  return (
+                    <React.Fragment key={`path-marker-${node.id}`}>
+                      <Circle
+                        cx={node.x}
+                        cy={node.y}
+                        r={50}
+                        fill="#912338"
+                        stroke="white"
+                        strokeWidth={7}
+                      />
+
+                      {/* Icon on top */}
+                      <SvgImage
+                        x={node.x - 40}
+                        y={node.y - 40}
+                        width={80}
+                        height={80}
+                        href={{ uri: asset.uri }}
+                        preserveAspectRatio="xMidYMid meet"
+                        onPress={() => {
+                          setSelectedPoi(node);
+                          onPoiPress?.(node);
+                          console.log("POI pressed", node.id);
+                        }}
+                      />
+                    </React.Fragment>
+                  );
+                })}
             </Svg>
           )}
         </Animated.View>
