@@ -3341,35 +3341,34 @@
       "weight": 22,
       "accessible": true
     },
-    [
-      {
-        "source": "VL_F1_elevator_door_1",
-        "target": "VL_F2_elevator_door_1",
-        "type": "elevator",
-        "weight": 15,
-        "accessible": true
-      },
-      {
-        "source": "VL_F1_stair_landing_1",
-        "target": "VL_F2_stair_landing_1",
-        "type": "stairs",
-        "weight": 15,
-        "accessible": false
-      },
-      {
-        "source": "VL_F1_stair_landing_2",
-        "target": "VL_F2_stair_landing_2",
-        "type": "stairs",
-        "weight": 15,
-        "accessible": false
-      },
-      {
-        "source": "VL_F1_stair_landing_3",
-        "target": "VL_F2_stair_landing_3",
-        "type": "stairs",
-        "weight": 15,
-        "accessible": false
-      }
-    ]
+
+    {
+      "source": "VL_F1_elevator_door_1",
+      "target": "VL_F2_elevator_door_1",
+      "type": "elevator",
+      "weight": 15,
+      "accessible": true
+    },
+    {
+      "source": "VL_F1_stair_landing_1",
+      "target": "VL_F2_stair_landing_1",
+      "type": "stairs",
+      "weight": 15,
+      "accessible": false
+    },
+    {
+      "source": "VL_F1_stair_landing_2",
+      "target": "VL_F2_stair_landing_2",
+      "type": "stairs",
+      "weight": 15,
+      "accessible": false
+    },
+    {
+      "source": "VL_F1_stair_landing_3",
+      "target": "VL_F2_stair_landing_3",
+      "type": "stairs",
+      "weight": 15,
+      "accessible": false
+    }
   ]
 }
