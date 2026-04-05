@@ -84,12 +84,10 @@ const MapScreen = () => {
   const originType = origin.type;
   const originCoords = origin.coords;
   const originLabel = origin.label;
-  const originCampus = origin.campus;
 
   const destinationType = destination.type;
   const destinationCoords = destination.coords;
   const destinationLabel = destination.label;
-  const destinationCampus = destination.campus;
 
   const statusText = getDisplayStatus(
     userLocation,
@@ -231,7 +229,40 @@ const MapScreen = () => {
       <View style={styles.overlay} pointerEvents="box-none">
         {/* TOP SEARCH BAR / ROUTE HEADER */}
         <View style={styles.searchContainer}>
-          {!isRouting ? (
+          {isRouting ? (
+            <View style={styles.routeHeader}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={
+                  isNavigating
+                    ? handleCancelNavigation
+                    : () => setIsRouting(false)
+                }
+              >
+                <MaterialIcons
+                  name={isNavigating ? "arrow-back" : "close"}
+                  size={24}
+                  color="#333"
+                />
+              </TouchableOpacity>
+
+              <View style={styles.routeInputs}>
+                <View style={styles.inputRow}>
+                  <MaterialIcons name="my-location" size={18} color="#4285F4" />
+                  <Text style={styles.routeTextStatic}>
+                    {originLabel || "Choose starting point"}
+                  </Text>
+                </View>
+                <View style={styles.routeDivider} />
+                <View style={styles.inputRow}>
+                  <MaterialIcons name="place" size={18} color="#912338" />
+                  <Text style={styles.routeTextStatic}>
+                    {destinationLabel || "Select Destination"}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ) : (
             !isNavigating && (
               <View style={styles.searchContainer}>
                 <View style={styles.searchBar}>
@@ -279,39 +310,6 @@ const MapScreen = () => {
                 )}
               </View>
             )
-          ) : (
-            <View style={styles.routeHeader}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={
-                  isNavigating
-                    ? handleCancelNavigation
-                    : () => setIsRouting(false)
-                }
-              >
-                <MaterialIcons
-                  name={isNavigating ? "arrow-back" : "close"}
-                  size={24}
-                  color="#333"
-                />
-              </TouchableOpacity>
-
-              <View style={styles.routeInputs}>
-                <View style={styles.inputRow}>
-                  <MaterialIcons name="my-location" size={18} color="#4285F4" />
-                  <Text style={styles.routeTextStatic}>
-                    {originLabel || "Choose starting point"}
-                  </Text>
-                </View>
-                <View style={styles.routeDivider} />
-                <View style={styles.inputRow}>
-                  <MaterialIcons name="place" size={18} color="#912338" />
-                  <Text style={styles.routeTextStatic}>
-                    {destinationLabel || "Select Destination"}
-                  </Text>
-                </View>
-              </View>
-            </View>
           )}
         </View>
 
@@ -474,8 +472,8 @@ const MapScreen = () => {
               showsVerticalScrollIndicator={false}
               scrollEnabled={!isIndoorInteracting}
             >
-              {!isRouting && selectedBuilding ? (
-                <>
+              {selectedBuilding && !isRouting ? (
+                <View style={{ width: "100%" }}>
                   <Text style={styles.sheetTitle}>
                     {selectedBuilding.fullName}
                   </Text>
@@ -582,12 +580,12 @@ const MapScreen = () => {
                   <Text style={styles.sheetSubtitle}>
                     Tap a building to see indoor maps
                   </Text>
-                </>
+                </View>
               ) : (
-                <View style={{ width: "100%" }}>
+                <>
                   {/* STEP 1: Picking Origin */}
 
-                  {!originCoords ? (
+                  {originCoords === null ? (
                     originType === "BUILDING" ? (
                       <>
                         <Text style={styles.routingTitle}>
@@ -701,7 +699,7 @@ const MapScreen = () => {
                         </TouchableOpacity>
                       </>
                     )
-                  ) : !destinationCoords ? (
+                  ) : destinationCoords === null ? (
                     /* STEP 2: Picking Destination */
 
                     destinationType === "BUILDING" ? (
@@ -877,7 +875,7 @@ const MapScreen = () => {
                       </TouchableOpacity>
                     </>
                   )}
-                </View>
+                </>
               )}
             </ScrollView>
           </View>

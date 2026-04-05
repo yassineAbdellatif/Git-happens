@@ -43,10 +43,7 @@ const NextClassCard: React.FC<Props> = ({ status, loading, onDirections }) => {
     );
   }
 
-  const { data } = status as Extract<
-    NextClassStatus,
-    { kind: "found" | "location_unavailable" | "building_unknown" }
-  >;
+  const { data } = status as Extract<NextClassStatus, { kind: "found" | "location_unavailable" | "building_unknown" }>;
   const mins = minutesUntil(data.startTime);
   const building = data.location
     ? CONCORDIA_BUILDINGS.find((b) => b.id === data.location!.building)

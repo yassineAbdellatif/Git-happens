@@ -1,9 +1,9 @@
-import React, { forwardRef, useMemo, useState } from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import React, { forwardRef, useMemo } from "react";
+import { StyleSheet, View, Text } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Marker } from "react-native-maps";
 import { POIResult } from "../../../services/mapApiService";
 import MapView, {
+  Marker,
   PROVIDER_GOOGLE,
   MapType,
   Polygon,

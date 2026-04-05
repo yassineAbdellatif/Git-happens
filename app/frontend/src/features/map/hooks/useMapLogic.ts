@@ -478,6 +478,7 @@ export const useMapLogic = () => {
         });
       }
     } catch (e) {
+      console.error("Backend connection failed:", e);
       alert("Backend connection failed.");
     }
   };
