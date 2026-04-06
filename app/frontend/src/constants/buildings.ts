@@ -31,13 +31,25 @@ export const CONCORDIA_BUILDINGS: Building[] = [
         nodeId: "Hall_F1_building_entry_exit_1",
         latitude: 45.497519782213104,
         longitude: -73.57842271723722,
-        name: "Bishop ST Entrance",
+        name: "Bishop ST Entrance 1",
       },
       {
         nodeId: "Hall_F1_building_entry_exit_2",
         latitude: 45.497508970326564,
         longitude: -73.57840393917704,
-        name: "Maisonneuve St Entrance", //dsjbc;abjd
+        name: "Bishop ST Entrance 2",
+      },
+      {
+        nodeId: "Hall_F1_building_entry_exit_3",
+        latitude: 45.497110517724295,
+        longitude: -73.57858557984171,
+        name: "Maisonneuve St Entrance 1",
+      },
+      {
+        nodeId: "Hall_F1_building_entry_exit_4",
+        latitude: 45.49696848495306,
+        longitude: -73.57872307883531,
+        name: "Maisonneuve St Entrance 2",
       },
     ],
   },
