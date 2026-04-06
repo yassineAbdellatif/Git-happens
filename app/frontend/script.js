@@ -1,6 +1,6 @@
 // Description: This script syncs the google-services.json file from the project root to the android/app directory.
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const projectRoot = __dirname;
 const source = path.join(projectRoot, 'google-services.json');

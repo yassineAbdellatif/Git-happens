@@ -74,16 +74,21 @@ function getLowestFScoreNode(
   return bestNode;
 }
 
+interface PathState {
+  gScore: Map<string, number>;
+  fScore: Map<string, number>;
+  cameFrom: Map<string, string>;
+  openSet: Set<string>;
+}
+
 function updateNeighbor(
   current: string,
   neighbor: { id: string; weight: number },
   endNode: LocalizedNode,
   nodeMap: Map<string, LocalizedNode>,
-  gScore: Map<string, number>,
-  fScore: Map<string, number>,
-  cameFrom: Map<string, string>,
-  openSet: Set<string>,
+  state: PathState,
 ) {
+  const { gScore, fScore, cameFrom, openSet } = state;
   const tentativeG = (gScore.get(current) ?? Infinity) + neighbor.weight;
 
   if (tentativeG >= (gScore.get(neighbor.id) ?? Infinity)) return;
@@ -125,6 +130,7 @@ export function findPath(
   const gScore = new Map<string, number>([[startId, 0]]);
   const fScore = new Map<string, number>([[startId, heuristic(startNode, endNode)]]);
   const cameFrom = new Map<string, string>();
+  const state: PathState = { gScore, fScore, cameFrom, openSet };
 
   while (openSet.size > 0) {
     const current = getLowestFScoreNode(openSet, fScore);
@@ -143,10 +149,7 @@ export function findPath(
         neighbor,
         endNode,
         nodeMap,
-        gScore,
-        fScore,
-        cameFrom,
-        openSet,
+        state,
       );
     }
   }

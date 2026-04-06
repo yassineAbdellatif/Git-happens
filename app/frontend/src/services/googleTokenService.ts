@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 
-const isExpoGo = Constants.appOwnership === "expo";
+const isExpoGo = Constants.executionEnvironment === "storeClient";
 
 /**
  * Silently refreshes google OAuth access token using the native Google Sign-In SDK

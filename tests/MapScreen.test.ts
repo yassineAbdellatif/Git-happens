@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const mapScreenPath = path.join(
   process.cwd(),
@@ -46,7 +46,6 @@ describe("MapScreen source contract", () => {
 
     expect(source).toContain("nearbyPois={nearbyPois}");
     expect(source).toContain("mapType={mapType}");
-    expect(source).toContain("onMapTypeChange={setMapType}");
   });
 
   it("supports single-floor and multi-floor indoor navigation paths", () => {

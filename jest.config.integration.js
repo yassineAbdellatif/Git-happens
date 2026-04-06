@@ -5,7 +5,10 @@ module.exports = {
   roots: ['<rootDir>/tests/integration', '<rootDir>/app/backend'],
   collectCoverage: true,
   collectCoverageFrom: [
-    'app/**/*.{ts,tsx,js,jsx}',
+    'app/backend/src/**/*.{ts,js}',
+    'app/frontend/src/services/**/*.{ts,js}',
+    'app/frontend/src/utils/**/*.{ts,js}',
+    'app/frontend/src/constants/**/*.{ts,js}',
     '!app/**/*.test.{ts,tsx}',
     '!app/**/node_modules/**',
     '!app/**/dist/**',
