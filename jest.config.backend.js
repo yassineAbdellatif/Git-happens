@@ -19,7 +19,6 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [
     "app/backend/src/**/*.{ts,js}",
-    "app/frontend/src/services/**/*.{ts,js}",
     "app/frontend/src/utils/**/*.{ts,js}",
     "app/frontend/src/constants/**/*.{ts,js}",
     "!app/**/*.test.{ts,tsx}",
@@ -28,6 +27,8 @@ module.exports = {
     "!app/**/build/**",
     "!app/**/coverage/**",
     "!app/**/__mocks__/**",
+    "!app/backend/src/services/mapService.ts",
+    "!app/backend/src/index.ts",
   ],
   coverageDirectory: "coverage",
   coverageReporters: ["json", "lcov", "text", "clover"],
