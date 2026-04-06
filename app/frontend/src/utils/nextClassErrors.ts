@@ -1,4 +1,4 @@
-import { CalendarEvent, NextClassInfo } from "../types/calendarTypes";
+import { NextClassInfo } from "../types/calendarTypes";
 import { CONCORDIA_BUILDINGS } from "../constants/buildings";
 
 export type NextClassStatus =

@@ -18,6 +18,7 @@ export const getNearbyPlaces = async (req: Request, res: Response) => {
     );
     res.json({ results });
   } catch (error) {
+    console.error("Failed to fetch nearby places:", error);
     res.status(500).json({ error: "Failed to fetch nearby places" });
   }
 };
@@ -32,6 +33,7 @@ export const getRoute = async (req: Request, res: Response) => {
     );
     res.json(directions);
   } catch (error) {
+    console.error("Failed to fetch directions:", error);
     res.status(500).json({ error: "Failed to fetch directions" });
   }
 };
