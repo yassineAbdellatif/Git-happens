@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../features/auth/config/firebaseConfig";
@@ -28,21 +28,11 @@ export const useCalendarSelection = () => {
 
 export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [googleCalendarAccessToken, setGoogleCalendarAccessToken] = useState<string | null>(null);
-  const [selectedCalendarIds, setSelectedCalendarIdsState] = useState<string[]>([]);
+  const [selectedCalendarIds, setSelectedCalendarIds] = useState<string[]>([]);
   const idsRef = useRef<string[]>([]);
   idsRef.current = selectedCalendarIds;
 
   const GOOGLE_CALENDAR_TOKEN_KEY = "@campus_guide_google_calendar_access_token";
-
-  const setSelectedCalendarIds = useCallback(
-    (idsOrUpdater: string[] | ((prev: string[]) => string[])) => {
-      setSelectedCalendarIdsState((prev) => {
-        const next = typeof idsOrUpdater === "function" ? idsOrUpdater(prev) : idsOrUpdater;
-        return next;
-      });
-    },
-    []
-  );
 
   const persistSelection = useCallback(async (ids: string[]) => {
     try {
@@ -58,7 +48,7 @@ export const CalendarSelectionProvider: React.FC<{ children: React.ReactNode }> 
       if (stored) {
         const ids = JSON.parse(stored) as string[];
         if (Array.isArray(ids)) {
-          setSelectedCalendarIdsState(ids);
+          setSelectedCalendarIds(ids);
         }
       }
     } catch (e) {
@@ -104,7 +94,7 @@ const getValidAccessToken = useCallback(async (): Promise<string | null> => {
 
   const clearCalendarState = useCallback(async () => {
     setGoogleCalendarAccessToken(null);
-    setSelectedCalendarIdsState([]);
+    setSelectedCalendarIds([]);
     try {
       await AsyncStorage.removeItem(SELECTED_CALENDARS_KEY);
       await AsyncStorage.removeItem(GOOGLE_CALENDAR_TOKEN_KEY);
@@ -131,7 +121,7 @@ const getValidAccessToken = useCallback(async (): Promise<string | null> => {
     return () => unsubscribe();
   }, [clearCalendarState]);
 
-  const value: CalendarSelectionContextValue = {
+  const value: CalendarSelectionContextValue = useMemo(() => ({
     googleCalendarAccessToken,
     setGoogleCalendarAccessToken,
     getValidAccessToken,
@@ -139,7 +129,7 @@ const getValidAccessToken = useCallback(async (): Promise<string | null> => {
     setSelectedCalendarIds,
     confirmSelection,
     clearCalendarState,
-  };
+  }), [googleCalendarAccessToken, getValidAccessToken, selectedCalendarIds, setSelectedCalendarIds, confirmSelection, clearCalendarState]);
 
   return (
     <CalendarSelectionContext.Provider value={value}>
