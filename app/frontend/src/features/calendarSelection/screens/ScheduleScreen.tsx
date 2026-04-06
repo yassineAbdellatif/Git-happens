@@ -45,6 +45,79 @@ interface PositionedEvent extends CalendarEvent {
   dayIndex: number;
 }
 
+// --- Extracted to fix SonarQube: cognitive complexity / nesting > 4 ---
+
+interface EventBlockProps {
+  event: PositionedEvent;
+  idx: number;
+  onPress: (event: PositionedEvent) => void;
+}
+
+const EventBlock: React.FC<EventBlockProps> = ({ event, idx, onPress }) => {
+  const topOffsetPixels =
+    (event.startHour - Math.floor(event.startHour)) * HOUR_HEIGHT;
+  const heightPixels = event.duration * HOUR_HEIGHT;
+
+  return (
+    <TouchableOpacity
+      key={`${event.id}-${idx}`}
+      activeOpacity={0.85}
+      onPress={() => onPress(event)}
+      style={[styles.eventBlock, { height: heightPixels, top: topOffsetPixels }]}
+    >
+      <Text style={styles.eventBlockTitle} numberOfLines={1}>
+        {event.summary}
+      </Text>
+      {event.start.dateTime && (
+        <Text style={styles.eventBlockTime} numberOfLines={1}>
+          {formatTime(event.start.dateTime)}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+interface DayCellProps {
+  hour: number;
+  dayObj: { day: string; date: Date; index: number };
+  dayIndex: number;
+  weekDaysLength: number;
+  eventsBySlot: Record<string, PositionedEvent[]>;
+  onEventPress: (event: PositionedEvent) => void;
+}
+
+const DayCell: React.FC<DayCellProps> = ({
+  hour,
+  dayObj,
+  dayIndex,
+  weekDaysLength,
+  eventsBySlot,
+  onEventPress,
+}) => {
+  const slotEvents = eventsBySlot[`${dayObj.index}-${hour}`] || [];
+
+  return (
+    <View
+      pointerEvents="box-none"
+      style={[
+        styles.dayCell,
+        dayIndex === weekDaysLength - 1 && { borderRightWidth: 0 },
+      ]}
+    >
+      {slotEvents.map((event, idx) => (
+        <EventBlock
+          key={`${event.id}-${idx}`}
+          event={event}
+          idx={idx}
+          onPress={onEventPress}
+        />
+      ))}
+    </View>
+  );
+};
+
+// --- End extracted components ---
+
 const ScheduleScreen: React.FC<{
   navigation?: any;
   onBackToSelection?: () => void;
@@ -55,20 +128,17 @@ const ScheduleScreen: React.FC<{
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null,
-  );
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
-const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
+  const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
     googleCalendarAccessToken,
     selectedCalendarIds,
   );
 
   const loadEvents = async () => {
-      // refresh the token first before fetching events
-      const token = await getValidAccessToken();
+    const token = await getValidAccessToken();
 
-      if (!token || selectedCalendarIds.length === 0) {
+    if (!token || selectedCalendarIds.length === 0) {
       setError("No calendars selected or access token missing");
       setLoading(false);
       return;
@@ -77,10 +147,7 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
     try {
       setLoading(true);
       setError(null);
-      const fetchedEvents = await fetchUpcomingEvents(
-        token,
-        selectedCalendarIds,
-      );
+      const fetchedEvents = await fetchUpcomingEvents(token, selectedCalendarIds);
       setEvents(fetchedEvents);
     } catch (err) {
       console.error("Failed to load events:", err);
@@ -121,7 +188,7 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
           weekStartDate.getDate(),
         );
         const weekEndOnly = new Date(weekStartDate);
-        weekEndOnly.setDate(weekEndOnly.getDate() + 4); // Mon-Fri = 5 days
+        weekEndOnly.setDate(weekEndOnly.getDate() + 4);
 
         return eventDateOnly >= weekStartOnly && eventDateOnly <= weekEndOnly;
       })
@@ -138,13 +205,11 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
           weekStartDate.getDate(),
         );
 
-        // Calculate day index by comparing just the dates
         const daysDiff = Math.round(
           (eventDateOnly.getTime() - weekStartOnly.getTime()) /
             (1000 * 60 * 60 * 24),
         );
         const dayIndex = Math.max(0, Math.min(daysDiff, 4));
-
         const startHour = eventDate.getHours() + eventDate.getMinutes() / 60;
 
         let duration = 1;
@@ -193,10 +258,7 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
 
   const handleGetDirections = () => {
     if (!selectedEvent?.location) {
-      Alert.alert(
-        "No Location",
-        "This event does not have a location set.",
-      );
+      Alert.alert("No Location", "This event does not have a location set.");
       return;
     }
 
@@ -235,7 +297,6 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
   const handleNextClassDirections = (buildingId: string) => {
     navigateToBuilding(buildingId);
   };
-
 
   const getEventTimeRange = (event: CalendarEvent): string => {
     if (!event.start.dateTime) {
@@ -342,7 +403,6 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
         </TouchableOpacity>
       </View>
 
-
       {/*
           // Small card that shows the next class and their location on the calendar screen
           // used while testing but not necessary in the issue so I commented it out for the time being
@@ -385,59 +445,16 @@ const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
                   {hour >= 12 ? "pm" : "am"}
                 </Text>
               </View>
-
               {weekDays.map((dayObj, dayIndex) => (
-                <View
+                <DayCell
                   key={`${hour}-${dayObj.index}`}
-                  pointerEvents="box-none"
-                  style={[
-                    styles.dayCell,
-                    dayIndex === weekDays.length - 1 && { borderRightWidth: 0 },
-                  ]}
-                >
-                  {/* Events for this hour */}
-                  {(eventsBySlot[`${dayObj.index}-${hour}`] || []).map(
-                    (event, idx) => {
-                      // Calculate top offset in pixels (fractional hour * 60px)
-                      const topOffsetPixels =
-                        (event.startHour - Math.floor(event.startHour)) *
-                        HOUR_HEIGHT;
-
-                      // Calculate height in pixels based on duration (1 hour = 60px)
-                      const heightPixels = event.duration * HOUR_HEIGHT;
-
-                      return (
-                        <TouchableOpacity
-                          key={`${event.id}-${idx}`}
-                          activeOpacity={0.85}
-                          onPress={() => setSelectedEvent(event)}
-                          style={[
-                            styles.eventBlock,
-                            {
-                              height: heightPixels,
-                              top: topOffsetPixels,
-                            },
-                          ]}
-                        >
-                          <Text
-                            style={styles.eventBlockTitle}
-                            numberOfLines={1}
-                          >
-                            {event.summary}
-                          </Text>
-                          {event.start.dateTime && (
-                            <Text
-                              style={styles.eventBlockTime}
-                              numberOfLines={1}
-                            >
-                              {formatTime(event.start.dateTime)}
-                            </Text>
-                          )}
-                        </TouchableOpacity>
-                      );
-                    },
-                  )}
-                </View>
+                  hour={hour}
+                  dayObj={dayObj}
+                  dayIndex={dayIndex}
+                  weekDaysLength={weekDays.length}
+                  eventsBySlot={eventsBySlot}
+                  onEventPress={setSelectedEvent}
+                />
               ))}
             </View>
           ))}

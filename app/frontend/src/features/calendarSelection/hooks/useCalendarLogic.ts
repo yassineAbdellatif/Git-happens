@@ -30,30 +30,46 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<CalendarError | null>(null);
 
-  const loadCalendars = useCallback(async () => {
-      // Try to get a valid (refreshed) token first
-      const token = await getValidAccessToken();
+  // Helper: filter selected IDs that still exist in fetched calendars
+  const filterValidIds = useCallback(
+    (ids: string[], availableCalendars: GoogleCalendarListItem[]) => {
+      return ids.filter((id) =>
+        availableCalendars.some((c) => c.id === id)
+      );
+    },
+    []
+  );
 
-     if (!token) {
-          setError({
-            type: "empty",
-            message: "Connect Google Calendar to select calendars.",
-          });
-          setCalendars([]);
-          return;
-    }
-
-    setLoading(true);
-    setError(null);
+  // Helper: handle token expired or fetch error
+  const fetchCalendarsWithToken = useCallback(async (token: string) => {
     let result = await fetchCalendarList(token);
 
-    // If token expired, try again with a freshly refreshed token
     if (result.error === "token_expired") {
-        const refreshedToken = await getValidAccessToken();
-        if (refreshedToken && refreshedToken !== token) {
-            result = await fetchCalendarList(refreshedToken);
-          }
+      const refreshedToken = await getValidAccessToken();
+      if (refreshedToken && refreshedToken !== token) {
+        result = await fetchCalendarList(refreshedToken);
       }
+    }
+
+    return result;
+  }, [getValidAccessToken]);
+
+  const loadCalendars = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    const token = await getValidAccessToken();
+    if (!token) {
+      setError({
+        type: "empty",
+        message: "Connect Google Calendar to select calendars.",
+      });
+      setCalendars([]);
+      setLoading(false);
+      return;
+    }
+
+    const result = await fetchCalendarsWithToken(token);
     setLoading(false);
 
     if (result.error) {
@@ -68,20 +84,15 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
     if (result.calendars.length === 0) {
       setError({
         type: "empty",
-        message:
-          "No calendars found. Create a calendar in Google Calendar first.",
+        message: "No calendars found. Create a calendar in Google Calendar first.",
       });
       setCalendars([]);
       return;
     }
 
     setCalendars(result.calendars);
-    setError(null);
-
-    setSelectedCalendarIds((prev) =>
-      prev.filter((id) => result.calendars.some((c) => c.id === id)),
-    );
-  }, [getValidAccessToken, setSelectedCalendarIds]);
+    setSelectedCalendarIds((prev) => filterValidIds(prev, result.calendars));
+  }, [getValidAccessToken, setSelectedCalendarIds, fetchCalendarsWithToken, filterValidIds]);
 
   useEffect(() => {
     loadCalendars();
@@ -90,10 +101,10 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
   const toggleCalendar = useCallback(
     (id: string) => {
       setSelectedCalendarIds((prev) =>
-        prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
+        prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
       );
     },
-    [setSelectedCalendarIds],
+    [setSelectedCalendarIds]
   );
 
   const handleConfirm = useCallback(async () => {
@@ -101,7 +112,7 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
       Alert.alert(
         "No calendars selected",
         "Please select at least one calendar to continue.",
-        [{ text: "OK" }],
+        [{ text: "OK" }]
       );
       return;
     }
@@ -110,9 +121,9 @@ export const useCalendarLogic = (navigation?: { goBack?: () => void }) => {
     Alert.alert(
       "Saved",
       `${selectedCalendarIds.length} calendar(s) selected.`,
-      [{ text: "OK" }],
+      [{ text: "OK" }]
     );
-  }, [selectedCalendarIds.length, confirmSelection, navigation]);
+  }, [selectedCalendarIds.length, confirmSelection]);
 
   return {
     hasToken: !!googleCalendarAccessToken,
