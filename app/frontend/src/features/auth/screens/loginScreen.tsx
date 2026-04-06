@@ -15,7 +15,7 @@ import { useCalendarSelection } from "../../../context/CalendarSelectionContext"
 let GoogleSignin: any = null;
 let statusCodes: any = null;
 
-const isExpoGo = Constants.appOwnership === "expo";
+const isExpoGo = Constants.executionEnvironment === "storeClient";
 
 if (!isExpoGo) {
   const GSignin = require("@react-native-google-signin/google-signin");

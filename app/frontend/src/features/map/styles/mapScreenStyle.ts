@@ -400,4 +400,17 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
     padding: 8,
   },
+
+  indoorEntryButton: {
+    backgroundColor: "#912338",
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
 });

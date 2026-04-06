@@ -45,26 +45,26 @@ function matchByBuildingId(text: string): ParsedLocation | null {
 
     // Pattern: ID[-_ ]?[RoomNumber]  e.g. "H-920", "MB 3.270", "EV1.605", "MB-S2.330"
     const withRoom = new RegExp(
-      `(?:^|[\\s,;])${escaped}[\\s\\-_]?([A-Z]?\\d[\\d.]*\\d?)(?:\\s|$|,|;)`,
+      String.raw`(?:^|[\s,;])${escaped}[\s\-_]?([A-Z]?\d[\d.]*\d?)(?:\s|$|,|;)`,
       "i"
     );
-    const roomMatch = text.match(withRoom);
+    const roomMatch = withRoom.exec(text);
     if (roomMatch) {
       return { building: id, room: roomMatch[1] };
     }
 
     // Pattern: "Room XXX" appearing after the building ID
     const roomWord = new RegExp(
-      `(?:^|[\\s,;])${escaped}[\\s,;]+(?:room|rm\\.?)\\s*(\\S+)`,
+      String.raw`(?:^|[\s,;])${escaped}[\s,;]+(?:room|rm\.?)\s*(\S+)`,
       "i"
     );
-    const roomWordMatch = text.match(roomWord);
+    const roomWordMatch = roomWord.exec(text);
     if (roomWordMatch) {
       return { building: id, room: roomWordMatch[1] };
     }
 
     // Pattern: standalone building ID (word boundary)
-    const standalone = new RegExp(`(?:^|[\\s,;])${escaped}(?:\\s|$|,|;)`, "i");
+    const standalone = new RegExp(String.raw`(?:^|[\s,;])${escaped}(?:\s|$|,|;)`, "i");
     if (standalone.test(text)) {
       return { building: id, room: null };
     }
@@ -86,13 +86,15 @@ function matchByFullName(text: string): ParsedLocation | null {
 
       // Check if a room number follows: "Hall Building Room 920"
       const afterName = lower.slice(lower.indexOf(name) + name.length);
-      const roomAfter = afterName.match(/\s*(?:room|rm\.?)\s*(\S+)/i);
+      const roomPattern = /\s*(?:room|rm\.?)\s*(\S+)/i;
+      const roomAfter = roomPattern.exec(afterName);
       if (roomAfter) {
         return { building: buildingId, room: roomAfter[1] };
       }
 
       // Check for bare number after name: "Hall Building 920"
-      const numAfter = afterName.match(/\s+(\d[\d.]*)/);
+      const numPattern = /\s+(\d[\d.]*)/;
+      const numAfter = numPattern.exec(afterName);
       if (numAfter) {
         return { building: buildingId, room: numAfter[1] };
       }
@@ -105,5 +107,5 @@ function matchByFullName(text: string): ParsedLocation | null {
 }
 
 function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
