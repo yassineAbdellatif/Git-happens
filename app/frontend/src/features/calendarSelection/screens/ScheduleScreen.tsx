@@ -129,6 +129,11 @@ const ScheduleScreen: React.FC<{
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
+  const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
+    googleCalendarAccessToken,
+    selectedCalendarIds,
+  );
+
   const loadEvents = async () => {
     const token = await getValidAccessToken();
 
@@ -286,6 +291,10 @@ const ScheduleScreen: React.FC<{
         destinationRoom: room,
       },
     });
+  };
+
+  const handleNextClassDirections = (buildingId: string) => {
+    navigateToBuilding(buildingId);
   };
 
   const getEventTimeRange = (event: CalendarEvent): string => {

@@ -295,10 +295,12 @@ const MapScreen = () => {
   const originType = origin.type;
   const originCoords = origin.coords;
   const originLabel = origin.label;
+  const originCampus = origin.campus;
 
   const destinationType = destination.type;
   const destinationCoords = destination.coords;
   const destinationLabel = destination.label;
+  const destinationCampus = destination.campus;
 
   const statusText = getDisplayStatus(
     userLocation,
@@ -353,6 +355,20 @@ const MapScreen = () => {
     }
   };
 
+  const handlePoiClose = () => {
+    poi.setIsOpen(false);
+    poi.clearResults();
+  };
+
+  const handlePoiSelectPOI = (p: { location: { latitude: number; longitude: number } }) => {
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        { ...p.location, latitudeDelta: 0.003, longitudeDelta: 0.003 },
+        600,
+      );
+    }
+  };
+
   const handlePoiGetDirections = (p: {
     location: { latitude: number; longitude: number };
     name: string;
@@ -376,6 +392,14 @@ const MapScreen = () => {
     poi.setIsOpen(false);
     poi.clearResults();
     setIsRouting(true);
+  };
+
+  const handleRouteHeaderClose = () => {
+    if (isNavigating) {
+      handleCancelNavigation();
+    } else {
+      setIsRouting(false);
+    }
   };
 
   const hasSupportedFloors = selectedBuilding
@@ -444,6 +468,7 @@ const MapScreen = () => {
           nearbyPois={nearbyPois}
           transportMode={transportMode}
           mapType={mapType}
+          onMapTypeChange={setMapType}
         />
       </View>
 
@@ -455,7 +480,7 @@ const MapScreen = () => {
               isNavigating={isNavigating}
               originLabel={originLabel}
               destinationLabel={destinationLabel}
-              onClose={isNavigating ? handleCancelNavigation : () => setIsRouting(false)}
+              onClose={handleRouteHeaderClose}
             />
           ) : (
             !isNavigating && (
@@ -578,23 +603,13 @@ const MapScreen = () => {
               const lng = userLocation?.longitude ?? currentRegion.longitude;
               poi.search(lat, lng);
             }}
-            onClose={() => {
-              poi.setIsOpen(false);
-              poi.clearResults();
-            }}
+            onClose={handlePoiClose}
             userLocation={
               userLocation
                 ? { latitude: userLocation.latitude, longitude: userLocation.longitude }
                 : null
             }
-            onSelectPOI={(p) => {
-              if (mapRef.current) {
-                mapRef.current.animateToRegion(
-                  { ...p.location, latitudeDelta: 0.003, longitudeDelta: 0.003 },
-                  600,
-                );
-              }
-            }}
+            onSelectPOI={handlePoiSelectPOI}
             onGetDirections={handlePoiGetDirections}
           />
         )}
@@ -671,15 +686,8 @@ const MapScreen = () => {
                       style={styles.indoorEntryButton}
                       onPress={handleOpenIndoorMap}
                     >
-                      <MaterialIcons
-                        name="map"
-                        size={20}
-                        color="white"
-                        style={{ marginRight: 8 }}
-                      />
-                      <Text style={styles.indoorEntryButton}>
-                        Open Indoor Floor Plan
-                      </Text>
+                      <MaterialIcons name="map" size={20} color="white" style={{ marginRight: 8 }} />
+                      <Text style={styles.indoorEntryButton}>Open Indoor Floor Plan</Text>
                     </TouchableOpacity>
                   )}
 
