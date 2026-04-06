@@ -576,7 +576,7 @@ const MapScreen = () => {
                         color="white"
                         style={{ marginRight: 8 }}
                       />
-                      <Text style={styles.indoorEntryButtonText}>
+                      <Text style={styles.indoorEntryButton}>
                         Open Indoor Floor Plan
                       </Text>
                     </TouchableOpacity>
