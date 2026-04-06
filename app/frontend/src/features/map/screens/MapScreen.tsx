@@ -468,7 +468,6 @@ const MapScreen = () => {
           nearbyPois={nearbyPois}
           transportMode={transportMode}
           mapType={mapType}
-          onMapTypeChange={setMapType}
         />
       </View>
 

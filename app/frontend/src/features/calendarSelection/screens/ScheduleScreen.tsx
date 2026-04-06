@@ -129,11 +129,6 @@ const ScheduleScreen: React.FC<{
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
-  const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
-    googleCalendarAccessToken,
-    selectedCalendarIds,
-  );
-
   const loadEvents = async () => {
     const token = await getValidAccessToken();
 
