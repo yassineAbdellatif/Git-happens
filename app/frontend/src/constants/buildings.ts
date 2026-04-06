@@ -31,13 +31,25 @@ export const CONCORDIA_BUILDINGS: Building[] = [
         nodeId: "Hall_F1_building_entry_exit_1",
         latitude: 45.497519782213104,
         longitude: -73.57842271723722,
-        name: "Bishop ST Entrance",
+        name: "Bishop ST Entrance 1",
       },
       {
         nodeId: "Hall_F1_building_entry_exit_2",
         latitude: 45.497508970326564,
         longitude: -73.57840393917704,
-        name: "Maisonneuve St Entrance", //dsjbc;abjd
+        name: "Bishop ST Entrance 2",
+      },
+      {
+        nodeId: "Hall_F1_building_entry_exit_3",
+        latitude: 45.497110517724295,
+        longitude: -73.57858557984171,
+        name: "Maisonneuve St Entrance 1",
+      },
+      {
+        nodeId: "Hall_F1_building_entry_exit_4",
+        latitude: 45.49696848495306,
+        longitude: -73.57872307883531,
+        name: "Maisonneuve St Entrance 2",
       },
     ],
   },
@@ -92,6 +104,20 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
     image:
       "https://images.squarespace-cdn.com/content/v1/597b8962ebbd1a681f3b6efb/1520004557787-X66JBMR6FDIRR5A6PV9O/John+Molson+School+of+Business.jpg?format=original",
+    entrances: [
+      {
+        nodeId: "MB_F1_building_entry_exit_1",
+        latitude: 45.495316712802065,
+        longitude: -73.57856438718323,
+        name: "Guy ST Entrance 1",
+      },
+      {
+        nodeId: "MB_F1_building_entry_exit_2",
+        latitude: 45.49561342588177,
+        longitude: -73.57918934170462,
+        name: "Guy ST Entrance 2",
+      },
+    ],
   },
   {
     id: "GM",
@@ -159,6 +185,20 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
     image:
       "https://www.concordia.ca/content/dam/concordia/now/2014/02/vanier-library-620.jpg",
+    entrances: [
+      {
+        nodeId: "VL_F1_building_entry_exit_1",
+        latitude: 45.4590931278783,
+        longitude: -73.63791760640558,
+        name: "Sherbrooke ST Entrance 1",
+      },
+      {
+        nodeId: "VL_F1_building_entry_exit_2",
+        latitude: 45.459224879511666,
+        longitude: -73.63892687586944,
+        name: "Sherbrooke ST Entrance 2",
+      },
+    ],
   },
   {
     id: "AD",
