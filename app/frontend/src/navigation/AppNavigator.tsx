@@ -85,8 +85,6 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
 type DrawerIconProps = {
   color: string;
-  size: number;
-  focused: boolean;
 };
 
 const renderDrawerContent = (props: DrawerContentComponentProps) => (

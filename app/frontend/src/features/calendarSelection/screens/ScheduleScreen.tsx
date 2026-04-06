@@ -15,8 +15,7 @@ import { fetchUpcomingEvents } from "../../../services/calendarService";
 import { CalendarEvent } from "../../../types/calendarTypes";
 import { parseLocation } from "../../../utils/locationParser";
 import { CONCORDIA_BUILDINGS } from "../../../constants/buildings";
-import { useNextClass } from "../../nextClass/hooks/useNextClass";
-import NextClassCard from "../../nextClass/components/NextClassCard";
+
 import { styles } from "../styles/ScheduleStyle";
 
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 6); // 6am to 8pm
@@ -129,11 +128,6 @@ const ScheduleScreen: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-
-  const { status: nextClassStatus, loading: nextClassLoading } = useNextClass(
-    googleCalendarAccessToken,
-    selectedCalendarIds,
-  );
 
   const loadEvents = async () => {
     const token = await getValidAccessToken();
@@ -294,10 +288,6 @@ const ScheduleScreen: React.FC<{
     });
   };
 
-  const handleNextClassDirections = (buildingId: string) => {
-    navigateToBuilding(buildingId);
-  };
-
   const getEventTimeRange = (event: CalendarEvent): string => {
     if (!event.start.dateTime) {
       return "All day";
@@ -424,7 +414,7 @@ const ScheduleScreen: React.FC<{
             <View style={styles.timeColumnHeader} />
             {weekDays.map((dayObj, index) => (
               <View
-                key={index}
+                key={dayObj.day}
                 style={[
                   styles.dayColumn,
                   index === weekDays.length - 1 && { borderRightWidth: 0 },

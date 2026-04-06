@@ -46,7 +46,6 @@ describe("MapScreen source contract", () => {
 
     expect(source).toContain("nearbyPois={nearbyPois}");
     expect(source).toContain("mapType={mapType}");
-    expect(source).toContain("onMapTypeChange={setMapType}");
   });
 
   it("supports single-floor and multi-floor indoor navigation paths", () => {

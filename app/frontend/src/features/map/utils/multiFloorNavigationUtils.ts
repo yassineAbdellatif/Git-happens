@@ -1,4 +1,4 @@
-import type { LocalizedNode, FloorNumber, LocalizedNodeType } from "../../../services/floorPlanService";
+import type { LocalizedNode, FloorNumber } from "../../../services/floorPlanService";
 
 // @param path is the complete path spanning multiple floors
 export function splitPathByFloor(
@@ -6,7 +6,8 @@ export function splitPathByFloor(
 ): Record<FloorNumber, LocalizedNode[]> {
   return path.reduce(
     (acc, node) => {
-      (acc[node.floor] ??= []).push(node);
+      acc[node.floor] = acc[node.floor] ?? [];
+      acc[node.floor].push(node);
       return acc;
     },
     {} as Record<FloorNumber, LocalizedNode[]>
