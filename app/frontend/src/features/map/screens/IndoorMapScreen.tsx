@@ -247,6 +247,7 @@ const IndoorMapScreen = () => {
             <MaterialIcons name="accessible" size={22} color="#111" />
           </View>
           <Switch
+            testID="indoor-accessibility-toggle"
             value={isAccessibilityEnabled}
             onValueChange={onToggleAccessibility}
             trackColor={{ false: "#cfcfcf", true: "#5FD38D" }}

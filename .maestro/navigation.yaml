@@ -22,10 +22,10 @@ appId: com.githappens
 - tapOn: John Molson Building
 
 - assertVisible:
-    id: travel-mode-driving
+    id: travel-mode-shuttle
 
 - tapOn:
-    id: travel-mode-driving
+    id: travel-mode-shuttle
 
 - tapOn: Start Navigation
 

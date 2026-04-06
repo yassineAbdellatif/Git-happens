@@ -1,0 +1,86 @@
+appId: com.githappens
+---
+# Covers US-4.3 through US-4.6 in one Hall indoor routing flow.
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- tapOn:
+    point: "500,350"
+
+- inputText: Hall
+
+- tapOn:
+    point: "500,550"
+
+- assertVisible: Henry F. Hall Building
+
+- assertVisible:
+    id: directions-button
+
+- assertVisible:
+    id: open-indoor-floor-plan-button
+
+- tapOn:
+    id: open-indoor-floor-plan-button
+
+- assertVisible:
+    id: floor-option-1
+
+- tapOn:
+    id: floor-option-8
+
+- tapOn:
+    point: "342,303"
+
+- tapOn:
+    id: indoor-start-input
+
+- inputText: 122
+
+- assertVisible:
+    id: indoor-search-results
+
+- tapOn:
+    id: indoor-search-result-Hall_F1_room_63
+
+- tapOn:
+    id: indoor-search-result-Hall_F1_room_63
+
+- tapOn:
+    id: indoor-destination-input
+
+- inputText: 931
+
+- assertVisible:
+    id: indoor-search-results
+
+- tapOn:
+    id: indoor-search-result-Hall_F9_room_203
+
+- tapOn:
+    id: indoor-search-result-Hall_F9_room_203
+
+- tapOn:
+    id: indoor-start-navigation-button
+
+- assertVisible:
+    id: indoor-accessibility-toggle
+
+- tapOn:
+    id: indoor-accessibility-toggle
+
+- waitForAnimationToEnd:
+    timeout: 1500
+
+- assertVisible: Floor 9
+
+- tapOn: Floor 9
+
+- tapOn: End
+
+- tapOn:
+    id: indoor-back-button
+
+- assertVisible:
+    id: campus-toggle-button

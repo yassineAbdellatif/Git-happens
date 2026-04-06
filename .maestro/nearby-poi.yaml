@@ -18,4 +18,16 @@ appId: com.githappens
 - waitForAnimationToEnd:
     timeout: 3000
 
+- assertVisible: Get Directions
+
+- tapOn: Get Directions
+
+- assertVisible:
+    id: travel-mode-walking
+
+- tapOn:
+    id: travel-mode-walking
+
+- tapOn: Start Navigation
+
 - takeScreenshot: nearby-poi-panel
