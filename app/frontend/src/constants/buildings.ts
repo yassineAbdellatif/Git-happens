@@ -185,6 +185,20 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
     image:
       "https://www.concordia.ca/content/dam/concordia/now/2014/02/vanier-library-620.jpg",
+    entrances: [
+      {
+        nodeId: "VL_F1_building_entry_exit_1",
+        latitude: 45.4590931278783,
+        longitude: -73.63791760640558,
+        name: "Sherbrooke ST Entrance 1",
+      },
+      {
+        nodeId: "VL_F1_building_entry_exit_2",
+        latitude: 45.459224879511666,
+        longitude: -73.63892687586944,
+        name: "Sherbrooke ST Entrance 2",
+      },
+    ],
   },
   {
     id: "AD",
