@@ -104,6 +104,20 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
     image:
       "https://images.squarespace-cdn.com/content/v1/597b8962ebbd1a681f3b6efb/1520004557787-X66JBMR6FDIRR5A6PV9O/John+Molson+School+of+Business.jpg?format=original",
+    entrances: [
+      {
+        nodeId: "MB_F1_building_entry_exit_1",
+        latitude: 45.495316712802065,
+        longitude: -73.57856438718323,
+        name: "Guy ST Entrance 1",
+      },
+      {
+        nodeId: "MB_F1_building_entry_exit_2",
+        latitude: 45.49561342588177,
+        longitude: -73.57918934170462,
+        name: "Guy ST Entrance 2",
+      },
+    ],
   },
   {
     id: "GM",
