@@ -161,6 +161,7 @@ export function findBestEntry(
 }
  
 /** Simple Haversine distance in meters between two lat/lng points. */
+// haversine function learned and used from https://github.com/thealmarques/haversine-distance-typescript.git
 function haversine(
   a: { latitude: number; longitude: number },
   b: { latitude: number; longitude: number },
@@ -176,19 +177,7 @@ function haversine(
     Math.cos(toRad(a.latitude)) * Math.cos(toRad(b.latitude)) * sinLon * sinLon;
   return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
 }
- 
-// ─── Main Orchestrator ───────────────────────────────────────────────────────
- 
-/**
- * Orchestrates a full cross-building route:
- *
- *   1. Indoor A* : Start Room  →  Exit Door  (origin building)
- *   2. Outdoor   : Exit Door   →  Entry Door (Google Directions API)
- *   3. Indoor A* : Entry Door  →  Dest Room  (destination building)
- *
- * Returns a `HandoffResult` with three ordered segments on success,
- * or a descriptive error on failure.
- */
+
 export async function buildHandoffRoute(
   request: HandoffRouteRequest,
 ): Promise<HandoffResult> {
