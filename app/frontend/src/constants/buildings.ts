@@ -265,7 +265,15 @@ export const CONCORDIA_BUILDINGS: Building[] = [
     ],
     image:
       "https://www.concordia.ca/content/concordia/en/maps/buildings/cc/_jcr_content/content-main/grid_container_307846512/grid-container-parsys/box_427340212/box-parsys/image.img.jpg/1750701910958.jpg",
-  },
+    entrances: [
+      {
+        nodeId: "CC_F1_building_entry_exit_5",
+        latitude: 45.457965,
+        longitude: -73.639614,
+        name: "Sherbrooke W ST Entrance",
+      },
+    ],
+    },
   {
     id: "VE",
     name: "VE",
