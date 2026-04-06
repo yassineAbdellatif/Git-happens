@@ -8,6 +8,7 @@ export interface Building {
   coordinates: { latitude: number; longitude: number }[];
   info: string;
   image?: string;
+  entrances?: { nodeId: string; latitude: number; longitude: number; name: string }[];
 }
 
 export const CONCORDIA_BUILDINGS: Building[] = [
@@ -25,6 +26,20 @@ export const CONCORDIA_BUILDINGS: Building[] = [
       { latitude: 45.496824, longitude: -73.578837 },
     ],
     image: "https://live.staticflickr.com/6102/6310030294_ed7366df3f_b.jpg",
+    entrances: [
+      {
+        nodeId: "Hall_F1_building_entry_exit_1",
+        latitude: 45.497519782213104,
+        longitude: -73.57842271723722,
+        name: "Bishop ST Entrance",
+      },
+      {
+        nodeId: "Hall_F1_building_entry_exit_2",
+        latitude: 45.497508970326564,
+        longitude: -73.57840393917704,
+        name: "Maisonneuve St Entrance", //dsjbc;abjd
+      },
+    ],
   },
   {
     id: "LB",
