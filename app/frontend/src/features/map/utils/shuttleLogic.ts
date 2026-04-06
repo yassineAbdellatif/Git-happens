@@ -57,12 +57,14 @@ export const getNextShuttleInfo = (
   }
 
   const dayIndex = now.getDay();
-  const daySchedule =
-    dayIndex >= 1 && dayIndex <= 4
-      ? schedule["Monday-Thursday"]
-      : dayIndex === 5
-        ? schedule["Friday"]
-        : null;
+  let daySchedule: (typeof schedule)[keyof typeof schedule] | null;
+  if (dayIndex >= 1 && dayIndex <= 4) {
+    daySchedule = schedule["Monday-Thursday"];
+  } else if (dayIndex === 5) {
+    daySchedule = schedule["Friday"];
+  } else {
+    daySchedule = null;
+  }
 
   if (!daySchedule) {
     return {
@@ -77,7 +79,7 @@ export const getNextShuttleInfo = (
       : daySchedule.departure_times_SGW;
 
   const toMinutes = (time: string) => {
-    const [hours, minutes] = time.split(":").map((value) => Number(value));
+    const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
   };
 

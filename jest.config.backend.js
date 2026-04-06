@@ -7,6 +7,7 @@ module.exports = {
         tsconfig: {
           esModuleInterop: true,
           allowJs: true,
+          lib: ["es2021"],
         },
       },
     ],
